@@ -1,0 +1,36 @@
+/* Mobile-friendly tooltip styles for word-by-word translation */
+.mobile-word-tooltip {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  max-width: 85vw;
+  width: auto;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  background-color: white;
+  text-align: center;
+}
+
+.dark .mobile-word-tooltip {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+/* Make sure the tooltip content is clear and readable */
+.arabic-word-interactive {
+  position: relative;
+  display: inline-block;
+  z-index: 10;
+}
+
+/* Highlight the active word more prominently on mobile */
+@media (max-width: 768px) {
+  .arabic-word-interactive.active {
+    background-color: rgba(59, 130, 246, 0.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  }
+}
