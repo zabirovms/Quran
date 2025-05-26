@@ -1,0 +1,52 @@
+05-26 08:34:51
+Executing search for 'رَبَّنَا وَاجْعَلْنَا مُسْلِمَيْنِ لَكَ وَمِن ذُرِّيَّتِنَا أُمَّةًۭ مُّسْلِمَةًۭ لَّكَ ۖ وَأَرِنَا مَنَاسِكَنَا وَتُبْ عَلَيْنَا ۖ إِنَّكَ أَنتَ ٱلتَّوَّابُ ٱ' in both languages
+05-26 08:34:53
+3:34:53 AM [search] Received search request: q=رَبَّنَا وَاجْعَلْنَا مُسْلِمَيْنِ لَكَ وَمِن ذُرِّيَّتِنَا أُمَّةًۭ مُّسْلِمَةًۭ لَّكَ ۖ وَأَرِنَا مَنَاسِكَنَا وَتُبْ عَلَيْنَا ۖ إِنَّكَ أَنتَ ٱلتَّوَّابُ , language=both, surahId=undefined
+05-26 08:34:53
+Executing search for 'رَبَّنَا وَاجْعَلْنَا مُسْلِمَيْنِ لَكَ وَمِن ذُرِّيَّتِنَا أُمَّةًۭ مُّسْلِمَةًۭ لَّكَ ۖ وَأَرِنَا مَنَاسِكَنَا وَتُبْ عَلَيْنَا ۖ إِنَّكَ أَنتَ ٱلتَّوَّابُ ' in both languages
+05-26 08:35:32
+3:35:32 AM [search] Received search request: q=j, language=both, surahId=undefined
+05-26 08:35:32
+Executing search for 'j' in both languages
+05-26 08:35:41
+3:35:41 AM [search] Received search request: q=g, language=both, surahId=undefined
+05-26 08:35:41
+Executing search for 'g' in both languages
+05-26 10:05:27
+starting up user application
+05-26 10:05:27
+forwarding local port 5000 to external port 80 (mapped as 1104)
+05-26 10:05:29
+> rest-express@1.0.0 start
+05-26 10:05:29
+> NODE_ENV=production node dist/index.js
+05-26 10:05:30
+Connecting to database with URL: postgresql:*****@aws-0-eu-north-1.pooler.supabase.com:6543/postgres
+05-26 10:05:30
+5:05:30 AM [express] serving on port 5000
+05-26 10:10:31
+system: received signal terminated
+05-26 10:16:01
+RangeNotSatisfiableError: Range Not Satisfiable
+05-26 10:16:01
+at createHttpError (/home/runner/workspace/node_modules/send/index.js:983:7)
+05-26 10:16:01
+at SendStream.error (/home/runner/workspace/node_modules/send/index.js:270:31)
+05-26 10:16:01
+at SendStream.send (/home/runner/workspace/node_modules/send/index.js:665:19)
+05-26 10:16:01
+at onstat (/home/runner/workspace/node_modules/send/index.js:724:10)
+05-26 10:16:01
+at FSReqCallback.oncomplete (node:fs:198:5)
+05-26 10:16:02
+RangeNotSatisfiableError: Range Not Satisfiable
+05-26 10:16:02
+at createHttpError (/home/runner/workspace/node_modules/send/index.js:983:7)
+05-26 10:16:02
+at SendStream.error (/home/runner/workspace/node_modules/send/index.js:270:31)
+05-26 10:16:02
+at SendStream.send (/home/runner/workspace/node_modules/send/index.js:665:19)
+05-26 10:16:02
+at onstat (/home/runner/workspace/node_modules/send/index.js:724:10)
+05-26 10:16:02
+at FSReqCallback.oncomplete (node:fs:198:5)
