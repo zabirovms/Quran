@@ -73,6 +73,8 @@ export const bookmarks = pgTable("bookmarks", {
 export const insertBookmarkSchema = createInsertSchema(bookmarks).omit({
   id: true,
   created_at: true,
+}).extend({
+  user_id: z.string(), // Explicitly set as string for Supabase UUID
 });
 
 export type InsertBookmark = z.infer<typeof insertBookmarkSchema>;
