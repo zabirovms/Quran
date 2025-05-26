@@ -13,6 +13,7 @@ import SearchOverlay from "./components/overlay/SearchOverlay";
 import BookmarksOverlay from "./components/overlay/BookmarksOverlay";
 import { DisplayProvider } from "./hooks/useDisplaySettings";
 import { ThemeProvider } from "./hooks/useTheme";
+import { AuthProvider } from "./hooks/useAuth";
 import DuasPage from "@/pages/duas";
 
 
@@ -64,13 +65,15 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <DisplayProvider>
-        <TooltipProvider>
-          <Router />
-        </TooltipProvider>
-      </DisplayProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <DisplayProvider>
+          <TooltipProvider>
+            <Router />
+          </TooltipProvider>
+        </DisplayProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

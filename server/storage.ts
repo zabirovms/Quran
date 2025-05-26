@@ -26,7 +26,7 @@ export interface IStorage {
   searchVerses(query: string, language?: 'arabic' | 'tajik' | 'both', surahId?: number): Promise<Verse[]>;
   
   // Bookmark operations
-  getBookmarksByUser(userId: number): Promise<{bookmark: Bookmark, verse: Verse}[]>;
+  getBookmarksByUser(userId: string): Promise<{bookmark: Bookmark, verse: Verse}[]>;
   createBookmark(bookmark: InsertBookmark): Promise<Bookmark>;
   deleteBookmark(id: number): Promise<boolean>;
   

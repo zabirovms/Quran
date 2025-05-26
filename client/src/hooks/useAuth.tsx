@@ -21,9 +21,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        setSession(session);
+        setUser(session.user);
+      } else {
+        // Automatically sign in anonymously if no session exists
+        try {
+          const { data, error } = await supabase.auth.signInAnonymously();
+          if (!error && data.session) {
+            setSession(data.session);
+            setUser(data.session.user);
+          }
+        } catch (error) {
+          console.error('Anonymous sign-in failed:', error);
+        }
+      }
       setLoading(false);
     });
 

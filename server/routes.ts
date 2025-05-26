@@ -132,10 +132,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get bookmarks for a user
   apiRouter.get("/bookmarks", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.query.userId as string);
+      const userId = req.query.userId as string;
       
-      if (isNaN(userId)) {
-        return res.status(400).json({ message: "Invalid user ID" });
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
       }
       
       const bookmarks = await storage.getBookmarksByUser(userId);

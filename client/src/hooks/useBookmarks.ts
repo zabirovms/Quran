@@ -9,7 +9,7 @@ interface BookmarkWithVerse {
 }
 
 export function useBookmarks() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   
   return useQuery<BookmarkWithVerse[]>({
     queryKey: [`/api/bookmarks`, user?.id],
@@ -22,7 +22,7 @@ export function useBookmarks() {
       }
       return response.json();
     },
-    enabled: !!user?.id,
+    enabled: !loading && !!user?.id,
   });
 }
 
