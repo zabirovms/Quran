@@ -1,9 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Bookmark, Verse } from '@shared/schema';
-
-// Mock user ID for now - in a real app, this would come from authentication
-const MOCK_USER_ID = 1;
+import { useAuth } from '@/hooks/useAuth';
 
 interface BookmarkWithVerse {
   bookmark: Bookmark;
@@ -11,18 +9,35 @@ interface BookmarkWithVerse {
 }
 
 export function useBookmarks() {
+  const { user } = useAuth();
+  
   return useQuery<BookmarkWithVerse[]>({
-    queryKey: [`/api/bookmarks?userId=${MOCK_USER_ID}`],
+    queryKey: [`/api/bookmarks`, user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const response = await fetch(`/api/bookmarks?userId=${user.id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch bookmarks');
+      }
+      return response.json();
+    },
+    enabled: !!user?.id,
   });
 }
 
 export function useAddBookmark() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   return useMutation({
     mutationFn: async (verseId: number) => {
+      if (!user?.id) {
+        throw new Error('User must be authenticated to bookmark verses');
+      }
+      
       const response = await apiRequest('POST', '/api/bookmarks', {
-        user_id: MOCK_USER_ID,
+        user_id: user.id,
         verse_id: verseId,
       });
       return response.json();
@@ -35,9 +50,14 @@ export function useAddBookmark() {
 
 export function useRemoveBookmark() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   return useMutation({
     mutationFn: async (bookmarkId: number) => {
+      if (!user?.id) {
+        throw new Error('User must be authenticated to remove bookmarks');
+      }
+      
       await apiRequest('DELETE', `/api/bookmarks/${bookmarkId}`);
     },
     onSuccess: () => {
