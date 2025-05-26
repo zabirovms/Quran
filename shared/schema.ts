@@ -65,7 +65,7 @@ export type Verse = typeof verses.$inferSelect;
 // Bookmarks table
 export const bookmarks = pgTable("bookmarks", {
   id: serial("id").primaryKey(),
-  user_id: integer("user_id").notNull(),
+  user_id: text("user_id").notNull(), // Changed to text to support Supabase UUID
   verse_id: integer("verse_id").notNull(),
   created_at: timestamp("created_at").defaultNow(),
 });
