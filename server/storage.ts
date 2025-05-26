@@ -252,7 +252,7 @@ export class MemStorage implements IStorage {
   }
 
   // Bookmark operations
-  async getBookmarksByUser(userId: number): Promise<{bookmark: Bookmark, verse: Verse}[]> {
+  async getBookmarksByUser(userId: string): Promise<{bookmark: Bookmark, verse: Verse}[]> {
     const userBookmarks = Array.from(this.bookmarks.values())
       .filter(bookmark => bookmark.user_id === userId);
     
@@ -479,7 +479,7 @@ export class PostgresStorage implements IStorage {
     }
   }
 
-  async getBookmarksByUser(userId: number): Promise<{bookmark: Bookmark, verse: Verse}[]> {
+  async getBookmarksByUser(userId: string): Promise<{bookmark: Bookmark, verse: Verse}[]> {
     // Use specific column selection to avoid nonexistent column errors
     const result = await db
       .select({
