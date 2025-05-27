@@ -1,105 +1,219 @@
-# Tajik Quran Web Application
+# Tajik Quran Reader 📖
 
-A comprehensive Tajik Quran web application providing an immersive digital Quranic experience for Tajik-speaking users, with advanced word-level data management and interactive learning features.
+A comprehensive full-stack web application for reading the Quran in Tajik, featuring an immersive digital experience with advanced content presentation, user interaction features, and modern performance optimizations.
 
-## Features
+## ✨ Features
 
-- Quran reading with Tajik translation
-- Beautiful Tajweed color-coding of Arabic text
-- Word-by-word translation and analysis
-- Audio recitation playback
-- Bookmark favorite verses
-- Search functionality in Arabic and Tajik
-- Dynamic verse image generation
-- Responsive design for desktop and mobile devices
-- Light/dark theme support
-- Customizable reading experience
+### Core Functionality
+- **📚 Complete Quran Text**: Full Quran in Arabic with multiple Tajik translations (tj_2, tj_3, farsi, russian)
+- **🔍 Word-by-Word Analysis**: Interactive word-by-word translation with 77,429+ word entries
+- **🎵 Audio Recitation**: High-quality audio playback for verses and entire surahs using AlQuran Cloud API
+- **🔎 Advanced Search**: Full-text search across Arabic and Tajik content with verse reference support
+- **📖 User Bookmarks**: Personal bookmark system with Supabase authentication
+- **📱 Responsive Design**: Optimized for mobile, tablet, and desktop devices
 
-## Technology Stack
+### Islamic Tools
+- **📿 Tasbeeh Counter**: Digital prayer beads counter for dhikr and Islamic prayers
+- **🤲 Duas Collection**: Curated collection of Islamic supplications
+- **🎯 Word Learning**: Interactive game for learning the 100 most common Quranic words
+- **📜 Farzi Ayn Book**: Dedicated section for the "Фарзи Айн - тоҷикӣ" religious text
 
-- **Frontend**: React with TypeScript
-- **Backend**: Express.js
-- **Database**: PostgreSQL (via Supabase)
-- **ORM**: Drizzle ORM
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **API Integration**: AlQuran Cloud API for audio and additional data
+### User Experience
+- **🎨 Theme Support**: Light and dark mode with "равшан" and "Торик" themes
+- **⚙️ Display Settings**: Customizable text sizes, line spacing, and content view modes
+- **🌐 Multi-Language**: Tajik, Farsi, Russian translation support
+- **💾 Offline Caching**: Smart caching for improved performance and offline access
 
-## Prerequisites
+### Performance Optimizations
+- **⚡ Lazy Loading**: Code-split pages for faster initial load times
+- **🗜️ Compression**: Gzip compression for all assets and API responses
+- **📊 Caching Strategy**: Optimized caching headers for static assets and API responses
+- **📱 Mobile Performance**: Reduced DOM complexity and optimized rendering
 
-- Node.js (v18+ recommended)
-- PostgreSQL database (or Supabase account)
-- NPM or Yarn
+## 🛠️ Tech Stack
 
-## Setup and Installation
+### Frontend
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **Vite** for build tooling and development
+- **Wouter** for client-side routing
+- **TanStack Query** for data fetching and caching
+- **Radix UI** + **shadcn/ui** for accessible UI components
+- **Framer Motion** for animations
 
-1. Clone the repository
-   ```
-   git clone https://github.com/yourusername/tajik-quran-app.git
-   cd tajik-quran-app
-   ```
+### Backend
+- **Node.js** with Express.js
+- **TypeScript** for type safety
+- **Drizzle ORM** for database operations
+- **PostgreSQL** database
+- **Compression** middleware for performance
+- **Performance monitoring** and Core Web Vitals tracking
 
-2. Install dependencies
-   ```
+### Authentication & Database
+- **Supabase** for user authentication and database hosting
+- **Anonymous authentication** for seamless user experience
+- **UUID-based user IDs** for scalability
+
+### DevOps & Deployment
+- **Railway** deployment configuration
+- **ESBuild** for production bundling
+- **Environment-based configuration**
+- **Health checks** and restart policies
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- Supabase account
+- Railway account (for deployment)
+
+### Installation
+
+1. **Clone and install**:
+   ```bash
+   git clone <your-repository>
+   cd tajik-quran-reader
    npm install
    ```
 
-3. Configure environment variables
-   - Create a `.env` file in the root directory
-   - Add your Supabase or PostgreSQL connection string:
-     ```
-     DATABASE_URL=postgresql://[USER]:[PASSWORD]@[HOST]:[PORT]/[DATABASE]
-     ```
-
-4. Initialize the database
+2. **Environment setup**:
+   ```bash
+   cp .env.example .env
    ```
+   
+   Configure your environment variables:
+   ```env
+   DATABASE_URL=postgresql://user:password@host:port/database
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+3. **Database setup**:
+   ```bash
    npm run db:push
    ```
 
-5. Start the development server
-   ```
+4. **Start development**:
+   ```bash
    npm run dev
    ```
 
-## Deploying to Railway
+Visit `http://localhost:5000` to see your application.
 
-This project is optimized for deployment on Railway with an improved JavaScript-based build process:
+## 📦 Deployment
 
-1. Create a new project on [Railway](https://railway.app/)
-2. Connect your GitHub repository
-3. Add a PostgreSQL database service or connect to Supabase
-4. Set up the following environment variables:
-   - `DATABASE_URL`: Your Supabase or PostgreSQL connection string
-   - `SESSION_SECRET`: A strong secret key for session encryption
-   - `NODE_ENV`: Set to `production`
-5. The deployment will automatically:
-   - Build the client application with code splitting for reduced bundle size
-   - Generate optimized server code using esbuild
-   - Create a production-ready package.json
-   - Start the application with proper path handling
+### Railway Deployment
 
-If you encounter any deployment issues:
-- Verify your DATABASE_URL environment variable is correctly set
-- Check the Railway logs for detailed error information
-- The build process is designed to work within Railway's memory constraints
-- Vite is configured to split code chunks to avoid memory issues during build
+This project is optimized for Railway deployment with automatic builds and deployments:
 
-## Database Setup on Supabase
+1. **Connect to Railway**:
+   - Link your GitHub repository to Railway
+   - Railway will automatically detect the configuration
 
-If you're using Supabase instead of a standard PostgreSQL database:
+2. **Environment Variables**:
+   Set these in your Railway dashboard:
+   ```
+   DATABASE_URL=your_supabase_postgres_url
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-1. Go to the [Supabase dashboard](https://supabase.com/dashboard/projects)
-2. Create a new project if you haven't already
-3. Once in the project page, click the "Connect" button on the top toolbar
-4. Copy URI value under "Connection string" -> "Transaction pooler"
-5. Replace `[YOUR-PASSWORD]` with the database password you set for the project
-6. Add this URI as your `DATABASE_URL` environment variable
+3. **Deploy**:
+   - Push to your main branch or deploy manually
+   - Railway will build and deploy automatically
+   - Health checks ensure your app is running properly
 
-## License
+### Build Configuration
+- **Build Command**: `npm run build`
+- **Start Command**: `npm start`
+- **Health Check**: `/api/surahs`
+- **Auto-restart**: On failure with 10 max retries
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📁 Project Structure
 
-## Acknowledgements
+```
+📦 tajik-quran-reader
+├── 📁 client/                 # Frontend React application
+│   ├── 📁 public/            # Static assets
+│   ├── 📁 src/
+│   │   ├── 📁 components/    # Reusable UI components
+│   │   ├── 📁 pages/         # Application pages
+│   │   ├── 📁 hooks/         # Custom React hooks
+│   │   ├── 📁 lib/           # Utility libraries
+│   │   └── 📄 App.tsx        # Main application component
+│   └── 📄 index.html         # HTML entry point
+├── 📁 server/                 # Backend Express server
+│   ├── 📄 index.ts           # Server entry point
+│   ├── 📄 routes.ts          # API route definitions
+│   ├── 📄 storage.ts         # Database operations
+│   ├── 📄 db.ts              # Database connection
+│   └── 📄 word-service.ts    # Word analysis service
+├── 📁 shared/                 # Shared TypeScript types
+│   └── 📄 schema.ts          # Database schema definitions
+├── 📁 scripts/                # Database and utility scripts
+│   ├── 📄 import-data.ts     # Data import scripts
+│   └── 📄 build-optimized.js # Optimized production build
+├── 📁 attached_assets/        # Static data files
+│   ├── 📄 Uthmani.json       # Arabic text data
+│   ├── 📄 tasbeehs.json      # Tasbeeh counter data
+│   └── 📄 top_100_words.json # Learning game data
+├── 📄 package.json           # Dependencies and scripts
+├── 📄 railway.json           # Railway deployment config
+├── 📄 Procfile               # Process configuration
+├── 📄 vite.config.ts         # Vite build configuration
+├── 📄 tailwind.config.ts     # Tailwind CSS configuration
+├── 📄 drizzle.config.ts      # Database ORM configuration
+└── 📄 tsconfig.json          # TypeScript configuration
+```
 
-- AlQuran Cloud API for Quranic data
-- Islamic Network for audio recitations
-- Contributors to the Tajik translation of the Quran
+## 🗄️ Database Schema
+
+### Core Tables
+- **surahs**: Quran chapters with metadata
+- **verses**: Individual verses with multiple translations
+- **bookmarks**: User-specific saved verses
+- **word_analysis**: Word-by-word translation data (77,429 entries)
+- **search_history**: User search tracking
+
+### Data Sources
+- **Arabic Text**: Uthmani script from authentic sources
+- **Tajik Translations**: Multiple verified translations (tj_2, tj_3)
+- **Audio**: AlQuran Cloud API integration
+- **Word Analysis**: Comprehensive word-by-word database
+
+## 🔧 Available Scripts
+
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm start           # Start production server
+
+# Database
+npm run db:push     # Push schema changes to database
+npm run db:studio   # Open Drizzle Studio
+
+# Code Quality
+npm run check       # TypeScript type checking
+```
+
+## 🌟 Performance Features
+
+- **Lazy Loading**: Page-level code splitting
+- **Compression**: Gzip compression for all responses
+- **Caching**: Smart caching strategies (1 year for assets, 5 minutes for API)
+- **Modern JavaScript**: ES2020 targeting for better performance
+- **Image Optimization**: Lazy loading with intersection observers
+- **Core Web Vitals**: Performance monitoring and optimization
+
+## 📄 License
+
+MIT License - feel free to use this project for educational and religious purposes.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit issues and enhancement requests.
+
+---
+
+*Built with ❤️ for the Tajik-speaking Muslim community*
