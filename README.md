@@ -66,6 +66,7 @@ A comprehensive full-stack web application for reading the Quran in Tajik, featu
 - Node.js 18+ 
 - Supabase account
 - Railway account (for deployment)
+- cross-env (for Windows compatibility)
 
 ### Installation
 
@@ -83,9 +84,19 @@ A comprehensive full-stack web application for reading the Quran in Tajik, featu
    
    Configure your environment variables:
    ```env
+   # Database Configuration
    DATABASE_URL=postgresql://user:password@host:port/database
+   
+   # Supabase Configuration
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   
+   # Server Configuration
+   PORT=5000
+   NODE_ENV=development
+   
+   # Session Configuration (for Railway)
+   SESSION_SECRET=your_session_secret
    ```
 
 3. **Database setup**:
@@ -135,7 +146,6 @@ This project is optimized for Railway deployment with automatic builds and deplo
 📦 tajik-quran-reader
 ├── 📁 client/                 # Frontend React application
 │   ├── 📁 public/            # Static assets
-│   ├── 📁 src/
 │   │   ├── 📁 components/    # Reusable UI components
 │   │   ├── 📁 pages/         # Application pages
 │   │   ├── 📁 hooks/         # Custom React hooks
@@ -185,13 +195,13 @@ This project is optimized for Railway deployment with automatic builds and deplo
 
 ```bash
 # Development
-npm run dev          # Start development server
+npm run dev          # Start development server (cross-platform)
 npm run build        # Build for production
-npm start           # Start production server
+npm start           # Start production server (cross-platform)
 
 # Database
 npm run db:push     # Push schema changes to database
-npm run db:studio   # Open Drizzle Studio
+npm run db:studio   # Open Drizzle Studio for database management
 
 # Code Quality
 npm run check       # TypeScript type checking
