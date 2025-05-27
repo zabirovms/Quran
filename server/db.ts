@@ -15,10 +15,29 @@ const sql = postgres(connectionString, {
   max: 10, // Connection pool size
   idle_timeout: 20,
   connect_timeout: 30,
-  ssl: { rejectUnauthorized: false }, // Required for Supabase connections
+  ssl: { 
+    rejectUnauthorized: false,
+    sslmode: 'require'
+  }, // Required for Supabase connections
   onnotice: () => {}, // Suppress notice messages
-  debug: false // Disable verbose logging to prevent excessive output
+  debug: process.env.NODE_ENV === 'development', // Enable debug in development
+  connection: {
+    application_name: 'tajik-quran-portal'
+  },
+  transform: {
+    undefined: null // Transform undefined to null
+  }
 });
+
+// Test the connection
+sql`SELECT 1`
+  .then(() => {
+    console.log('Successfully connected to the database');
+  })
+  .catch((err) => {
+    console.error('Failed to connect to the database:', err);
+    process.exit(1); // Exit if we can't connect to the database
+  });
 
 // Initialize drizzle
 export const db = drizzle(sql);
