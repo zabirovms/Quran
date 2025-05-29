@@ -95,14 +95,14 @@ export default function CompactVerseItem({ verse, surahName, isLoading = false }
       removeBookmark.mutate(bookmarkId, {
         onSuccess: () => {
           toast({
-            title: "Хатмича ҳазф шуд",
-            description: `Ояти ${verse.unique_key} аз хатмичаҳо ҳазф шуд`,
+            title: "Ҳазф шуд",
+            description: `Ояти ${verse.unique_key} аз захирагоҳ ҳазф шуд`,
           });
           setIsBookmarkPending(false);
         },
         onError: () => {
           toast({
-            title: "Хато ҳангоми ҳазфи хатмича",
+            title: "Хатогӣ ҳангоми ҳазф",
             description: "Лутфан дубора кӯшиш кунед",
             variant: "destructive",
           });
@@ -116,14 +116,14 @@ export default function CompactVerseItem({ verse, surahName, isLoading = false }
         {
           onSuccess: () => {
             toast({
-              title: "Хатмича илова шуд",
-              description: `Ояти ${verse.unique_key} ба хатмичаҳо илова шуд`,
+              title: "Захира шуд",
+              description: `Ояти ${verse.unique_key} ба захирагоҳ илова шуд`,
             });
             setIsBookmarkPending(false);
           },
           onError: () => {
             toast({
-              title: "Хато ҳангоми иловаи хатмича",
+              title: "Хатогӣ ҳангоми илова",
               description: "Лутфан дубора кӯшиш кунед",
               variant: "destructive",
             });
@@ -154,8 +154,8 @@ export default function CompactVerseItem({ verse, surahName, isLoading = false }
     }).catch((err) => {
       console.error('Could not copy text: ', err);
       toast({
-        title: "Хато ҳангоми нусхабардорӣ",
-        description: "Имкон надорад, ки матнро нусхабардорӣ кунед",
+        title: "Хатогӣ ҳангоми нусхабардорӣ",
+        description: "Матн нусхабардорӣ нашуд",
         variant: "destructive",
       });
     });
@@ -251,7 +251,7 @@ export default function CompactVerseItem({ verse, surahName, isLoading = false }
                 className={`h-5 w-5 p-0.5 ${isBookmarked ? "text-amber-500" : "text-gray-400 hover:text-primary"}`}
                 onClick={toggleBookmark}
                 disabled={isBookmarkPending || isBookmarkLoading}
-                title={isBookmarked ? "Хатмичаро хориҷ кунед" : "Ҳамчун хатмича нигоҳ доред"}
+                title={isBookmarked ? "Ҳазф кунед" : "Захира кунед"}
               >
                 <BookmarkIcon className={`h-3 w-3 ${isBookmarked ? "fill-current" : ""}`} />
               </Button>
