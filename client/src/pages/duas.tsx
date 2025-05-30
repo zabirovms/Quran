@@ -22,7 +22,7 @@ export default function DuasPage() {
     dua.arabic.toLowerCase().includes(searchQuery.toLowerCase()) ||
     dua.transliteration.toLowerCase().includes(searchQuery.toLowerCase()) ||
     dua.tajik.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    `Сура ${dua.surah}, Оят ${dua.verse}`.includes(searchQuery)
+    `Сураи ${dua.surah}, Ояти ${dua.verse}`.includes(searchQuery)
   );
 
   return (
