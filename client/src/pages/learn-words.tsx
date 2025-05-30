@@ -89,14 +89,22 @@ export default function LearnWords() {
       try {
         const response = await fetch('/data/top_100_words.json');
         if (!response.ok) {
-          throw new Error('Failed to load Quran words');
+          throw new Error(`Failed to load Quran words: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error('Invalid data format: expected non-empty array');
+        }
         setWords(data);
         initializeStudyWords(data);
         setIsLoading(false);
       } catch (error) {
         console.error('Error loading Quran words:', error);
+        toast({
+          title: "Хато",
+          description: "Калимаҳо бор карда нашуд. Лутфан саҳифаро аз нав бор кунед.",
+          variant: "destructive",
+        });
         setIsLoading(false);
       }
     };
@@ -965,4 +973,8 @@ export default function LearnWords() {
       </main>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fe7b85f6b3394b5c747be0ef34925eddbd31f4bc
