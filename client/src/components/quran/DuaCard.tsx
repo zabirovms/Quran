@@ -15,7 +15,7 @@ export default function DuaCard({ surah, verse, arabic, transliteration, tajik }
     <article className="w-full bg-card rounded-lg border p-4 space-y-3 hover:bg-accent/50 transition-colors">
       <div className="flex justify-between items-center">
         <Badge variant="secondary" className={cn("text-sm")}>
-          Сура {surah}, Оят {verse}
+          Сураи {surah}, Ояти {verse}
         </Badge>
       </div>
       
