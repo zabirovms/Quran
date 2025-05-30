@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
+import * as React from "react";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface DuaCardProps {
   surah: number;
@@ -10,30 +10,26 @@ interface DuaCardProps {
   tajik: string;
 }
 
-export default function DuaCard({ surah, verse, arabic, transliteration, tajik }: DuaCardProps) {
+export default function DuaCard({ surah, verse, arabic, transliteration, tajik }: DuaCardProps): React.ReactElement {
   return (
-    <Card className="w-full">
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <Badge variant="secondary" className="text-sm">
-            Сура {surah}, Оят {verse}
-          </Badge>
+    <article className="w-full bg-card rounded-lg border p-4 space-y-3 hover:bg-accent/50 transition-colors">
+      <div className="flex justify-between items-center">
+        <Badge variant="secondary" className={cn("text-sm")}>
+          Сура {surah}, Оят {verse}
+        </Badge>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="text-right text-xl md:text-2xl font-arabic leading-relaxed">
+          {arabic}
         </div>
-        
-        <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-          <div className="space-y-4">
-            <div className="text-right text-2xl font-arabic leading-loose">
-              {arabic}
-            </div>
-            <div className="text-muted-foreground text-sm">
-              {transliteration}
-            </div>
-            <div className="text-sm">
-              {tajik}
-            </div>
-          </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
+        <div className="text-muted-foreground text-sm md:text-base">
+          {transliteration}
+        </div>
+        <div className="text-sm md:text-base">
+          {tajik}
+        </div>
+      </div>
+    </article>
   );
 } 

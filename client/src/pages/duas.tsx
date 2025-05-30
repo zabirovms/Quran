@@ -26,11 +26,11 @@ export default function DuasPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
-        <div className="container flex h-14 max-w-screen-2xl items-center">
-          <div className="flex w-full justify-between space-x-2 md:space-x-4">
+        <div className="container flex h-14 max-w-screen-2xl items-center px-4">
+          <div className="flex w-full justify-between items-center">
             <div className="flex items-center gap-2">
               <Link href="/">
                 <Button variant="ghost" size="sm" className="flex gap-2 items-center">
@@ -57,11 +57,11 @@ export default function DuasPage() {
       </header>
 
       {/* Main content */}
-      <main className="container max-w-4xl mx-auto py-8 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Дуоҳои Қуръонӣ</h1>
-          <p className="text-muted-foreground mb-6">
-            Маҷмӯаи дуоҳо аз Қуръони карим. Қисми дуо бо ранги баланд нишон дода шудааст.
+      <main className="container max-w-3xl mx-auto py-6 px-4">
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Дуоҳои Қуръонӣ</h1>
+          <p className="text-muted-foreground text-sm md:text-base mb-4">
+            Маҷмӯаи дуоҳо аз Қуръони карим
           </p>
           
           <div className="relative">
@@ -76,7 +76,7 @@ export default function DuasPage() {
           </div>
         </div>
 
-        <div className="grid gap-6">
+        <div className="grid gap-4">
           {filteredDuas.map((dua, index) => (
             <DuaCard
               key={index}
