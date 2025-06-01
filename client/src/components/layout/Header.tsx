@@ -1,3 +1,4 @@
+import { Home } from 'lucide-react'; // Add Home icon import
 import { useTheme } from '@/hooks/useTheme';
 import { useDisplaySettings } from '@/hooks/useDisplaySettings';
 import { Button } from '@/components/ui/button';
@@ -80,91 +81,110 @@ export default function Header({
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
+  const isFarziAynPage = location === '/farzi-ayn';
+  const isProjectsPage = location === '/projects';
+  const isHomePage = location === '/';
+
   return (
     <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          {/* Navigation options */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-600 dark:text-gray-300"
-                aria-label="Menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[250px]">
-              <SheetHeader>
-                <SheetTitle>Меню</SheetTitle>
-              </SheetHeader>
-              <div className="py-6 px-1 space-y-3">
-                <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                  <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
-                  <span>Асосӣ</span>
-                </Link>
-                <Link href="/farzi-ayn" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                  <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
-                  <span>Фарзи Айн</span>
-                </Link>
-                <Link href="/projects" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                  <FolderKanban className="h-5 w-5 text-primary dark:text-accent" />
-                  <span>Лоиҳаҳои мо</span>
-                </Link>
-              </div>
-            </SheetContent>
-          </Sheet>
-          
-          <Link href="/">
-            <h1 className="text-xl font-bold text-primary dark:text-accent cursor-pointer">
-              Қуръони Карим
-            </h1>
-          </Link>
-        </div>
-        
-        <div className="flex items-center space-x-3">
-          {/* Simplified header controls - more options in the sidebar */}
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenOverlay('search')}
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenOverlay('bookmarks')}
-              aria-label="Bookmarks"
-            >
-              <BookmarkIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </Button>
-            
+          {isHomePage && (
             <Sheet>
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label="Settings"
+                  className="text-gray-600 dark:text-gray-300"
+                  aria-label="Menu"
                 >
-                  <Settings className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                  <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px]">
+              <SheetContent side="left" className="w-[250px]">
                 <SheetHeader>
-                  <SheetTitle>Танзимот</SheetTitle>
+                  <SheetTitle>Меню</SheetTitle>
                 </SheetHeader>
-                <div className="py-4">
-                  <HeaderSettings />
+                <div className="py-6 px-1 space-y-3">
+                  <Link
+                    href="/"
+                    className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+                  >
+                    <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
+                    <span>Асосӣ</span>
+                  </Link>
+                  <Link
+                    href="/farzi-ayn"
+                    className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+                  >
+                    <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
+                    <span>Фарзи Айн</span>
+                  </Link>
+                  <Link
+                    href="/projects"
+                    className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+                  >
+                    <FolderKanban className="h-5 w-5 text-primary dark:text-accent" />
+                    <span>Лоиҳаҳои мо</span>
+                  </Link>
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
+          )}
+
+          {(isFarziAynPage || isProjectsPage) ? (
+            <Link href="/">
+              <Button variant="ghost" size="icon" aria-label="Home">
+                <Home className="h-5 w-5 text-primary dark:text-accent" />
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/">
+              <h1 className="text-xl font-bold text-primary dark:text-accent cursor-pointer">
+                Қуръони Карим
+              </h1>
+            </Link>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-3">
+          {isHomePage && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onOpenOverlay('search')}
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onOpenOverlay('bookmarks')}
+                aria-label="Bookmarks"
+              >
+                <BookmarkIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Theme Toggle">
+                    <Settings className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Theme</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <div className="flex items-center justify-between w-full">
+                      <span>Dark Mode</span>
+                      <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
         </div>
       </div>
       
