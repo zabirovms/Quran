@@ -797,12 +797,13 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
           
           {/* Bismillah for the verses */}
           {surah && surah.number !== 1 && surah.number !== 9 && (
-            <div className="bismillah text-center py-6 px-8 rounded-lg bg-gradient-to-r from-primary/5 to-accent/5 dark:from-primary/5 dark:to-accent/10 mb-8 shadow-sm">
-              <p className="font-arabic text-3xl md:text-4xl leading-relaxed tracking-wider">
+            <div className="py-6 px-4 mb-6 text-center">
+              <p className="font-arabic text-2xl md:text-3xl leading-normal tracking-normal mx-auto w-fit text-center text-gray-800 dark:text-gray-100">
                 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
               </p>
             </div>
           )}
+
           
           {/* Verses */}
           <div className={cn("space-y-6 mb-8", `content-${contentViewMode}`)}>
