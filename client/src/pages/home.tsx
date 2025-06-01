@@ -225,32 +225,23 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               ))}
             </div>
           </div>
-          
-
 
           {/* Islamic Tools Section */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-primary dark:text-accent mb-4">
               Абзорҳои исломӣ
             </h2>
-
             <Swiper
               modules={[Autoplay]}
-              spaceBetween={12}
-              slidesPerView={1.2}
-              breakpoints={{
-                640: { slidesPerView: 1.5 },
-                768: { slidesPerView: 2.2 },
-                1024: { slidesPerView: 3.2 },
-              }}
+              spaceBetween={16}
+              slidesPerView="auto"
               autoplay={{ delay: 3000, disableOnInteraction: false }}
-              loop={true}
-              className="!overflow-visible"
+              style={{ overflow: 'hidden', paddingBottom: '1rem' }}
             >
-              {/* Tasbeeh Counter */}
-              <SwiperSlide>
-                <Link href="/tasbeeh">
-                  <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/20 dark:to-emerald-900/10 hover:shadow-md transition-all border-emerald-200/50 dark:border-emerald-800/30">
+              {/* Tasbeeh Counter Card */}
+              <SwiperSlide style={{ width: '280px' }}>
+                <Link href="/tasbeeh" className="block h-full">
+                  <Card className="h-full bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/20 dark:to-emerald-900/10 hover:shadow-md transition-all border-emerald-200/50 dark:border-emerald-800/30">
                     <CardContent className="p-4 h-full flex flex-col">
                       <h3 className="font-bold text-emerald-800 dark:text-emerald-300 text-lg mb-1">Тасбеҳгӯяк</h3>
                       <p className="text-sm text-emerald-700/80 dark:text-emerald-300/70 mb-3">
@@ -258,8 +249,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                       </p>
                       <div className="flex items-center mt-auto">
                         <span className="inline-block bg-emerald-100 dark:bg-emerald-800/40 text-emerald-600 dark:text-emerald-300 rounded-full p-1 mr-2">
-                          {/* SVG */}
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M21 6H3"></path>
                             <circle cx="12" cy="14" r="6"></circle><path d="M12 10v4l2 2"></path>
                           </svg>
@@ -271,10 +261,10 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 </Link>
               </SwiperSlide>
 
-              {/* Farzi Ayn */}
-              <SwiperSlide>
-                <Link href="/farzi-ayn">
-                  <Card className="bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/20 dark:to-amber-900/10 hover:shadow-md transition-all border-amber-200/50 dark:border-amber-800/30">
+              {/* Farzi Ayn Book Card */}
+              <SwiperSlide style={{ width: '280px' }}>
+                <Link href="/farzi-ayn" className="block h-full">
+                  <Card className="h-full bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/20 dark:to-amber-900/10 hover:shadow-md transition-all border-amber-200/50 dark:border-amber-800/30">
                     <CardContent className="p-4 h-full flex flex-col">
                       <h3 className="font-bold text-amber-800 dark:text-amber-300 text-lg mb-1">Фарзи Айн</h3>
                       <p className="text-sm text-amber-700/80 dark:text-amber-300/70 mb-3">
@@ -289,17 +279,17 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 </Link>
               </SwiperSlide>
 
-              {/* Learn Quran Words */}
-              <SwiperSlide>
-                <Link href="/learn-words">
-                  <Card className="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 hover:shadow-md transition-all border-blue-200/50 dark:border-blue-800/30">
+              {/* Learn Quran Words Card */}
+              <SwiperSlide style={{ width: '280px' }}>
+                <Link href="/learn-words" className="block h-full">
+                  <Card className="h-full bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 hover:shadow-md transition-all border-blue-200/50 dark:border-blue-800/30">
                     <CardContent className="p-4 h-full flex flex-col">
                       <h3 className="font-bold text-blue-800 dark:text-blue-300 text-lg mb-1">Омӯзиши луғат</h3>
                       <p className="text-sm text-blue-700/80 dark:text-blue-300/70 mb-3">
                         100 калимаи серистеъмолтарини Қуръонро бо усули бозӣ омӯзед
                       </p>
                       <div className="flex items-center mt-auto">
-                        <svg className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <svg className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 9h.01"/>
                           <path d="M19 9a7 7 0 1 0-13-3"/>
                           <path d="M3 13a7 7 0 0 0 13 3"/>
@@ -313,17 +303,17 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 </Link>
               </SwiperSlide>
 
-              {/* Quranic Duas */}
-              <SwiperSlide>
-                <Link href="/duas">
-                  <Card className="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 hover:shadow-md transition-all border-purple-200/50 dark:border-purple-800/30">
+              {/* Quranic Duas Card */}
+              <SwiperSlide style={{ width: '280px' }}>
+                <Link href="/duas" className="block h-full">
+                  <Card className="h-full bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 hover:shadow-md transition-all border-purple-200/50 dark:border-purple-800/30">
                     <CardContent className="p-4 h-full flex flex-col">
                       <h3 className="font-bold text-purple-800 dark:text-purple-300 text-lg mb-1">Дуоҳои Қуръонӣ</h3>
                       <p className="text-sm text-purple-700/80 dark:text-purple-300/70 mb-3">
                         Маҷмӯаи дуоҳо аз Қуръони карим бо нишондиҳии қисми дуо
                       </p>
                       <div className="flex items-center mt-auto">
-                        <svg className="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <svg className="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M17 6.1H3"/>
                           <path d="M21 12.1H3"/>
                           <path d="M15.1 18H3"/>
