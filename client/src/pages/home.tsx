@@ -195,15 +195,12 @@ export default function Home({ onOpenOverlay }: HomeProps) {
         {scrollDirection === 'top' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
       </Button>
       
-      <main className="flex-1 container mx-auto px-4 py-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-6 text-center">
+      <main className="flex-1 container mx-auto px-4 py-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-4 text-center">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
               Қуръон бо Тафсири Осонбаён 
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Қуръони шариф бо тарҷума ва тафсири тоҷикӣ
-            </p>
           </div>
           
           {/* Popular Surahs Section - Moved to the top */}
