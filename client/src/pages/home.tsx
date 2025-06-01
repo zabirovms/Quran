@@ -228,7 +228,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
 
           {/* Islamic Tools Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-primary dark:text-accent mb-4">
+            <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
               Абзорҳои исломӣ
             </h2>
             <Swiper
@@ -394,8 +394,8 @@ export default function Home({ onOpenOverlay }: HomeProps) {
           </div>
           
           <div>
-            <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent">Рӯйхати сураҳо</h2>
-            
+            <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent text-center">Рӯйхати сураҳо</h2>
+
             {isLoading ? (
               // Show loading skeletons
               Array.from({ length: 10 }).map((_, index) => renderSkeletonItem(index))
