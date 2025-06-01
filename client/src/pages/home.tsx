@@ -366,24 +366,15 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               )}
             </div>
             
-            {/* Search Box - Now more prominent */}
+            {/* Compact Search Box */}
             <div className="md:col-span-5">
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                    <Search className="h-5 w-5 text-primary dark:text-accent" />
-                    Ҷустуҷӯи сураҳо
-                  </CardTitle>
-                  <CardDescription>
-                    Номи сураро ба забони тоҷикӣ ё англисӣ ҷустуҷӯ кунед.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+              <Card className="h-full p-2">
+                <CardContent className="p-2">
                   <div className="relative">
                     <Input
                       type="text"
                       placeholder="Ҷустуҷӯи сура..."
-                      className="pl-10"
+                      className="pl-10 py-2 text-sm"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
