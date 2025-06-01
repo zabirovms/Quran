@@ -310,76 +310,61 @@ export default function Home({ onOpenOverlay }: HomeProps) {
             </div>
           </div>
           
-          {/* Quick Access - Last Read Position */}
-          <div className="grid md:grid-cols-12 gap-6 mb-6">
-            {/* Last Read Section - Now in a prominent position */}
-            <div className="md:col-span-7">
-              {lastRead ? (
-                <Card className="h-full bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 border-primary/20 dark:border-accent/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
-                      <span className="text-primary dark:text-accent">Саҳифаи охирон хондашуда</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Аз ҳамон ҷое, ки қатъ карда будед хонданро идома диҳед.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">Сураи {lastRead.surahName}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">ояти {lastRead.verseNumber}</p>
-                      </div>
-                      <Link href={`/surah/${lastRead.surahNumber}#verse-${lastRead.verseKey.replace(':', '-')}`}>
-                        <Button>
-                          Идома додан
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </Link>
+          {/* Quick Access - Last Read Position and Search */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6">
+            {/* Last Read Section */}
+            <Card className="h-full bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 border-primary/20 dark:border-accent/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
+                  <span className="text-primary dark:text-accent">Саҳифаи охирон хондашуда</span>
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Аз ҳамон ҷое, ки қатъ карда будед хонданро идома диҳед.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                {lastRead ? (
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-medium text-sm sm:text-base">Сураи {lastRead.surahName}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">ояти {lastRead.verseNumber}</p>
                     </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card className="h-full bg-gradient-to-br from-primary/5 to-accent/5 dark:from-primary/10 dark:to-accent/10 border-primary/10 dark:border-accent/10">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
-                      <span className="text-primary dark:text-accent">Хонданро оғоз кунед</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Шумо ҳоло ҳеҷ сураро нахондаед.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                    <Link href={`/surah/${lastRead.surahNumber}#verse-${lastRead.verseKey.replace(':', '-')}`}>
+                      <Button size="sm">
+                        Идома додан
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="text-sm">
                     <Link href="/surah/1">
-                      <Button className="w-full">
+                      <Button className="w-full" size="sm">
                         Аз сураи Фотиҳа оғоз кунед
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </Link>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-            
-            {/* Compact Search Box */}
-            <div className="md:col-span-5">
-              <Card className="h-full p-2">
-                <CardContent className="p-2">
-                  <div className="relative">
-                    <Input
-                      type="text"
-                      placeholder="Ҷустуҷӯи сура..."
-                      className="pl-10 py-2 text-sm"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Search Box */}
+            <Card className="h-full p-3">
+              <CardContent className="p-0">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Ҷустуҷӯи сура..."
+                    className="pl-10 py-2 text-sm"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
           
           <div>
