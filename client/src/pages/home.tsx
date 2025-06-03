@@ -1,3 +1,6 @@
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -196,14 +199,11 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       </Button>
       
       <main className="flex-1 container mx-auto px-4 py-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-6 text-center">
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-4 text-center">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
               Қуръон бо Тафсири Осонбаён 
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Қуръони шариф бо тарҷума ва тафсири тоҷикӣ
-            </p>
           </div>
           
           {/* Popular Surahs Section - Moved to the top */}
@@ -225,178 +225,177 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               ))}
             </div>
           </div>
-          
+
           {/* Islamic Tools Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-primary dark:text-accent mb-4">
+            <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
               Абзорҳои исломӣ
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Swiper
+              modules={[Autoplay]}
+              spaceBetween={16}
+              slidesPerView="auto"
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              style={{ overflow: 'hidden', paddingBottom: '1rem' }}
+            >
               {/* Tasbeeh Counter Card */}
-              <Link href="/tasbeeh" className="block h-full">
-                <Card className="h-full bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/20 dark:to-emerald-900/10 hover:shadow-md transition-all border-emerald-200/50 dark:border-emerald-800/30">
-                  <CardContent className="p-4 h-full flex flex-col">
-                    <h3 className="font-bold text-emerald-800 dark:text-emerald-300 text-lg mb-1">Тасбеҳгӯяк</h3>
-                    <p className="text-sm text-emerald-700/80 dark:text-emerald-300/70 mb-3">
-                      Абзори интерактивии зикрҳои исломӣ барои шумориши тасбеҳ
-                    </p>
-                    <div className="flex items-center mt-auto">
-                      <span className="inline-block bg-emerald-100 dark:bg-emerald-800/40 text-emerald-600 dark:text-emerald-300 rounded-full p-1 mr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M21 6H3"></path>
-                          <circle cx="12" cy="14" r="6"></circle><path d="M12 10v4l2 2"></path>
-                        </svg>
-                      </span>
-                      <span className="text-xs text-emerald-600 dark:text-emerald-400">Истифода бурдан</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-              
-              {/* Farzi Ayn Book Card */}
-              <Link href="/farzi-ayn" className="block h-full">
-                <Card className="h-full bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/20 dark:to-amber-900/10 hover:shadow-md transition-all border-amber-200/50 dark:border-amber-800/30">
-                  <CardContent className="p-4 h-full flex flex-col">
-                    <h3 className="font-bold text-amber-800 dark:text-amber-300 text-lg mb-1">Фарзи Айн</h3>
-                    <p className="text-sm text-amber-700/80 dark:text-amber-300/70 mb-3">
-                      Китоби "Фарзи Айн" бо забони тоҷикӣ барои омӯзиши усули дин
-                    </p>
-                    <div className="flex items-center mt-auto">
-                      <Book className="h-4 w-4 text-amber-600 dark:text-amber-400 mr-2" />
-                      <span className="text-xs text-amber-600 dark:text-amber-400">Хондан</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-              
-              {/* Learn Quran Words Card */}
-              <Link href="/learn-words" className="block h-full">
-                <Card className="h-full bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 hover:shadow-md transition-all border-blue-200/50 dark:border-blue-800/30">
-                  <CardContent className="p-4 h-full flex flex-col">
-                    <h3 className="font-bold text-blue-800 dark:text-blue-300 text-lg mb-1">Омӯзиши луғат</h3>
-                    <p className="text-sm text-blue-700/80 dark:text-blue-300/70 mb-3">
-                      100 калимаи серистеъмолтарини Қуръонро бо усули бозӣ омӯзед
-                    </p>
-                    <div className="flex items-center mt-auto">
-                      <svg className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 9h.01"/>
-                        <path d="M19 9a7 7 0 1 0-13-3"/>
-                        <path d="M3 13a7 7 0 0 0 13 3"/>
-                        <path d="M16 19a7 7 0 0 0 4-11"/>
-                        <path d="M9 21a7 7 0 0 0 8-4"/>
-                      </svg>
-                      <span className="text-xs text-blue-600 dark:text-blue-400">Омӯхтан</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-              
-              {/* Quranic Duas Card */}
-              <Link href="/duas" className="block h-full">
-                <Card className="h-full bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 hover:shadow-md transition-all border-purple-200/50 dark:border-purple-800/30">
-                  <CardContent className="p-4 h-full flex flex-col">
-                    <h3 className="font-bold text-purple-800 dark:text-purple-300 text-lg mb-1">Дуоҳои Қуръонӣ</h3>
-                    <p className="text-sm text-purple-700/80 dark:text-purple-300/70 mb-3">
-                      Маҷмӯаи дуоҳо аз Қуръони карим бо нишондиҳии қисми дуо
-                    </p>
-                    <div className="flex items-center mt-auto">
-                      <svg className="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M17 6.1H3"/>
-                        <path d="M21 12.1H3"/>
-                        <path d="M15.1 18H3"/>
-                      </svg>
-                      <span className="text-xs text-purple-600 dark:text-purple-400">Дуоҳо</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-          </div>
-          
-          {/* Quick Access - Last Read Position */}
-          <div className="grid md:grid-cols-12 gap-6 mb-6">
-            {/* Last Read Section - Now in a prominent position */}
-            <div className="md:col-span-7">
-              {lastRead ? (
-                <Card className="h-full bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 border-primary/20 dark:border-accent/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
-                      <span className="text-primary dark:text-accent">Саҳифаи охирон хондашуда</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Аз ҳамон ҷое, ки қатъ карда будед хонданро идома диҳед.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">Сураи {lastRead.surahName}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">ояти {lastRead.verseNumber}</p>
+              <SwiperSlide style={{ width: '280px' }}>
+                <Link href="/tasbeeh" className="block h-full">
+                  <Card className="h-full bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/20 dark:to-emerald-900/10 hover:shadow-md transition-all border-emerald-200/50 dark:border-emerald-800/30">
+                    <CardContent className="p-4 h-full flex flex-col">
+                      <h3 className="font-bold text-emerald-800 dark:text-emerald-300 text-lg mb-1">Тасбеҳгӯяк</h3>
+                      <p className="text-sm text-emerald-700/80 dark:text-emerald-300/70 mb-3">
+                        Абзори интерактивии зикрҳои исломӣ барои шумориши тасбеҳ
+                      </p>
+                      <div className="flex items-center mt-auto">
+                        <span className="inline-block bg-emerald-100 dark:bg-emerald-800/40 text-emerald-600 dark:text-emerald-300 rounded-full p-1 mr-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M21 6H3"></path>
+                            <circle cx="12" cy="14" r="6"></circle><path d="M12 10v4l2 2"></path>
+                          </svg>
+                        </span>
+                        <span className="text-xs text-emerald-600 dark:text-emerald-400">Истифода бурдан</span>
                       </div>
-                      <Link href={`/surah/${lastRead.surahNumber}#verse-${lastRead.verseKey.replace(':', '-')}`}>
-                        <Button>
-                          Идома додан
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </Link>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </SwiperSlide>
+
+              {/* Farzi Ayn Book Card */}
+              <SwiperSlide style={{ width: '280px' }}>
+                <Link href="/farzi-ayn" className="block h-full">
+                  <Card className="h-full bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/20 dark:to-amber-900/10 hover:shadow-md transition-all border-amber-200/50 dark:border-amber-800/30">
+                    <CardContent className="p-4 h-full flex flex-col">
+                      <h3 className="font-bold text-amber-800 dark:text-amber-300 text-lg mb-1">Фарзи Айн</h3>
+                      <p className="text-sm text-amber-700/80 dark:text-amber-300/70 mb-3">
+                        Китоби "Фарзи Айн" бо забони тоҷикӣ барои омӯзиши усули дин
+                      </p>
+                      <div className="flex items-center mt-auto">
+                        <Book className="h-4 w-4 text-amber-600 dark:text-amber-400 mr-2" />
+                        <span className="text-xs text-amber-600 dark:text-amber-400">Хондан</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </SwiperSlide>
+
+              {/* Learn Quran Words Card */}
+              <SwiperSlide style={{ width: '280px' }}>
+                <Link href="/learn-words" className="block h-full">
+                  <Card className="h-full bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 hover:shadow-md transition-all border-blue-200/50 dark:border-blue-800/30">
+                    <CardContent className="p-4 h-full flex flex-col">
+                      <h3 className="font-bold text-blue-800 dark:text-blue-300 text-lg mb-1">Омӯзиши луғат</h3>
+                      <p className="text-sm text-blue-700/80 dark:text-blue-300/70 mb-3">
+                        100 калимаи серистеъмолтарини Қуръонро бо усули бозӣ омӯзед
+                      </p>
+                      <div className="flex items-center mt-auto">
+                        <svg className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 9h.01"/>
+                          <path d="M19 9a7 7 0 1 0-13-3"/>
+                          <path d="M3 13a7 7 0 0 0 13 3"/>
+                          <path d="M16 19a7 7 0 0 0 4-11"/>
+                          <path d="M9 21a7 7 0 0 0 8-4"/>
+                        </svg>
+                        <span className="text-xs text-blue-600 dark:text-blue-400">Омӯхтан</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </SwiperSlide>
+
+              {/* Quranic Duas Card */}
+              <SwiperSlide style={{ width: '280px' }}>
+                <Link href="/duas" className="block h-full">
+                  <Card className="h-full bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 hover:shadow-md transition-all border-purple-200/50 dark:border-purple-800/30">
+                    <CardContent className="p-4 h-full flex flex-col">
+                      <h3 className="font-bold text-purple-800 dark:text-purple-300 text-lg mb-1">Дуоҳои Қуръонӣ</h3>
+                      <p className="text-sm text-purple-700/80 dark:text-purple-300/70 mb-3">
+                        Маҷмӯаи дуоҳо аз Қуръони карим бо нишондиҳии қисми дуо
+                      </p>
+                      <div className="flex items-center mt-auto">
+                        <svg className="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17 6.1H3"/>
+                          <path d="M21 12.1H3"/>
+                          <path d="M15.1 18H3"/>
+                        </svg>
+                        <span className="text-xs text-purple-600 dark:text-purple-400">Дуоҳо</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </SwiperSlide>
+            </Swiper>
+          </div>
+
+          
+          {/* Quick Access - Stacked Layout for All Screens */}
+          <div className="flex flex-col gap-4 mb-4">
+            {/* Last Read Section - Full Width Card */}
+            <Card className="bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 border-primary/20 dark:border-accent/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
+                  <span className="text-primary dark:text-accent">
+                    {lastRead ? "Охирин хондашуда" : "Оғоз кунед"}
+                  </span>
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  {lastRead
+                    ? "Аз ҳамон ҷо идома диҳед."
+                    : "Ҳоло ҳеҷ сура хонда нашудааст."}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="py-3">
+                {lastRead ? (
+                  <div className="flex justify-between items-center flex-wrap gap-2">
+                    <div>
+                      <p className="font-medium text-sm">
+                        Сураи {lastRead.surahName}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        ояти {lastRead.verseNumber}
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card className="h-full bg-gradient-to-br from-primary/5 to-accent/5 dark:from-primary/10 dark:to-accent/10 border-primary/10 dark:border-accent/10">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
-                      <span className="text-primary dark:text-accent">Хонданро оғоз кунед</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Шумо ҳоло ҳеҷ сураро нахондаед.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Link href="/surah/1">
-                      <Button className="w-full">
-                        Аз сураи Фотиҳа оғоз кунед
+                    <Link
+                      href={`/surah/${lastRead.surahNumber}#verse-${lastRead.verseKey.replace(':', '-')}`}
+                    >
+                      <Button size="sm">
+                        Идома
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </Link>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-            
-            {/* Search Box - Now more prominent */}
-            <div className="md:col-span-5">
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                    <Search className="h-5 w-5 text-primary dark:text-accent" />
-                    Ҷустуҷӯи сураҳо
-                  </CardTitle>
-                  <CardDescription>
-                    Номи сураро ба забони тоҷикӣ ё англисӣ ҷустуҷӯ кунед.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative">
-                    <Input
-                      type="text"
-                      placeholder="Ҷустуҷӯи сура..."
-                      className="pl-10"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                ) : (
+                  <Link href="/surah/1">
+                    <Button className="w-full sm:w-auto" size="sm">
+                      Сураи Фотиҳа
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </Link>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Search Box - Full Width Card Below */}
+            <Card className="p-2">
+              <CardContent className="p-2">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Ҷустуҷӯи сура..."
+                    className="pl-9 py-2 text-sm"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
           
           <div>
-            <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent">Рӯйхати сураҳо</h2>
-            
+            <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent text-center">Рӯйхати сураҳо</h2>
+
             {isLoading ? (
               // Show loading skeletons
               Array.from({ length: 10 }).map((_, index) => renderSkeletonItem(index))
