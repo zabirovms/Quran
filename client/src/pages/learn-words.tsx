@@ -26,23 +26,35 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Home, ChevronLeft, ChevronRight, Check, X, Award, Settings, Info, RefreshCw, Book, Shuffle, Moon, Sun, Volume2 } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, Check, X, Award, Settings, Info, RefreshCw, Book, Shuffle, Moon, Sun, Volume2, Play, Pause, Timer, BookOpen, Clock, Flame, Trophy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Link } from 'wouter';
 import SeoHead from '@/components/shared/SeoHead';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface QuranWord {
   rank: number;
   word: string;
-  frequency: number;
   translation_tajik: string;
+  transliteration_tajik: string;
+  example: string;
+  example_transliteration: string;
+  example_translation: string;
+  reference: string;
 }
 
 // Game modes
-type GameMode = 'flashcards' | 'quiz' | 'match';
+type GameMode = 'flashcards' | 'quiz' | 'match' | 'typing' | 'listening';
 
 // Game difficulty levels
 type GameDifficulty = 'beginner' | 'intermediate' | 'advanced';
@@ -55,142 +67,199 @@ export default function LearnWords() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showTranslation, setShowTranslation] = useState(true);
+  const [showTransliteration, setShowTransliteration] = useState(true); // New state for transliteration
   const [revealAnswers, setRevealAnswers] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [score, setScore] = useState(0);
   const [wordsLearned, setWordsLearned] = useState<number[]>([]);
   const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0); // New state for best streak
   const [showSettings, setShowSettings] = useState(false);
   const [quizOptions, setQuizOptions] = useState<QuranWord[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [matchPairs, setMatchPairs] = useState<{id: number, word: QuranWord, isMatched: boolean, isSelected: boolean}[]>([]);
+  const [matchPairs, setMatchPairs] = useState<{ id: number, word: QuranWord, isMatched: boolean, isSelected: boolean }[]>([]);
   const [firstSelected, setFirstSelected] = useState<number | null>(null);
   const [gameCompleted, setGameCompleted] = useState(false);
-  const [wordCount, setWordCount] = useState(20); // Default number of words to learn
+  const [wordCount, setWordCount] = useState(20); // Default to intermediate word count
   const [studyWords, setStudyWords] = useState<QuranWord[]>([]);
-  
+  const [typingInput, setTypingInput] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [showExample, setShowExample] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [selectedWord, setSelectedWord] = useState<QuranWord | null>(null); // For flashcard detail dialog
+
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   // Load words data
   useEffect(() => {
     const fetchWords = async () => {
       try {
-        const response = await fetch('/top_100_words.json');
+        const response = await fetch('/data/top_100_words.json');
         if (!response.ok) {
-          throw new Error('Failed to load Quran words');
+          throw new Error(`Failed to load Quran words: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error('Invalid data format: expected non-empty array');
+        }
         setWords(data);
-        
-        // Initialize study words based on difficulty
-        initializeStudyWords(data);
-        
         setIsLoading(false);
       } catch (error) {
         console.error('Error loading Quran words:', error);
+        toast({
+          title: "Хато",
+          description: "Калимаҳо бор карда нашуд. Лутфан саҳифаро аз нав бор кунед.",
+          variant: "destructive",
+        });
         setIsLoading(false);
       }
     };
 
     fetchWords();
-    
-    // Load saved progress from localStorage
+
+    // Load saved progress
     const savedWordsLearned = localStorage.getItem('wordsLearned');
     const savedDifficulty = localStorage.getItem('wordsDifficulty');
     const savedWordCount = localStorage.getItem('wordsCount');
-    
+    const savedTimer = localStorage.getItem('wordsTimer');
+    const savedBestStreak = localStorage.getItem('bestStreak');
+    const savedShowTranslation = localStorage.getItem('showTranslation');
+    const savedShowTransliteration = localStorage.getItem('showTransliteration');
+
+
     if (savedWordsLearned) setWordsLearned(JSON.parse(savedWordsLearned));
     if (savedDifficulty) setDifficulty(savedDifficulty as GameDifficulty);
     if (savedWordCount) setWordCount(parseInt(savedWordCount));
-    
+    if (savedTimer) setTimer(parseInt(savedTimer));
+    if (savedBestStreak) setBestStreak(parseInt(savedBestStreak));
+    if (savedShowTranslation) setShowTranslation(JSON.parse(savedShowTranslation));
+    if (savedShowTransliteration) setShowTransliteration(JSON.parse(savedShowTransliteration));
+
     // Initialize audio element
     audioRef.current = new Audio();
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, []);
-  
+
+  // Effect to initialize study words whenever 'words', 'difficulty', or 'wordCount' change
+  useEffect(() => {
+    if (words.length > 0) {
+      initializeStudyWords(words);
+    }
+  }, [words, difficulty, wordCount, gameMode]); // Added gameMode as a dependency
+
+  // Timer effect
+  useEffect(() => {
+    if (isTimerRunning) {
+      timerRef.current = setInterval(() => {
+        setTimer(prev => {
+          const newTime = prev + 1;
+          localStorage.setItem('wordsTimer', newTime.toString());
+          return newTime;
+        });
+      }, 1000);
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+  }, [isTimerRunning]);
+
   // Initialize study words based on difficulty and word count
   const initializeStudyWords = (allWords: QuranWord[]) => {
-    let wordPool: QuranWord[] = [];
-    
-    switch(difficulty) {
+    let poolSize = 0;
+    switch (difficulty) {
       case 'beginner':
-        wordPool = allWords.slice(0, 33); // Top 33 words
+        poolSize = 10; // First 10 words
         break;
       case 'intermediate':
-        wordPool = allWords.slice(0, 66); // Top 66 words
+        poolSize = 20; // First 20 words
         break;
       case 'advanced':
-        wordPool = allWords; // All 100 words
+        poolSize = 30; // First 30 words
         break;
     }
-    
-    // Shuffle and take the requested number of words
+    setWordCount(poolSize);
+
+    const wordPool = allWords.slice(0, poolSize);
     const shuffled = [...wordPool].sort(() => Math.random() - 0.5);
     setStudyWords(shuffled.slice(0, wordCount));
-    
+
     // Reset game state
     setCurrentWordIndex(0);
     setIsFlipped(false);
     setScore(0);
     setStreak(0);
     setGameCompleted(false);
-    
-    // Initialize quiz or match game if needed
+    setTypingInput('');
+    setIsListening(false);
+    setShowExample(false);
+    setSelectedAnswer(null); // Reset selected answer for quiz
+
+    // Initialize game mode specific states
     if (gameMode === 'quiz') {
       generateQuizOptions(0, shuffled.slice(0, wordCount));
     } else if (gameMode === 'match') {
-      generateMatchPairs(shuffled.slice(0, wordCount));
+      generateMatchPairs(shuffled.slice(0, Math.min(8, wordCount))); // Max 8 words for match game
     }
   };
-  
+
   // Save progress to localStorage
   useEffect(() => {
     if (!isLoading) {
       localStorage.setItem('wordsLearned', JSON.stringify(wordsLearned));
       localStorage.setItem('wordsDifficulty', difficulty);
       localStorage.setItem('wordsCount', wordCount.toString());
+      localStorage.setItem('bestStreak', bestStreak.toString());
+      localStorage.setItem('showTranslation', JSON.stringify(showTranslation));
+      localStorage.setItem('showTransliteration', JSON.stringify(showTransliteration));
+
     }
-  }, [wordsLearned, difficulty, wordCount, isLoading]);
-  
+  }, [wordsLearned, difficulty, wordCount, isLoading, bestStreak, showTranslation, showTransliteration]);
+
   // Generate random options for quiz mode
   const generateQuizOptions = (index: number, wordsList: QuranWord[] = studyWords) => {
-    if (wordsList.length === 0) return;
-    
+    if (wordsList.length === 0 || index >= wordsList.length) return;
+
     const correctWord = wordsList[index];
     let options = [correctWord];
-    
-    // Get 3 random incorrect options
-    const otherWords = wordsList.filter(w => w.rank !== correctWord.rank);
+
+    const otherWords = words.filter(w => w.rank !== correctWord.rank); // Use allWords for diverse options
     const shuffled = [...otherWords].sort(() => Math.random() - 0.5);
-    options = [...options, ...shuffled.slice(0, 3)];
-    
-    // Shuffle options
+    options = [...options, ...shuffled.slice(0, 3)].filter(Boolean); // Ensure no undefined options
+
+    // If less than 4 options, pad with duplicates (shouldn't happen with 100 words)
+    while (options.length < 4) {
+      options.push(correctWord);
+    }
+
     setQuizOptions(options.sort(() => Math.random() - 0.5));
     setSelectedAnswer(null);
     setRevealAnswers(false);
   };
-  
+
   // Generate pairs for matching game
   const generateMatchPairs = (wordsList: QuranWord[] = studyWords) => {
-    if (wordsList.length === 0) return;
-    
-    // Take first 8 words for the match game
-    const gameWords = wordsList.slice(0, 8);
-    
-    // Create pairs (word and translation)
-    const pairs: {id: number, word: QuranWord, isMatched: boolean, isSelected: boolean}[] = [];
-    
+    if (wordsList.length < 2) {
+      setMatchPairs([]);
+      return;
+    }
+
+    const gameWords = wordsList.slice(0, Math.min(8, wordsList.length)); // Take up to 8 words
+    const pairs: { id: number, word: QuranWord, isMatched: boolean, isSelected: boolean }[] = [];
+
     gameWords.forEach((word, index) => {
-      // Add the Arabic word
       pairs.push({
         id: index * 2,
         word,
         isMatched: false,
         isSelected: false
       });
-      
-      // Add the translation
+
       pairs.push({
         id: index * 2 + 1,
         word,
@@ -198,783 +267,660 @@ export default function LearnWords() {
         isSelected: false
       });
     });
-    
-    // Shuffle the pairs
+
     setMatchPairs(pairs.sort(() => Math.random() - 0.5));
     setFirstSelected(null);
   };
-  
+
   // Handle card flip in flashcard mode
   const flipCard = () => {
     setIsFlipped(!isFlipped);
-    
-    // Play sound effect if enabled
+
     if (audioEnabled && audioRef.current) {
       audioRef.current.src = '/sounds/card-flip.mp3';
       audioRef.current.play().catch(e => console.error('Error playing audio:', e));
     }
   };
-  
+
   // Move to next or previous word
   const navigateWord = (direction: 'next' | 'prev') => {
     if (studyWords.length === 0) return;
-    
+
     let newIndex;
     if (direction === 'next') {
-      newIndex = (currentWordIndex + 1) % studyWords.length;
-      
-      // Check if we've completed the full set
-      if (newIndex === 0 && gameMode !== 'match') {
+      newIndex = (currentWordIndex + 1);
+      if (newIndex >= studyWords.length) {
         setGameCompleted(true);
-        // Add bonus for completing a full round
-        setScore(prev => prev + 10);
+        setIsTimerRunning(false); // Stop timer when game completes
         toast({
           title: "Офарин!",
           description: "Шумо ҳама калимаҳоро омӯхтед!",
         });
+        return; // Prevent navigating past the last word
       }
     } else {
       newIndex = (currentWordIndex - 1 + studyWords.length) % studyWords.length;
     }
-    
+
     setCurrentWordIndex(newIndex);
     setIsFlipped(false);
-    
-    // Generate new quiz options if in quiz mode
+    setTypingInput('');
+    setShowExample(false);
+
     if (gameMode === 'quiz') {
       generateQuizOptions(newIndex);
     }
-    
-    // Play sound effect if enabled
+
     if (audioEnabled && audioRef.current) {
       audioRef.current.src = '/sounds/card-slide.mp3';
       audioRef.current.play().catch(e => console.error('Error playing audio:', e));
     }
   };
-  
+
   // Mark word as learned
   const markAsLearned = (rank: number) => {
     if (!wordsLearned.includes(rank)) {
-      const newLearned = [...wordsLearned, rank];
-      setWordsLearned(newLearned);
+      setWordsLearned(prev => [...prev, rank]);
       setScore(prev => prev + 5);
       setStreak(prev => prev + 1);
-      
+
       toast({
-        title: "Калима омӯхта шуд!",
-        description: `Шумо ${streak + 1} калимаро паиҳам омӯхтед.`,
+        title: "Хуб!",
+        description: "Шумо ин калимаро омӯхтед!",
       });
-      
-      // Play sound effect if enabled
-      if (audioEnabled && audioRef.current) {
-        audioRef.current.src = '/sounds/success.mp3';
-        audioRef.current.play().catch(e => console.error('Error playing audio:', e));
-      }
     }
   };
-  
-  // Check quiz answer
+
+  // Check answer in quiz mode
   const checkAnswer = (index: number) => {
+    if (selectedAnswer !== null || revealAnswers) return;
+
     setSelectedAnswer(index);
-    
-    const isCorrect = quizOptions[index].rank === studyWords[currentWordIndex].rank;
     setRevealAnswers(true);
-    
+
+    const isCorrect = quizOptions[index]?.rank === studyWords[currentWordIndex]?.rank;
+
     if (isCorrect) {
-      // Correct answer - increase score and streak
       setScore(prev => prev + 10);
-      setStreak(prev => prev + 1);
+      setStreak(prev => {
+        const newStreak = prev + 1;
+        setBestStreak(currentBest => Math.max(currentBest, newStreak));
+        return newStreak;
+      });
       markAsLearned(studyWords[currentWordIndex].rank);
-      
-      // Play sound effect if enabled
-      if (audioEnabled && audioRef.current) {
-        audioRef.current.src = '/sounds/correct.mp3';
-        audioRef.current.play().catch(e => console.error('Error playing audio:', e));
-      }
+
+      toast({
+        title: "Дуруст!",
+        description: "Ҷавоби шумо дуруст аст!",
+      });
     } else {
-      // Wrong answer - reset streak
       setStreak(0);
-      
-      // Play sound effect if enabled
-      if (audioEnabled && audioRef.current) {
-        audioRef.current.src = '/sounds/wrong.mp3';
-        audioRef.current.play().catch(e => console.error('Error playing audio:', e));
-      }
+      toast({
+        title: "Нодуруст!",
+        description: `Ҷавоби дуруст: ${studyWords[currentWordIndex]?.translation_tajik || ''}`,
+      });
     }
-    
-    // Auto-advance to next word after delay
-    setTimeout(() => {
-      navigateWord('next');
-    }, 1500);
   };
-  
-  // Handle match game selection
+
+  // Handle match selection
   const handleMatchSelection = (id: number) => {
-    // If already matched, do nothing
-    if (matchPairs.find(p => p.id === id)?.isMatched) return;
-    
-    // Clone the current state
-    const newPairs = [...matchPairs];
-    const selectedPairIndex = newPairs.findIndex(p => p.id === id);
-    
-    // Toggle selection for this card
-    newPairs[selectedPairIndex].isSelected = true;
-    
-    // If this is the first card selected
+    const clickedPair = matchPairs.find(pair => pair.id === id);
+    if (!clickedPair || clickedPair.isMatched || clickedPair.isSelected) return;
+
+    setMatchPairs(prev => prev.map(pair =>
+      pair.id === id ? { ...pair, isSelected: true } : pair
+    ));
+
     if (firstSelected === null) {
       setFirstSelected(id);
-    } 
-    // This is the second card
-    else {
-      const firstPairIndex = newPairs.findIndex(p => p.id === firstSelected);
-      
-      // Check if it's a match (same word)
-      if (newPairs[firstPairIndex].word.rank === newPairs[selectedPairIndex].word.rank) {
-        // It's a match!
-        newPairs[firstPairIndex].isMatched = true;
-        newPairs[selectedPairIndex].isMatched = true;
-        
-        // Increase score and mark word as learned
-        setScore(prev => prev + 15);
-        markAsLearned(newPairs[firstPairIndex].word.rank);
-        
-        // Play sound effect if enabled
-        if (audioEnabled && audioRef.current) {
-          audioRef.current.src = '/sounds/match.mp3';
-          audioRef.current.play().catch(e => console.error('Error playing audio:', e));
-        }
-        
-        // Check if all pairs are matched
-        const allMatched = newPairs.every(p => p.isMatched);
+    } else {
+      const firstWord = matchPairs.find(pair => pair.id === firstSelected)?.word;
+      const secondWord = clickedPair.word;
+
+      if (firstWord && secondWord && firstWord.rank === secondWord.rank) {
+        setMatchPairs(prev => prev.map(pair =>
+          pair.id === id || pair.id === firstSelected
+            ? { ...pair, isMatched: true, isSelected: false }
+            : pair
+        ));
+
+        setScore(prev => prev + 5);
+        setStreak(prev => {
+          const newStreak = prev + 1;
+          setBestStreak(currentBest => Math.max(currentBest, newStreak));
+          return newStreak;
+        });
+        markAsLearned(firstWord.rank);
+
+        toast({
+          title: "Дуруст!",
+          description: "Шумо ҷуфтро дуруст пайдо кардед!",
+        });
+
+        const allMatched = matchPairs.every(pair => pair.isMatched || pair.id === id || pair.id === firstSelected);
         if (allMatched) {
-          setTimeout(() => {
-            setGameCompleted(true);
-            // Add completion bonus
-            setScore(prev => prev + 20);
-            toast({
-              title: "Офарин!",
-              description: "Шумо ҳама ҷуфтҳоро пайдо кардед!",
-            });
-          }, 500);
+          setGameCompleted(true);
+          setIsTimerRunning(false);
+          toast({
+            title: "Офарин!",
+            description: "Шумо ҳамаи ҷуфтҳоро ёфтед!",
+          });
         }
+
       } else {
-        // Not a match - reset streak
+        setMatchPairs(prev => prev.map(pair =>
+          pair.id === id || pair.id === firstSelected
+            ? { ...pair, isSelected: false }
+            : pair
+        ));
+
         setStreak(0);
-        
-        // Play sound effect if enabled
-        if (audioEnabled && audioRef.current) {
-          audioRef.current.src = '/sounds/wrong.mp3';
-          audioRef.current.play().catch(e => console.error('Error playing audio:', e));
-        }
-        
-        // Flip cards back after a delay
-        setTimeout(() => {
-          newPairs[firstPairIndex].isSelected = false;
-          newPairs[selectedPairIndex].isSelected = false;
-          setMatchPairs([...newPairs]);
-        }, 1000);
+        toast({
+          title: "Нодуруст!",
+          description: "Ин ҷуфт нодуруст аст!",
+        });
       }
-      
-      // Reset first selection
+
       setFirstSelected(null);
     }
-    
-    setMatchPairs(newPairs);
   };
-  
-  // Reset game with current settings
+
+  // Handle typing game
+  const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    setTypingInput(input);
+
+    if (studyWords.length > 0 && input.toLowerCase() === studyWords[currentWordIndex].translation_tajik.toLowerCase()) {
+      setScore(prev => prev + 10);
+      setStreak(prev => {
+        const newStreak = prev + 1;
+        setBestStreak(currentBest => Math.max(currentBest, newStreak));
+        return newStreak;
+      });
+      markAsLearned(studyWords[currentWordIndex].rank);
+
+      toast({
+        title: "Дуруст!",
+        description: "Шумо калимаро дуруст навиштед!",
+      });
+
+      setTimeout(() => {
+        navigateWord('next');
+      }, 1000);
+    }
+  };
+
+  // Handle listening game
+  const handleListening = () => {
+    if (!isListening && studyWords[currentWordIndex]?.word) {
+      setIsListening(true);
+      // Implement text-to-speech for the word
+      const utterance = new SpeechSynthesisUtterance(studyWords[currentWordIndex].word);
+      utterance.lang = 'ar-SA'; // Set language to Arabic for Quranic words
+      utterance.onend = () => setIsListening(false);
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Reset game
   const resetGame = () => {
     initializeStudyWords(words);
-    toast({
-      title: "Бозӣ аз нав оғоз шуд",
-      description: "Калимаҳо аз нав омехта шуданд.",
-    });
+    setTimer(0);
+    setIsTimerRunning(false);
+    setGameCompleted(false);
+    setWordsLearned([]); // Clear learned words on reset
+    setScore(0);
+    setStreak(0);
   };
-  
+
   // Change game mode
   const changeGameMode = (mode: GameMode) => {
     setGameMode(mode);
-    resetGame();
+    setIsTimerRunning(false); // Pause timer when changing mode
+    resetGame(); // Reset game state for new mode
   };
-  
+
   // Change difficulty
   const changeDifficulty = (newDifficulty: GameDifficulty) => {
     setDifficulty(newDifficulty);
-    resetGame();
+    setIsTimerRunning(false); // Pause timer when changing difficulty
+    let newWordCount;
+    switch (newDifficulty) {
+      case 'beginner':
+        newWordCount = 10;
+        break;
+      case 'intermediate':
+        newWordCount = 20;
+        break;
+      case 'advanced':
+        newWordCount = 30;
+        break;
+      default:
+        newWordCount = 20;
+    }
+    setWordCount(newWordCount);
+    resetGame(); // Reset game state for new difficulty
   };
-  
-  // Calculate progress percentage
+
+  // Calculate progress
   const calculateProgress = () => {
     if (studyWords.length === 0) return 0;
-    
-    // Count how many words in the current study set are marked as learned
-    const learnedCount = studyWords.filter(word => wordsLearned.includes(word.rank)).length;
-    return Math.round((learnedCount / studyWords.length) * 100);
+    const currentProgress = (currentWordIndex / studyWords.length) * 100;
+    return Math.min(currentProgress, 100); // Ensure it doesn't exceed 100
   };
-  
-  // Get current word
-  const currentWord = studyWords[currentWordIndex];
-  
-  return (
-    <>
-      <SeoHead 
-        title="Омӯзиши луғат | Қуръони Карим"
-        description="Барномаи омӯзиши луғати арабӣ барои Қуръон бо усули бозӣ ва кортҳои омӯзишӣ"
-      />
-      
-      <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/95">
-        {/* Header */}
-        <header className="border-b px-4 py-3 bg-background/80 backdrop-blur sticky top-0 z-10">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <Home className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium text-sm">Асосӣ</span>
-            </Link>
-            
-            <div className="text-center flex-1 flex justify-center">
-              <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                Омӯзиши луғат
-              </h1>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              >
-                {theme === 'dark' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
-              
-              <SettingsDialog 
-                showTranslation={showTranslation}
-                setShowTranslation={setShowTranslation}
-                audioEnabled={audioEnabled}
-                setAudioEnabled={setAudioEnabled}
-                difficulty={difficulty}
-                setDifficulty={changeDifficulty}
-                wordCount={wordCount}
-                setWordCount={(count) => {
-                  setWordCount(count);
-                  resetGame();
-                }}
-                resetProgress={() => {
-                  setWordsLearned([]);
-                  resetGame();
-                }}
-              />
-            </div>
-          </div>
-        </header>
-        
-        <main className="flex-1 flex flex-col px-4 py-6 overflow-hidden max-w-lg mx-auto w-full">
-          {isLoading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
-            </div>
-          ) : (
-            <>
-              {/* Game Modes Tabs */}
-              <Tabs value={gameMode} onValueChange={(value) => changeGameMode(value as GameMode)} className="w-full mb-4">
-                <TabsList className="grid grid-cols-3">
-                  <TabsTrigger value="flashcards" className="text-sm">Кортҳо</TabsTrigger>
-                  <TabsTrigger value="quiz" className="text-sm">Санҷиш</TabsTrigger>
-                  <TabsTrigger value="match" className="text-sm">Ҷуфткунӣ</TabsTrigger>
-                </TabsList>
-              </Tabs>
-              
-              {/* Score and Progress Bar */}
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex items-center gap-2">
-                    <Award className="h-4 w-4 text-yellow-500" />
-                    <span className="text-sm font-medium">{score} хол</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{calculateProgress()}%</span>
-                  </div>
-                </div>
-                <Progress value={calculateProgress()} className="h-2" />
-              </div>
-              
-              {/* Game Content based on mode */}
-              <div className="flex-1 flex flex-col">
-                {gameMode === 'flashcards' && studyWords.length > 0 && (
-                  <div className="flex-1 flex flex-col">
-                    {/* Word Counter */}
-                    <div className="text-center mb-3">
-                      <span className="text-sm text-muted-foreground">
-                        {currentWordIndex + 1} аз {studyWords.length}
-                      </span>
-                    </div>
-                    
-                    {/* Flashcard */}
-                    <div 
-                      className="relative flex-1 flex mb-4 min-h-[250px] w-full perspective-1000"
-                      onClick={flipCard}
-                    >
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={`card-${currentWordIndex}-${isFlipped ? 'back' : 'front'}`}
-                          initial={{ rotateY: isFlipped ? -90 : 90 }}
-                          animate={{ rotateY: 0 }}
-                          exit={{ rotateY: isFlipped ? 90 : -90 }}
-                          transition={{ duration: 0.3 }}
-                          className={cn(
-                            "absolute inset-0 flex flex-col items-center justify-center backface-hidden",
-                            "rounded-xl p-6 border",
-                            isFlipped 
-                              ? "bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 border-primary/20" 
-                              : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                          )}
-                        >
-                          {!isFlipped ? (
-                            // Front of card (Arabic)
-                            <div className="text-center">
-                              <p className="text-4xl font-arabic mb-4">
-                                {currentWord.word}
-                              </p>
-                              {showTranslation && (
-                                <p className="text-sm text-muted-foreground">
-                                  (зер кунед барои тарҷума)
-                                </p>
-                              )}
-                            </div>
-                          ) : (
-                            // Back of card (Translation)
-                            <div className="text-center">
-                              <p className="text-xl mb-2 font-medium">
-                                {currentWord.translation_tajik}
-                              </p>
-                              <p className="text-sm text-muted-foreground mb-2">
-                                Истифодабарӣ: {currentWord.frequency} маротиба
-                              </p>
-                              <p className="text-xs text-primary">
-                                Калимаи №{currentWord.rank}
-                              </p>
-                            </div>
-                          )}
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                    
-                    {/* Card Navigation */}
-                    <div className="flex justify-between items-center mb-4">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => navigateWord('prev')}
-                      >
-                        <ChevronLeft className="h-4 w-4 mr-1" />
-                        Пешина
-                      </Button>
-                      
-                      <Button 
-                        variant="default" 
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                        onClick={() => {
-                          markAsLearned(currentWord.rank);
-                          navigateWord('next');
-                        }}
-                      >
-                        <Check className="h-4 w-4 mr-1" />
-                        Омӯхтам
-                      </Button>
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => navigateWord('next')}
-                      >
-                        Оянда
-                        <ChevronRight className="h-4 w-4 ml-1" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-                
-                {gameMode === 'quiz' && studyWords.length > 0 && (
-                  <div className="flex-1 flex flex-col">
-                    {/* Question Counter */}
-                    <div className="text-center mb-3">
-                      <span className="text-sm text-muted-foreground">
-                        Савол {currentWordIndex + 1} аз {studyWords.length}
-                      </span>
-                    </div>
-                    
-                    {/* Question */}
-                    <Card className="mb-4 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20">
-                      <CardContent className="p-6 text-center">
-                        <h3 className="text-lg mb-1">Тарҷумаи ин калима чист?</h3>
-                        <p className="text-3xl font-arabic mb-3">
-                          {currentWord.word}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    
-                    {/* Answer Options */}
-                    <div className="grid grid-cols-1 gap-3 mb-4">
-                      {quizOptions.map((option, index) => (
-                        <Button
-                          key={index}
-                          variant={
-                            revealAnswers
-                              ? option.rank === currentWord.rank
-                                ? "default"
-                                : selectedAnswer === index
-                                  ? "destructive"
-                                  : "outline"
-                              : "outline"
-                          }
-                          className={cn(
-                            "h-auto py-3 justify-start text-left",
-                            revealAnswers && option.rank === currentWord.rank && "bg-green-600 hover:bg-green-700 text-white"
-                          )}
-                          disabled={revealAnswers}
-                          onClick={() => checkAnswer(index)}
-                        >
-                          <div className="flex items-center w-full">
-                            <span className="mr-2">{String.fromCharCode(65 + index)}.</span>
-                            <span>{option.translation_tajik}</span>
-                            {revealAnswers && option.rank === currentWord.rank && (
-                              <Check className="h-4 w-4 ml-auto" />
-                            )}
-                            {revealAnswers && selectedAnswer === index && option.rank !== currentWord.rank && (
-                              <X className="h-4 w-4 ml-auto" />
-                            )}
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {gameMode === 'match' && (
-                  <div className="flex-1 flex flex-col">
-                    {/* Match Game Instructions */}
-                    <div className="text-center mb-3">
-                      <span className="text-sm text-muted-foreground">
-                        Калимаҳои арабӣ ва тарҷумаҳои онҳоро ҷуфт кунед
-                      </span>
-                    </div>
-                    
-                    {/* Match Cards Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                      {matchPairs.map((pair, index) => (
-                        <div key={index} className="relative perspective-500">
-                          <motion.div
-                            animate={{ 
-                              rotateY: pair.isSelected || pair.isMatched ? 0 : 180,
-                              scale: pair.isMatched ? 0.95 : 1
-                            }}
-                            transition={{ duration: 0.3 }}
-                            className="w-full aspect-[3/4] cursor-pointer preserve-3d"
-                            onClick={() => !pair.isMatched && !pair.isSelected && handleMatchSelection(pair.id)}
-                          >
-                            {/* Card Front (Content) */}
-                            <div className={cn(
-                              "absolute inset-0 backface-hidden rounded-lg border flex items-center justify-center p-2 text-center",
-                              pair.isMatched 
-                                ? "bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700" 
-                                : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                            )}>
-                              {/* Display Arabic or Translation based on even/odd index */}
-                              {pair.id % 2 === 0 ? (
-                                <span className="font-arabic text-xl">{pair.word.word}</span>
-                              ) : (
-                                <span className="text-sm">{pair.word.translation_tajik}</span>
-                              )}
-                            </div>
-                            
-                            {/* Card Back (Hidden) */}
-                            <div className="absolute inset-0 backface-hidden rotateY-180 rounded-lg border border-primary/30 bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-                              <span className="text-2xl text-primary/70 dark:text-primary/50">؟</span>
-                            </div>
-                          </motion.div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Reset Match Game */}
-                    {matchPairs.length > 0 && (
-                      <div className="flex justify-center">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => generateMatchPairs()}
-                          className="mb-4"
-                        >
-                          <RefreshCw className="h-4 w-4 mr-1" />
-                          Аз нав омехтан
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {/* Game Controls */}
-                <div className="flex justify-center gap-3 mt-auto">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={resetGame}
-                  >
-                    <Shuffle className="h-4 w-4 mr-1" />
-                    Омехтан
-                  </Button>
-                  
-                  <InfoDialog wordsLearned={wordsLearned.length} totalWords={words.length} />
-                </div>
-              </div>
-              
-              {/* Game Completion Dialog */}
-              <Dialog open={gameCompleted} onOpenChange={setGameCompleted}>
-                <DialogContent className="max-w-xs sm:max-w-sm">
-                  <DialogHeader>
-                    <DialogTitle className="text-center">
-                      <span className="block text-xl mb-2">✨ Офарин! ✨</span>
-                    </DialogTitle>
-                    <DialogDescription className="text-center">
-                      Шумо ин даврро ба итмом расондед!
-                    </DialogDescription>
-                  </DialogHeader>
-                  
-                  <div className="my-4 text-center">
-                    <p className="text-2xl font-bold text-primary">{score} хол</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Шумо {wordsLearned.length} калимаи Қуръонро омӯхтед
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button onClick={() => {
-                      setGameCompleted(false);
-                      resetGame();
-                    }}>
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Аз нав
-                    </Button>
-                    <DialogClose asChild>
-                      <Button variant="outline">
-                        Идома додан
-                      </Button>
-                    </DialogClose>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </>
-          )}
-        </main>
-      </div>
-    </>
-  );
-}
 
-// Settings dialog component
-function SettingsDialog({
-  showTranslation,
-  setShowTranslation,
-  audioEnabled,
-  setAudioEnabled,
-  difficulty,
-  setDifficulty,
-  wordCount,
-  setWordCount,
-  resetProgress
-}: {
-  showTranslation: boolean;
-  setShowTranslation: (value: boolean) => void;
-  audioEnabled: boolean;
-  setAudioEnabled: (value: boolean) => void;
-  difficulty: GameDifficulty;
-  setDifficulty: (value: GameDifficulty) => void;
-  wordCount: number;
-  setWordCount: (value: number) => void;
-  resetProgress: () => void;
-}) {
+  // Format time
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  const currentWord = studyWords[currentWordIndex];
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Settings className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-xs sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Танзимот</DialogTitle>
-          <DialogDescription>
-            Танзимоти омӯзиши луғатро мувофиқи худ созед
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-4 py-2">
-          {/* Translation toggle */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="translation">Нишон додани тарҷума</Label>
-              <p className="text-xs text-muted-foreground">
-                Нишон додани ишора барои тарҷума
-              </p>
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+      <SeoHead
+        title="Омӯзиши калимаҳои Қуръон"
+        description="Калимаҳои аз ҳама бештар истифодашавандаро дар Қуръон тавассути шеваҳои интерактивӣ омӯзед."
+      />
+      <div className="container mx-auto px-4 py-8">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            Омӯзиши калимаҳои Қуръон
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Калимаҳои аз ҳама бештар истифодашавандаро дар Қуръон тавассути шеваҳои интерактивӣ омӯзед.
+          </p>
+        </div>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-card rounded-lg p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Калимаҳои омӯхташуда</p>
+                <p className="text-2xl font-bold">{wordsLearned.length}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <BookOpen className="h-6 w-6 text-primary" />
+              </div>
             </div>
-            <Switch 
-              id="translation" 
-              checked={showTranslation}
-              onCheckedChange={setShowTranslation}
-            />
           </div>
-          
-          {/* Audio toggle */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="audio" className="flex items-center gap-2">
-                <Volume2 className="h-4 w-4" />
-                <span>Садо</span>
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                Иҷозат додани садо ҳангоми бозӣ
-              </p>
+          <div className="bg-card rounded-lg p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Вақти омӯзиш</p>
+                <p className="text-2xl font-bold">{formatTime(timer)}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Clock className="h-6 w-6 text-primary" />
+              </div>
             </div>
-            <Switch 
-              id="audio" 
-              checked={audioEnabled}
-              onCheckedChange={setAudioEnabled}
-            />
           </div>
-          
-          {/* Difficulty setting */}
-          <div className="space-y-2">
-            <Label htmlFor="difficulty">Дараҷаи душворӣ</Label>
-            <div className="flex gap-2">
-              <Button
-                variant={difficulty === 'beginner' ? "default" : "outline"}
-                size="sm"
-                className="flex-1"
-                onClick={() => setDifficulty('beginner')}
+          <div className="bg-card rounded-lg p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Занҷири ҷорӣ</p>
+                <p className="text-2xl font-bold">{streak}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Flame className="h-6 w-6 text-primary" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-card rounded-lg p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Беҳтарин занҷир</p>
+                <p className="text-2xl font-bold">{bestStreak}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Trophy className="h-6 w-6 text-primary" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Settings Section */}
+        <div className="bg-card rounded-lg p-6 shadow-sm mb-8">
+          <h2 className="text-2xl font-bold mb-4">Танзимот</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="difficulty-select">Сатҳи душворӣ</Label>
+              <Select
+                value={difficulty}
+                onValueChange={(value) => changeDifficulty(value as GameDifficulty)}
               >
-                Осон
-              </Button>
-              <Button
-                variant={difficulty === 'intermediate' ? "default" : "outline"}
-                size="sm"
-                className="flex-1"
-                onClick={() => setDifficulty('intermediate')}
-              >
-                Миёна
-              </Button>
-              <Button
-                variant={difficulty === 'advanced' ? "default" : "outline"}
-                size="sm"
-                className="flex-1"
-                onClick={() => setDifficulty('advanced')}
-              >
-                Душвор
-              </Button>
+                <SelectTrigger id="difficulty-select">
+                  <SelectValue placeholder="Сатҳро интихоб кунед" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="beginner">Осон (10 калима)</SelectItem>
+                  <SelectItem value="intermediate">Миёна (20 калима)</SelectItem>
+                  <SelectItem value="advanced">Душвор (30 калима)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-          
-          {/* Word count */}
-          <div className="space-y-2">
-            <Label htmlFor="word-count">Шумораи калимаҳо</Label>
-            <div className="flex gap-2">
-              {[10, 20, 30, 50].map(count => (
-                <Button
-                  key={count}
-                  variant={wordCount === count ? "default" : "outline"}
-                  size="sm"
-                  className="flex-1"
-                  onClick={() => setWordCount(count)}
-                >
-                  {count}
-                </Button>
-              ))}
+            <div className="space-y-2">
+              <Label htmlFor="game-mode-select">Намуди бозӣ</Label>
+              <Select
+                value={gameMode}
+                onValueChange={(value) => changeGameMode(value as GameMode)}
+              >
+                <SelectTrigger id="game-mode-select">
+                  <SelectValue placeholder="Намудро интихоб кунед" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="flashcards">Флешкартаҳо</SelectItem>
+                  <SelectItem value="quiz">Саволу ҷавоб</SelectItem>
+                  <SelectItem value="match">Мувофиқат</SelectItem>
+                  <SelectItem value="typing">Навиштан</SelectItem>
+                  <SelectItem value="listening">Гӯш кардан</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-          
-          {/* Reset progress */}
-          <div className="pt-2">
-            <Button 
-              variant="destructive" 
-              className="w-full" 
-              size="sm"
-              onClick={resetProgress}
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-translation"
+                checked={showTranslation}
+                onCheckedChange={(checked) => setShowTranslation(checked)}
+              />
+              <Label htmlFor="show-translation">Тарҷумаро нишон диҳед</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-transliteration"
+                checked={showTransliteration}
+                onCheckedChange={(checked) => setShowTransliteration(checked)}
+              />
+              <Label htmlFor="show-transliteration">Транслитератсияро нишон диҳед</Label>
+            </div>
+            <Button
+              onClick={() => setIsTimerRunning(prev => !prev)}
+              variant="outline"
+              className="w-full"
             >
-              Тоза кардани пешрафт
+              {isTimerRunning ? <><Pause className="mr-2 h-4 w-4" /> Таваққуф</> : <><Play className="mr-2 h-4 w-4" /> Оғози вақтсанҷ</>}
+            </Button>
+            <Button
+              onClick={resetGame}
+              variant="secondary"
+              className="w-full"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" /> Бозӣ оғоз кардан
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
-// Info dialog component
-function InfoDialog({
-  wordsLearned,
-  totalWords
-}: {
-  wordsLearned: number;
-  totalWords: number;
-}) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Info className="h-4 w-4 mr-1" />
-          Маълумот
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-xs sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Дар бораи омӯзиши луғат</DialogTitle>
-          <DialogDescription>
-            Маълумот дар бораи омӯзиши луғати Қуръон
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-4 py-2">
-          <div>
-            <h4 className="text-sm font-medium mb-1">Дар бораи ин бозӣ</h4>
-            <p className="text-sm text-muted-foreground">
-              Ин бозӣ ба шумо имкон медиҳад, ки 100 калимаи серистеъмолтарини Қуръонро омӯзед. Ин калимаҳо 70% матни Қуръонро ташкил медиҳанд.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="text-sm font-medium mb-1">Пешрафти шумо</h4>
-            <div className="flex items-center gap-3 mb-2">
-              <Progress value={(wordsLearned / totalWords) * 100} className="h-2 flex-1" />
-              <span className="text-sm">{Math.round((wordsLearned / totalWords) * 100)}%</span>
+        {/* Game Section */}
+        <div className="bg-card rounded-lg p-6 shadow-sm">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Шумо {wordsLearned} калима аз {totalWords} калимаро омӯхтед.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="text-sm font-medium mb-1">Намудҳои бозӣ</h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li className="flex items-start gap-2">
-                <span className="text-primary">•</span> 
-                <span><strong>Кортҳо</strong> - калимаҳоро бо кортҳои омӯзишӣ аз бар кунед</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary">•</span> 
-                <span><strong>Санҷиш</strong> - дониши худро бо ҷавоб додан ба саволҳо санҷед</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary">•</span> 
-                <span><strong>Ҷуфткунӣ</strong> - калимаҳоро бо тарҷумаи онҳо ҷуфт кунед</span>
-              </li>
-            </ul>
-          </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Award className="h-4 w-4 text-yellow-500" />
+                    <span className="font-bold">{score}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Flame className="h-4 w-4 text-red-500" />
+                    <span className="font-bold">{streak}</span>
+                  </div>
+                </div>
+                {gameMode !== 'flashcards' && gameMode !== 'match' && ( // Progress bar for sequential modes
+                  <Progress value={calculateProgress()} className="w-1/2" />
+                )}
+              </div>
+
+              {gameCompleted && (
+                <div className="text-center text-lg font-semibold text-primary mb-4">
+                  Бозӣ ба охир расид!
+                  <Button onClick={resetGame} className="ml-4">Бозӣ оғоз кардан</Button>
+                </div>
+              )}
+
+              {!gameCompleted && studyWords.length > 0 && (
+                <>
+                  {gameMode === 'flashcards' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {studyWords.map((word, index) => (
+                        <Card
+                          key={index}
+                          className="bg-background rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                          onClick={() => setSelectedWord(word)}
+                        >
+                          <CardContent className="p-0">
+                            <div className="flex justify-between items-start mb-4">
+                              <div>
+                                <h3 className="text-2xl font-bold mb-2 text-right">{word.word}</h3>
+                                {showTransliteration && (
+                                  <p className="text-muted-foreground text-right">{word.transliteration_tajik}</p>
+                                )}
+                              </div>
+                              <Badge variant="secondary" className="ml-2">
+                                Зинаи #{word.rank}
+                              </Badge>
+                            </div>
+                            {showTranslation && (
+                              <p className="text-lg text-right">{word.translation_tajik}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+
+                  {gameMode === 'quiz' && currentWord && (
+                    <div className="flex flex-col items-center space-y-4">
+                      <Card className="w-full max-w-md p-6 text-center">
+                        <CardContent>
+                          <p className="text-4xl font-bold mb-4">{currentWord.word}</p>
+                          {showTransliteration && (
+                            <p className="text-lg text-muted-foreground mb-4">{currentWord.transliteration_tajik}</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md">
+                        {quizOptions.map((option, index) => (
+                          <Button
+                            key={index}
+                            variant={
+                              selectedAnswer === index
+                                ? (option.rank === currentWord.rank ? 'success' : 'destructive')
+                                : (revealAnswers && option.rank === currentWord.rank ? 'success' : 'outline')
+                            }
+                            onClick={() => checkAnswer(index)}
+                            disabled={revealAnswers}
+                            className={cn("text-lg py-6", {
+                              "border-2 border-green-500": revealAnswers && option.rank === currentWord.rank,
+                              "border-2 border-red-500": revealAnswers && selectedAnswer === index && option.rank !== currentWord.rank,
+                            })}
+                          >
+                            {option.translation_tajik}
+                          </Button>
+                        ))}
+                      </div>
+                      {revealAnswers && (
+                        <Button onClick={() => navigateWord('next')} className="mt-4">
+                          Калимаи навбатӣ <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  {gameMode === 'match' && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
+                      {matchPairs.map((pair) => (
+                        <Card
+                          key={pair.id}
+                          className={cn(
+                            "p-4 text-center cursor-pointer transition-all duration-200",
+                            pair.isMatched && "bg-green-100 dark:bg-green-900 opacity-50 pointer-events-none",
+                            pair.isSelected && "border-2 border-primary ring-2 ring-primary",
+                            !pair.isMatched && !pair.isSelected && "hover:shadow-md"
+                          )}
+                          onClick={() => handleMatchSelection(pair.id)}
+                        >
+                          <CardContent className="p-0 flex flex-col items-center justify-center h-20">
+                            {pair.id % 2 === 0 ? ( // Even IDs for Arabic word, odd for Tajik translation
+                              <p className="text-2xl font-bold">{pair.word.word}</p>
+                            ) : (
+                              <p className="text-lg">{pair.word.translation_tajik}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+
+                  {gameMode === 'typing' && currentWord && (
+                    <div className="flex flex-col items-center space-y-4">
+                      <Card className="w-full max-w-md p-6 text-center">
+                        <CardContent>
+                          <p className="text-4xl font-bold mb-4">{currentWord.word}</p>
+                          {showTransliteration && (
+                            <p className="text-lg text-muted-foreground mb-4">{currentWord.transliteration_tajik}</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                      <input
+                        type="text"
+                        value={typingInput}
+                        onChange={handleTyping}
+                        placeholder="Тарҷумаро ин ҷо нависед..."
+                        className="w-full max-w-md p-3 border rounded-md text-center text-lg bg-input"
+                      />
+                      <div className="flex gap-2">
+                        <Button onClick={() => navigateWord('prev')} variant="outline">
+                          <ChevronLeft className="mr-2 h-4 w-4" /> Пеш
+                        </Button>
+                        <Button onClick={() => navigateWord('next')} variant="outline">
+                          Баъд <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {gameMode === 'listening' && currentWord && (
+                    <div className="flex flex-col items-center space-y-4">
+                      <Card className="w-full max-w-md p-6 text-center">
+                        <CardContent>
+                          <p className="text-4xl font-bold mb-4">Калимаро гӯш кунед</p>
+                          <Button onClick={handleListening} disabled={isListening} className="text-xl p-4">
+                            {isListening ? <Pause className="mr-2 h-6 w-6" /> : <Volume2 className="mr-2 h-6 w-6" />}
+                            Гӯш кардан
+                          </Button>
+                          {showTranslation && (
+                            <p className="text-lg text-muted-foreground mt-4">
+                              {currentWord.translation_tajik}
+                            </p>
+                          )}
+                          {showTransliteration && (
+                            <p className="text-base text-muted-foreground mt-2">
+                              ({currentWord.transliteration_tajik})
+                            </p>
+                          )}
+                        </CardContent>
+                      </Card>
+                      <div className="flex gap-2">
+                        <Button onClick={() => navigateWord('prev')} variant="outline">
+                          <ChevronLeft className="mr-2 h-4 w-4" /> Пеш
+                        </Button>
+                        <Button onClick={() => navigateWord('next')} variant="outline">
+                          Баъд <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Navigation for Flashcards (if not using click to reveal) */}
+                  {gameMode === 'flashcards' && !selectedWord && studyWords.length > 0 && (
+                    <div className="flex justify-center mt-4 gap-4">
+                      <Button onClick={() => navigateWord('prev')} variant="outline">
+                        <ChevronLeft className="mr-2 h-4 w-4" /> Пеш
+                      </Button>
+                      <Button onClick={flipCard} variant="default">
+                        {isFlipped ? "Пинҳон кардан" : "Тарҷумаро нишон додан"}
+                      </Button>
+                      <Button onClick={() => markAsLearned(currentWord.rank)} variant="success">
+                        <Check className="mr-2 h-4 w-4" /> Омӯхтам
+                      </Button>
+                      <Button onClick={() => navigateWord('next')} variant="outline">
+                        Баъд <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
+              {studyWords.length === 0 && !isLoading && (
+                <div className="text-center text-muted-foreground">
+                  Калимаҳо барои омӯзиш вуҷуд надоранд. Лутфан танзимотро танзим кунед.
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+
+      {/* Word Detail Dialog */}
+      <Dialog open={!!selectedWord} onOpenChange={setSelectedWord}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-right">{selectedWord?.word}</DialogTitle>
+            {showTransliteration && selectedWord?.transliteration_tajik && (
+              <p className="text-muted-foreground text-right">{selectedWord.transliteration_tajik}</p>
+            )}
+          </DialogHeader>
+          <div className="space-y-4">
+            {showTranslation && (
+              <div>
+                <h4 className="font-semibold mb-2">Тарҷума</h4>
+                <p className="text-lg text-right">{selectedWord?.translation_tajik}</p>
+              </div>
+            )}
+            {selectedWord?.example && (
+              <div>
+                <h4 className="font-semibold mb-2">Намуна аз Қуръон</h4>
+                <div className="bg-muted/50 rounded-lg p-4">
+                  <p className="text-xl mb-2 text-right">{selectedWord.example}</p>
+                  {selectedWord.example_transliteration && showTransliteration && (
+                    <p className="text-muted-foreground text-right">{selectedWord.example_transliteration}</p>
+                  )}
+                  <p className="text-right mt-2">{selectedWord.example_translation}</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {selectedWord.reference}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => {
+              if (selectedWord) markAsLearned(selectedWord.rank);
+              setSelectedWord(null);
+            }} variant="success">
+              <Check className="mr-2 h-4 w-4" /> Ин калимаро омӯхтам
+            </Button>
+            <DialogClose asChild>
+              <Button variant="outline">Пӯшидан</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
