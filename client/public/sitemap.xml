@@ -1,50 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
   <url>
-    <loc>https://quran-tajik.replit.app/</loc>
-    <lastmod>2023-05-23</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://www.quran.tj/</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Main Features -->
   <url>
-    <loc>https://quran-tajik.replit.app/farzi-ayn</loc>
-    <lastmod>2023-05-23</lastmod>
+    <loc>https://www.quran.tj/learn-words</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.quran.tj/duas</loc>
+    <lastmod>2024-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://quran-tajik.replit.app/projects</loc>
-    <lastmod>2023-05-23</lastmod>
+    <loc>https://www.quran.tj/farzi-ayn</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.quran.tj/tasbeeh</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.quran.tj/projects</loc>
+    <lastmod>2024-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+
+  <!-- Surah Pages -->
   <url>
-    <loc>https://quran-tajik.replit.app/surah/1</loc>
-    <lastmod>2023-05-23</lastmod>
+    <loc>https://www.quran.tj/surah/1</loc>
+    <lastmod>2024-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://quran-tajik.replit.app/surah/36</loc>
-    <lastmod>2023-05-23</lastmod>
+    <loc>https://www.quran.tj/surah/2</loc>
+    <lastmod>2024-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://quran-tajik.replit.app/surah/67</loc>
-    <lastmod>2023-05-23</lastmod>
+    <loc>https://www.quran.tj/surah/3</loc>
+    <lastmod>2024-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
+  <!-- Add all 114 surahs -->
   <url>
-    <loc>https://quran-tajik.replit.app/surah/55</loc>
-    <lastmod>2023-05-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://quran-tajik.replit.app/surah/18</loc>
-    <lastmod>2023-05-23</lastmod>
+    <loc>https://www.quran.tj/surah/114</loc>
+    <lastmod>2024-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
