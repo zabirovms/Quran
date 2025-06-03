@@ -1,9 +1,8 @@
-
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /private/
 
-# Crawl-delay: 10
-Sitemap: https://quran-tajik.replit.app/sitemap.xml
+Crawl-delay: 10
+Sitemap: https://www.quran.tj/sitemap.xml
