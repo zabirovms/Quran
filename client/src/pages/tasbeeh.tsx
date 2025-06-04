@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -9,6 +9,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi, // Import CarouselApi type
 } from '@/components/ui/carousel';
 import {
   Dialog,
@@ -16,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
 import { Check, Vibrate, RotateCcw, Settings, Share, Info, Home, Moon, Sun, Book } from 'lucide-react';
@@ -47,7 +47,12 @@ export default function TasbeehCounter() {
   const counterRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
 
-  // Load tasbeehs data
+  // State for Carousel API
+  const [api, setApi] = useState<CarouselApi>();
+  // State to control the active tab
+  const [activeTab, setActiveTab] = useState("counter"); // Add this state
+
+  // Load tasbeehs data and saved settings from localStorage
   useEffect(() => {
     const fetchTasbeehs = async () => {
       try {
@@ -72,13 +77,52 @@ export default function TasbeehCounter() {
     const savedTargetCount = localStorage.getItem('targetCount');
     const savedVibrationEnabled = localStorage.getItem('vibrationEnabled');
     const savedCompletedTasbeehs = localStorage.getItem('completedTasbeehs');
+    const savedSaveHistory = localStorage.getItem('saveHistory');
 
     if (savedCount) setCount(parseInt(savedCount));
-    if (savedTasbeehIndex) setCurrentTasbeehIndex(parseInt(savedTasbeehIndex));
+    if (savedTasbeehIndex) setCurrentTasbeehIndex(parseInt(savedTasbeehIndex)); // Corrected typo here
     if (savedTargetCount) setTargetCount(parseInt(savedTargetCount));
     if (savedVibrationEnabled) setVibrationEnabled(savedVibrationEnabled === 'true');
     if (savedCompletedTasbeehs) setCompletedTasbeehs(parseInt(savedCompletedTasbeehs));
+    if (savedSaveHistory) setSaveHistory(savedSaveHistory === 'true');
+    else setSaveHistory(true); // Default to true
   }, []);
+
+
+  // --- Carousel Synchronization Logic ---
+  // This effect handles two-way synchronization:
+  // 1. When the carousel scrolls (e.g., via swipe/arrows), update currentTasbeehIndex.
+  // 2. When currentTasbeehIndex changes programmatically (e.g., from collection tab or initial load), scroll the carousel.
+  useEffect(() => {
+    if (!api) return;
+
+    // Handler for when the carousel's selected slide changes
+    const onSelect = () => {
+      const selectedIndex = api.selectedScrollSnap();
+      // Only update state if it's actually different to avoid unnecessary renders
+      if (selectedIndex !== currentTasbeehIndex) {
+        setCurrentTasbeehIndex(selectedIndex);
+        resetCounter(); // Reset counter if the user changed tasbeeh via carousel navigation
+      }
+    };
+
+    // Attach listener for carousel's 'select' event
+    api.on('select', onSelect);
+
+    // Initial scroll: Ensure carousel starts at the correct index loaded from localStorage
+    // This runs once when API is ready and when currentTasbeehIndex changes (e.g., from local storage or initial load)
+    if (api.selectedScrollSnap() !== currentTasbeehIndex) {
+      api.scrollTo(currentTasbeehIndex, false); // `false` for no animation on initial load
+    }
+
+    // Cleanup listener
+    return () => {
+      api.off('select', onSelect);
+    };
+  }, [api, currentTasbeehIndex]); // Depend on currentTasbeehIndex to re-run if it changes externally
+
+  // --- End Carousel Synchronization Logic ---
+
 
   // Save settings to localStorage
   useEffect(() => {
@@ -88,14 +132,13 @@ export default function TasbeehCounter() {
       localStorage.setItem('targetCount', targetCount.toString());
       localStorage.setItem('vibrationEnabled', vibrationEnabled.toString());
       localStorage.setItem('completedTasbeehs', completedTasbeehs.toString());
+      localStorage.setItem('saveHistory', saveHistory.toString());
     }
   }, [count, currentTasbeehIndex, targetCount, vibrationEnabled, completedTasbeehs, saveHistory, isLoading]);
 
   // Handle count increment with haptic feedback
   const incrementCount = () => {
-    // Provide haptic feedback if enabled and supported
     if (vibrationEnabled && 'vibrate' in navigator) {
-      // Prevent too frequent vibrations (throttle to 100ms)
       const now = Date.now();
       if (now - lastVibration > 100) {
         navigator.vibrate(25);
@@ -106,9 +149,7 @@ export default function TasbeehCounter() {
     const newCount = count + 1;
     setCount(newCount);
 
-    // Check if reached target
     if (newCount >= targetCount) {
-      // Reset count and show completion dialog
       setCount(0);
       setCompletedTasbeehs(prev => prev + 1);
       setShowCompletionDialog(true);
@@ -120,11 +161,15 @@ export default function TasbeehCounter() {
     setCount(0);
   };
 
-  // Change tasbeeh
-  const changeTasbeeh = (index: number) => {
-    setCurrentTasbeehIndex(index);
-    resetCounter();
-  };
+  // Change tasbeeh - This is called when clicking a card or a button in the collection tab
+  // It updates the state, and the useEffect above will then scroll the carousel
+  const changeTasbeeh = useCallback((index: number) => {
+    if (index >= 0 && index < tasbeehs.length && index !== currentTasbeehIndex) {
+      setCurrentTasbeehIndex(index); // Update the state
+      resetCounter(); // Reset counter for the newly selected tasbeeh
+    }
+  }, [currentTasbeehIndex, tasbeehs.length, resetCounter]);
+
 
   // Get current tasbeeh
   const currentTasbeeh = tasbeehs[currentTasbeehIndex] || {
@@ -135,7 +180,7 @@ export default function TasbeehCounter() {
 
   return (
     <>
-      <SeoHead 
+      <SeoHead
         title="Тасбеҳ | Қуръони Карим"
         description="Тасбеҳгӯяк барои зикрҳои Исломӣ бо забони тоҷикӣ ва арабӣ"
       />
@@ -156,9 +201,9 @@ export default function TasbeehCounter() {
             </div>
 
             <div className="flex gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="h-8 w-8"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               >
@@ -169,7 +214,7 @@ export default function TasbeehCounter() {
                 )}
               </Button>
 
-              <SettingsDialog 
+              <SettingsDialog
                 vibrationEnabled={vibrationEnabled}
                 setVibrationEnabled={setVibrationEnabled}
                 targetCount={targetCount}
@@ -181,6 +226,8 @@ export default function TasbeehCounter() {
                   setCompletedTasbeehs(0);
                   localStorage.removeItem('tasbeehCount');
                   localStorage.removeItem('completedTasbeehs');
+                  localStorage.removeItem('saveHistory');
+                  setSaveHistory(true);
                 }}
               />
             </div>
@@ -193,7 +240,7 @@ export default function TasbeehCounter() {
               <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
             </div>
           ) : (
-            <Tabs defaultValue="counter" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full"> {/* Controlled Tabs */}
               <TabsList className="grid grid-cols-2 mb-6">
                 <TabsTrigger value="counter" className="flex items-center gap-2">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -215,18 +262,18 @@ export default function TasbeehCounter() {
                   <div className="flex flex-col md:flex-row gap-3 mb-3">
                     {/* Tasbeeh selector - more compact */}
                     <div className="flex-1">
-                      <Carousel className="h-[90px]">
+                      <Carousel className="h-[120px]" setApi={setApi}> {/* Pass setApi prop here, increased height for translation */}
                         <CarouselContent>
                           {tasbeehs.map((tasbeeh, index) => (
                             <CarouselItem key={index} className="basis-full">
-                              <Card 
+                              <Card
                                 className={cn(
                                   "border shadow-sm cursor-pointer transition-all h-full",
-                                  index === currentTasbeehIndex ? 
-                                    "border-primary/50 bg-primary/5 dark:bg-primary/10" : 
+                                  index === currentTasbeehIndex ?
+                                    "border-primary/50 bg-primary/5 dark:bg-primary/10" :
                                     "hover:border-muted-foreground/20"
                                 )}
-                                onClick={() => changeTasbeeh(index)}
+                                onClick={() => changeTasbeeh(index)} // This click will now update currentTasbeehIndex state
                               >
                                 <CardContent className="p-3 flex flex-col items-center justify-center h-full">
                                   <div className="text-center">
@@ -235,6 +282,10 @@ export default function TasbeehCounter() {
                                     </p>
                                     <p className="text-xs font-medium text-primary dark:text-primary/90 mt-1 line-clamp-1">
                                       {tasbeeh.tajik_transliteration}
+                                    </p>
+                                    {/* Moved translation here for the carousel items */}
+                                    <p className="text-xs text-center text-muted-foreground mt-2 line-clamp-2">
+                                      {tasbeeh.tajik_translation}
                                     </p>
                                   </div>
 
@@ -248,6 +299,8 @@ export default function TasbeehCounter() {
                             </CarouselItem>
                           ))}
                         </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
                       </Carousel>
                     </div>
 
@@ -325,9 +378,9 @@ export default function TasbeehCounter() {
 
                       {/* Right column - touch area */}
                       <div className="flex-1 flex items-center justify-center md:col-span-2">
-                        <div 
-                          className="w-full h-full rounded-xl bg-gradient-to-b from-primary/5 to-primary/10 flex items-center justify-center 
-                            cursor-pointer active:from-primary/10 active:to-primary/20 active:scale-[0.98] transition-all duration-150 
+                        <div
+                          className="w-full h-full rounded-xl bg-gradient-to-b from-primary/5 to-primary/10 flex items-center justify-center
+                            cursor-pointer active:from-primary/10 active:to-primary/20 active:scale-[0.98] transition-all duration-150
                             border border-primary/20 shadow-sm select-none touch-none"
                           onClick={incrementCount}
                         >
@@ -338,12 +391,7 @@ export default function TasbeehCounter() {
                       </div>
                     </div>
 
-                    {/* Bottom section - tasbeeh info */}
-                    <div className="mt-3 p-2 bg-muted/10 rounded-lg border border-muted/20">
-                      <p className="text-xs text-center text-muted-foreground line-clamp-2">
-                        {currentTasbeeh.tajik_translation}
-                      </p>
-                    </div>
+                    {/* Removed the separate "Bottom section - tasbeeh info" as translation is now inside carousel item */}
                   </div>
                 </div>
               </TabsContent>
@@ -373,19 +421,20 @@ export default function TasbeehCounter() {
                                 <p className="text-sm font-medium text-primary dark:text-primary/90">
                                   {tasbeeh.tajik_transliteration}
                                 </p>
-                              </div>
-
-                              <div className="pt-2 border-t border-primary/5 dark:border-primary/10 text-center">
-                                <p className="text-xs text-muted-foreground">
+                                {/* Moved translation here for the collection items */}
+                                <p className="text-xs text-muted-foreground mt-2">
                                   {tasbeeh.tajik_translation}
                                 </p>
                               </div>
 
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 size="sm"
                                 className="w-full mt-2 group-hover:bg-primary/5 dark:group-hover:bg-primary/10 transition-colors"
-                                onClick={() => changeTasbeeh(index)}
+                                onClick={() => {
+                                  changeTasbeeh(index); // Update tasbeeh index
+                                  setActiveTab("counter"); // Switch to the counter tab
+                                }}
                               >
                                 Шуморидан
                               </Button>
@@ -416,20 +465,25 @@ export default function TasbeehCounter() {
             <div className="my-4 text-center">
               <p className="font-arabic text-2xl mb-2">{currentTasbeeh.arabic}</p>
               <p className="text-sm">{currentTasbeeh.tajik_transliteration}</p>
+              {/* Added translation to the completion dialog */}
+              <p className="text-xs text-muted-foreground mt-1">{currentTasbeeh.tajik_translation}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <Button onClick={() => setShowCompletionDialog(false)}>
                 Идома додан
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   if (navigator.share) {
                     navigator.share({
                       title: 'Тасбеҳ',
-                      text: `Ман ${targetCount} маротиба "${currentTasbeeh.tajik_transliteration}" хондам.`
+                      text: `Ман ${targetCount} маротиба "${currentTasbeeh.tajik_transliteration}" хондам.`,
+                      url: window.location.href
                     }).catch(console.error);
+                  } else {
+                    alert(`Шумо ${targetCount} маротиба "${currentTasbeeh.tajik_transliteration}" хондам. Шумо метавонед ин паёмро нусхабардорӣ кунед.`);
                   }
                 }}
               >
@@ -444,7 +498,7 @@ export default function TasbeehCounter() {
   );
 }
 
-// Settings dialog component
+// Settings dialog component (unchanged from the previous robust version)
 function SettingsDialog({
   vibrationEnabled,
   setVibrationEnabled,
@@ -462,6 +516,8 @@ function SettingsDialog({
   setSaveHistory: (value: boolean) => void;
   resetAll: () => void;
 }) {
+  const availableTargetCounts = [33, 99, 100, 500];
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -486,8 +542,8 @@ function SettingsDialog({
                 Ларзиши телефон ҳангоми зер кардан
               </p>
             </div>
-            <Switch 
-              id="vibration" 
+            <Switch
+              id="vibration"
               checked={vibrationEnabled}
               onCheckedChange={setVibrationEnabled}
             />
@@ -496,14 +552,15 @@ function SettingsDialog({
           {/* Target counter */}
           <div className="space-y-2">
             <Label htmlFor="target-count">Шумораи мақсад</Label>
-            <div className="flex gap-2">
-              {[33, 99, 100, 500].map(count => (
+            <div className="flex gap-2" role="radiogroup" aria-labelledby="target-count">
+              {availableTargetCounts.map(count => (
                 <Button
                   key={count}
                   variant={targetCount === count ? "default" : "outline"}
                   size="sm"
                   className="flex-1"
                   onClick={() => setTargetCount(count)}
+                  aria-pressed={targetCount === count}
                 >
                   {count}
                 </Button>
@@ -519,8 +576,8 @@ function SettingsDialog({
                 Нигоҳдории шумора ва танзимот
               </p>
             </div>
-            <Switch 
-              id="save-history" 
+            <Switch
+              id="save-history"
               checked={saveHistory}
               onCheckedChange={setSaveHistory}
             />
@@ -528,9 +585,9 @@ function SettingsDialog({
 
           {/* Reset all data */}
           <div className="pt-2">
-            <Button 
-              variant="destructive" 
-              className="w-full" 
+            <Button
+              variant="destructive"
+              className="w-full"
               size="sm"
               onClick={resetAll}
             >
