@@ -80,7 +80,7 @@ export default function TasbeehCounter() {
     const savedSaveHistory = localStorage.getItem('saveHistory');
 
     if (savedCount) setCount(parseInt(savedCount));
-    if (savedTasbeehIndex) setCurrentTasbeehIndex(parseInt(savedTasbeehIndex)); // Corrected typo here
+    if (savedTasbeehIndex) setCurrentTasbeehIndex(parseInt(savedTasbeehIndex));
     if (savedTargetCount) setTargetCount(parseInt(savedTargetCount));
     if (savedVibrationEnabled) setVibrationEnabled(savedVibrationEnabled === 'true');
     if (savedCompletedTasbeehs) setCompletedTasbeehs(parseInt(savedCompletedTasbeehs));
@@ -255,9 +255,9 @@ export default function TasbeehCounter() {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="counter" className="mt-0">
+              <TabsContent value="counter" className="mt-0 h-full"> {/* Added h-full here */}
                 {/* Compact mobile-friendly layout */}
-                <div className="h-[calc(100vh-170px)] flex flex-col">
+                <div className="h-full flex flex-col"> {/* Removed fixed height, using h-full */}
                   {/* Tasbeeh selector and counter info in one row */}
                   <div className="flex flex-col md:flex-row gap-3 mb-3">
                     {/* Tasbeeh selector - more compact */}
@@ -322,76 +322,61 @@ export default function TasbeehCounter() {
                     </div>
                   </div>
 
-                  {/* Compact counter display and touch area */}
-                  <div className="flex flex-col flex-1">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 h-full">
-                      {/* Left column - counter circle */}
-                      <div className="flex items-center justify-center md:col-span-1">
-                        <div className="relative w-[130px] h-[130px]" ref={counterRef}>
-                          {/* Progress circle */}
-                          <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
-                            {/* Background circle */}
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="42"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="8"
-                              className="text-muted/10"
-                            />
+                  {/* Make the entire remaining space clickable for counting */}
+                  <div
+                    className="flex-1 flex items-center justify-center
+                                rounded-xl bg-gradient-to-b from-primary/5 to-primary/10
+                                cursor-pointer active:from-primary/10 active:to-primary/20 active:scale-[0.98]
+                                transition-all duration-150 border border-primary/20 shadow-sm select-none touch-none"
+                    onClick={incrementCount} // The main click handler for the large area
+                  >
+                    <div className="relative w-[130px] h-[130px]" ref={counterRef}>
+                      {/* Progress circle */}
+                      <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+                        {/* Background circle */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          className="text-muted/10"
+                        />
 
-                            {/* Progress arc */}
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="42"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="10"
-                              strokeLinecap="round"
-                              strokeDasharray={`${(count / targetCount) * 263.8} 263.8`}
-                              className="text-primary transition-all duration-300 ease-out"
-                            />
-                          </svg>
+                        {/* Progress arc */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="10"
+                          strokeLinecap="round"
+                          strokeDasharray={`${(count / targetCount) * 263.8} 263.8`}
+                          className="text-primary transition-all duration-300 ease-out"
+                        />
+                      </svg>
 
-                          {/* Inner text */}
-                          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                            <AnimatePresence mode="wait">
-                              <motion.div
-                                key={count}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 1.2 }}
-                                transition={{ duration: 0.2 }}
-                                className="text-3xl font-bold text-foreground"
-                              >
-                                {count}
-                              </motion.div>
-                            </AnimatePresence>
-                            <p className="text-xs text-muted-foreground">
-                              аз {targetCount}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right column - touch area */}
-                      <div className="flex-1 flex items-center justify-center md:col-span-2">
-                        <div
-                          className="w-full h-full rounded-xl bg-gradient-to-b from-primary/5 to-primary/10 flex items-center justify-center
-                            cursor-pointer active:from-primary/10 active:to-primary/20 active:scale-[0.98] transition-all duration-150
-                            border border-primary/20 shadow-sm select-none touch-none"
-                          onClick={incrementCount}
-                        >
-                          <p className="text-primary/80 dark:text-primary/90 font-medium text-sm">
-                            Барои шуморидан зер кунед
-                          </p>
-                        </div>
+                      {/* Inner text */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={count}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.2 }}
+                            transition={{ duration: 0.2 }}
+                            className="text-3xl font-bold text-foreground"
+                          >
+                            {count}
+                          </motion.div>
+                        </AnimatePresence>
+                        <p className="text-xs text-muted-foreground">
+                          аз {targetCount}
+                        </p>
                       </div>
                     </div>
-
-                    {/* Removed the separate "Bottom section - tasbeeh info" as translation is now inside carousel item */}
                   </div>
                 </div>
               </TabsContent>
