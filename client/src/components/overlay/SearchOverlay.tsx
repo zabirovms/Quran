@@ -53,7 +53,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       setError("Хатогӣ дар ҷустуҷӯ. Лутфан дубора кӯшиш кунед.");
       toast({
         title: "Хатогӣ дар ҷустуҷӯ",
-        description: "Ҳангоми ҷустуҷӯ хатогӣ рӯй дод. Лутфан дубора кӯшиш кунед.",
+        description: "Ҳангоми ҷустуҷӯ хатогӣ рӯх дод. Лутфан дубора кӯшиш кунед.",
         variant: "destructive"
       });
     } else {
@@ -101,7 +101,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             <div className="relative mb-4">
               <Input 
                 type="text" 
-                placeholder="Матн ё рақами оятро ҷустуҷӯ кунед (масалан, 2:255)" 
+                placeholder="Ҷустуҷӯ (масалан, 2:255)" 
                 className="pl-10 pr-4 py-2"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -164,7 +164,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               {!searchActive && (
                 <div className="text-center p-8 text-gray-500 dark:text-gray-400">
                   <Search className="h-8 w-8 mx-auto mb-2" />
-                  <p>Барои оғози ҷустуҷӯ матнро ворид кунед</p>
+                  <p>Барои ҷустуҷӯ рақам ё матнро ворид кунед</p>
                 </div>
               )}
               
