@@ -121,7 +121,9 @@ export default function PageView({ currentSurah, onPageChange }: PageViewProps) 
           </div>
         ) : (
           <div className="text-right text-2xl leading-loose font-uthmani">
-            {pageData?.text}
+            {pageData?.ayahs?.map((ayah: any) => (
+              <p key={ayah.number}>{ayah.text}</p>
+            ))}
           </div>
         )}
       </div>
