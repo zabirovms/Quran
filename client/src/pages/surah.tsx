@@ -305,6 +305,14 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
   
   const [isPageView, setIsPageView] = useState(false);
   
+  // Update visibleVerses when allVerses or currentPage changes
+  useEffect(() => {
+    if (allVerses && allVerses.length > 0) {
+      const endIndex = currentPage * VERSES_PER_PAGE;
+      setVisibleVerses(allVerses.slice(0, endIndex));
+    }
+  }, [allVerses, currentPage]);
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       {surah && (

@@ -26,7 +26,7 @@ export default function PageView({ currentSurah, onPageChange }: PageViewProps) 
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://api.alquran.cloud/v1/page/${page}/quran-uthmani`);
+      const response = await fetch(`https://api.alquran.cloud/v1/page/${page}/quran-uthmani`);
       const data = await response.json();
       if (data.code === 200 && data.data) {
         setPageData(data.data);
