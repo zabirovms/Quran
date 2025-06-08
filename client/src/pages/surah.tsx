@@ -63,6 +63,8 @@ import {
 } from "@/components/ui/accordion";
 import { SettingsDrawer, SettingsContent } from "@/components/layout/SettingsDrawer";
 import { preloadSurahData, preloadAdjacentSurahs } from '@/lib/uthmaniQuran';
+import PageView from '@/components/quran/PageView';
+import ViewToggle from '@/components/quran/ViewToggle';
 
 interface SurahProps {
   surahNumber: number;
@@ -300,6 +302,8 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
   const nextSurah = getNextSurahNumber();
   
   const isLoading = isSurahsLoading || isSurahLoading || isVersesLoading;
+  
+  const [isPageView, setIsPageView] = useState(false);
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -617,257 +621,62 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
         <main className="flex-1 max-w-4xl mx-auto w-full p-3 md:p-6" ref={contentRef}>
           <div ref={scrollTopRef}></div>
           
-          {/* Add verse navigation component for better verse navigation */}
-          {surah && (
-            <div className="sticky top-[64px] z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm py-2 px-4 mb-4 rounded-lg">
-              <div className="flex justify-between items-center">
-                <div className="text-sm font-medium flex items-center gap-1">
-                  <span className="text-gray-600 dark:text-gray-400">Сураи {surah.name_tajik}</span>
+          {/* Toggle for view mode */}
+          <ViewToggle isPageView={isPageView} onToggle={setIsPageView} />
+          
+          {/* Render based on view mode */}
+          {isPageView ? (
+            <PageView currentSurah={surahNumber} />
+          ) : (
+            <>
+              {/* Existing translation/verses logic */}
+              {/* Bismillah for the verses */}
+              {surah && surah.number !== 1 && surah.number !== 9 && (
+                <div className="py-6 px-4 mb-6 text-center">
+                  <p className="font-arabic text-2xl md:text-3xl leading-normal tracking-normal mx-auto w-fit text-center text-gray-800 dark:text-gray-100">
+                    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                  </p>
                 </div>
-                
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="flex items-center gap-1 h-8"
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  >
-                    <ArrowUp className="h-3 w-3" />
-                    <span className="text-xs">Боло</span>
-                  </Button>
-                  
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="flex items-center gap-1 h-8"
-                      >
-                        <ChevronDown className="h-3 w-3" />
-                        <span className="text-xs">Оятҳо</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 grid grid-cols-5 gap-1 p-2 overflow-y-auto max-h-[300px]">
-                      {Array.from({ length: Math.min(surah.verses_count, 100) }).map((_, i) => (
-                        <Button 
-                          key={i}
-                          variant="ghost"
-                          size="sm"
-                          className="text-xs h-7 w-7 p-0"
-                          onClick={() => {
-                            const verseElement = document.getElementById(`verse-${surah.number}-${i + 1}`);
-                            if (verseElement) {
-                              verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                              
-                              // Add highlight effect
-                              verseElement.classList.add('verse-highlight');
-                              setTimeout(() => {
-                                verseElement.classList.remove('verse-highlight');
-                              }, 2000);
-                            }
-                          }}
-                        >
-                          {i + 1}
-                        </Button>
-                      ))}
-                      {surah.verses_count > 100 && (
-                        <Sheet>
-                          <SheetTrigger asChild>
-                            <Button 
-                              variant="ghost"
-                              size="sm"
-                              className="text-xs h-7 w-7 p-0"
-                            >
-                              <MoreHorizontal className="h-3 w-3" />
-                            </Button>
-                          </SheetTrigger>
-                          <SheetContent side="bottom" className="h-[60vh]">
-                            <SheetHeader>
-                              <SheetTitle>Ба оят гузаред</SheetTitle>
-                            </SheetHeader>
-                            <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 mt-4 overflow-y-auto max-h-[40vh] p-2">
-                              {Array.from({ length: surah.verses_count }).map((_, i) => (
-                                <Button 
-                                  key={i}
-                                  variant="outline"
-                                  size="sm"
-                                  className="text-xs h-8 w-8"
-                                  onClick={() => {
-                                    const verseElement = document.getElementById(`verse-${surah.number}-${i + 1}`);
-                                    if (verseElement) {
-                                      verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                      
-                                      // Add highlight effect
-                                      verseElement.classList.add('verse-highlight');
-                                      setTimeout(() => {
-                                        verseElement.classList.remove('verse-highlight');
-                                      }, 2000);
-                                    }
-                                  }}
-                                >
-                                  {i + 1}
-                                </Button>
-                              ))}
-                            </div>
-                          </SheetContent>
-                        </Sheet>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Surah Information Card with Accordion */}
-          {surah && !isSurahLoading && (
-            <Card className="mb-6 overflow-hidden bg-gradient-to-b from-white to-white/20 dark:from-gray-800 dark:to-gray-800/20 shadow-md md:shadow-lg">
-              <div className="p-6">
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="info" className="border-0">
-                    <div className="flex flex-col items-center text-center">
-                      <div>
-                        <h1 className="text-2xl md:text-3xl font-bold text-primary dark:text-accent">{surah.name_tajik}</h1>
-                        <h2 className="text-xl md:text-2xl text-gray-700 dark:text-gray-200 font-arabic mt-1">
-                          {surah.name_arabic}
-                        </h2>
-                        <div className="text-sm text-muted-foreground mt-2 flex items-center justify-center">
-                          <span>Сураи {surah.number}</span>
-                          <span className="mx-2">•</span>
-                          <span>{surah.verses_count} оят</span>
-                          <span className="mx-2">•</span>
-                          <span>{surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}</span>
-                          <span className="flex items-center gap-1 ml-2">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="flex items-center gap-1 py-0 h-6 text-primary" 
-                              onClick={handlePlaySurah}
-                            >
-                              <Volume2 className="h-3 w-3" />
-                              <span className="text-xs">Тиловат</span>
-                            </Button>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-4 flex items-center">
-                        <span className="text-sm font-medium text-muted-foreground mr-2">Маълумот</span>
-                        <AccordionTrigger className="pt-0 h-6">
-                          <span className="sr-only">Toggle surah info</span>
-                        </AccordionTrigger>
-                      </div>
-                    </div>
-                    
-                    <AccordionContent>
-                      <div className="mt-4">
-                        <div className="flex items-center gap-4 mb-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2"
-                            onClick={handlePlaySurah}
-                          >
-                            <Volume2 className="h-4 w-4" />
-                            <span>Тиловат</span>
-                          </Button>
-                        </div>
-                        
-                        <div className="prose prose-sm dark:prose-invert max-w-none mt-4">
-                          <p>{surah.description || 'Маълумот дар бораи ин сура мавҷуд нест.'}</p>
-                        </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-            </Card>
-          )}
-          
-          {/* Surah Header Skeleton */}
-          {isSurahLoading && (
-            <Card className="mb-6 overflow-hidden">
-              <div className="p-6">
-                <Skeleton className="h-8 w-48 mb-2" />
-                <Skeleton className="h-6 w-32 mb-4" />
-                <Skeleton className="h-4 w-full mb-1" />
-                <Skeleton className="h-4 w-2/3" />
-              </div>
-            </Card>
-          )}
-          
-          {/* Bismillah for the verses */}
-          {surah && surah.number !== 1 && surah.number !== 9 && (
-            <div className="py-6 px-4 mb-6 text-center">
-              <p className="font-arabic text-2xl md:text-3xl leading-normal tracking-normal mx-auto w-fit text-center text-gray-800 dark:text-gray-100">
-                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-              </p>
-            </div>
-          )}
-
-          
-          {/* Verses */}
-          <div className={cn("space-y-6 mb-8", `content-${contentViewMode}`)}>
-            {isAllVersesLoading ? (
-              // Show loading skeletons for verses when initially loading
-              Array.from({ length: 10 }).map((_, index) => (
-                <CompactVerseItem 
-                  key={index}
-                  verse={{
-                    id: 0,
-                    surah_id: 0,
-                    verse_number: 0,
-                    arabic_text: "",
-                    transliteration: null,
-                    tajik_text: "",
-                    tj_2: null,
-                    tj_3: null,
-                    farsi: null,
-                    russian: null,
-                    tafsir: null,
-                    page: null,
-                    juz: null,
-                    unique_key: ""
-                  }}
-                  surahName=""
-                  isLoading={true}
-                />
-              ))
-            ) : (
-              // Display loaded verses
-              allVerses && allVerses.slice(0, currentPage * VERSES_PER_PAGE).map(verse => (
-                <div 
-                  key={verse.id} 
-                  ref={el => verseRefs.current[verse.unique_key] = el}
-                  id={`verse-${verse.unique_key}`}
-                >
-                  <CompactVerseItem 
-                    verse={verse}
-                    surahName={surah?.name_tajik || ""}
-                  />
-                </div>
-              ))
-            )}
-            
-            {/* Intersection Observer for Infinite Scroll */}
-            {!isAllVersesLoading && allVerses && allVerses.length > 0 && (
-              <div 
-                ref={loadingElementRef} 
-                className="h-20 flex items-center justify-center"
-                style={{ display: currentPage * VERSES_PER_PAGE >= allVerses.length ? 'none' : 'flex' }}
-              >
-                {isFetchingNextPage ? (
-                  <div className="flex flex-col items-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
-                    <p className="text-xs text-muted-foreground mt-2">Боркунии оятҳо...</p>
-                  </div>
+              )}
+              {/* Verses */}
+              <div className={cn("space-y-6 mb-8", `content-${contentViewMode}`)}>
+                {isAllVersesLoading ? (
+                  Array.from({ length: 10 }).map((_, index) => (
+                    <CompactVerseItem 
+                      key={index}
+                      verse={{
+                        id: 0,
+                        surah_id: 0,
+                        verse_number: 0,
+                        arabic_text: "",
+                        transliteration: null,
+                        tajik_text: "",
+                        tj_2: null,
+                        tj_3: null,
+                        farsi: null,
+                        russian: null,
+                        tafsir: null,
+                        page: null,
+                        juz: null,
+                        unique_key: ""
+                      }}
+                      surahName=""
+                      isLoading={true}
+                    />
+                  ))
                 ) : (
-                  <div className="flex flex-col items-center">
-                    <p className="text-xs text-muted-foreground">Скрол кунед барои дидани оятҳои дигар</p>
-                  </div>
+                  visibleVerses.map((verse, index) => (
+                    <CompactVerseItem
+                      key={verse.unique_key || `${verse.surah_id}:${verse.verse_number}`}
+                      verse={verse}
+                      surahName={surah?.name_tajik || ''}
+                      isLoading={false}
+                    />
+                  ))
                 )}
               </div>
-            )}
-          </div>
+            </>
+          )}
           
           {/* Pagination Controls */}
           {surah && (
