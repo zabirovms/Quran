@@ -28,11 +28,12 @@ export default function PageView({ currentSurah, onPageChange }: PageViewProps) 
     try {
       const response = await fetch(`https://api.alquran.cloud/v1/page/${page}/quran-uthmani`);
       const data = await response.json();
+      console.log('API Response:', data);
       if (data.code === 200 && data.data) {
         setPageData(data.data);
         onPageChange?.(page);
       } else {
-        setError('Failed to load page data');
+        setError('Failed to load page data: ' + (data.status || 'Unknown error'));
       }
     } catch (err) {
       setError('Error loading page data');
