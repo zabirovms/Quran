@@ -5,6 +5,16 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// Redirect quran.tj to www.quran.tj
+app.use((req, res, next) => {
+  const host = req.headers.host;
+  if (host === 'quran.tj') {
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    return res.redirect(301, `${protocol}://www.quran.tj${req.url}`);
+  }
+  next();
+});
+
 // Enable compression for all responses
 app.use(compression({
   level: 6, // Balanced compression level
