@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSurahs } from '@/hooks/useQuran';
 import { getArabicFontClass } from '@/lib/fonts';
-import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { GlobalOverlayType } from '@/App';
 import { 
@@ -50,7 +49,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [lastRead, setLastRead] = useState<LastReadSection | null>(null);
   const [scrollDirection, setScrollDirection] = useState<'top' | 'bottom'>('top');
-
+  
   // Function to scroll to top or bottom
   const scrollToPosition = (direction: 'top' | 'bottom') => {
     if (direction === 'top') {
@@ -64,12 +63,12 @@ export default function Home({ onOpenOverlay }: HomeProps) {
   // Filter surahs based on search term
   const filterSurahs = useCallback(() => {
     if (!surahs || !surahs.length) return;
-
+    
     if (!searchTerm) {
       setFilteredSurahs(surahs);
       return;
     }
-
+    
     const term = searchTerm.toLowerCase();
     const filtered = surahs.filter(
       surah => 
@@ -77,15 +76,15 @@ export default function Home({ onOpenOverlay }: HomeProps) {
         surah.name_english.toLowerCase().includes(term) ||
         surah.number.toString().includes(term)
     );
-
+    
     setFilteredSurahs(filtered);
   }, [surahs, searchTerm]);
-
+  
   // Apply filtering when dependencies change
   useEffect(() => {
     filterSurahs();
   }, [filterSurahs]);
-
+  
   // Check local storage for last read position
   useEffect(() => {
     const storedPosition = localStorage.getItem('lastReadPosition');
@@ -94,7 +93,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       setLastRead(position);
     }
   }, []);
-
+  
   // Render surah list item
   const renderSurahItem = (surah: Surah) => (
     <Link 
@@ -125,7 +124,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       </Card>
     </Link>
   );
-
+  
   // Render loading skeleton for surah list
   const renderSkeletonItem = (index: number) => (
     <Card key={index} className="mb-2">
@@ -143,12 +142,12 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       </CardContent>
     </Card>
   );
-
+  
   // Render popular surah link
   const renderPopularSurahLink = (surah: PopularSurah) => {
     const baseLinkClass = "block p-2 rounded-md";
     const inactiveLinkClass = `${baseLinkClass} hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300`;
-
+    
     return (
       <Link 
         key={surah.number} 
@@ -187,8 +186,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
           "keywords": "Куръон, Қуръони Карим, тарҷумаи тоҷикӣ, тафсир, тиловат, талаффуз, тоҷикӣ, забони точики"
         }}
       />
-      <Header onOpenOverlay={onOpenOverlay} />
-
+      
       {/* Scroll to top/bottom button */}
       <Button 
         variant="outline" 
@@ -198,7 +196,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       >
         {scrollDirection === 'top' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
       </Button>
-
+      
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="max-w-3xl mx-auto">
           <div className="mb-4 text-center">
@@ -206,7 +204,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               Қуръон бо Тафсири Осонбаён 
             </h1>
           </div>
-
+          
           {/* Popular Surahs Section - Moved to the top */}
           <div className="mb-8 bg-gradient-to-r from-primary/5 to-accent/5 p-5 rounded-lg border border-gray-100 dark:border-gray-700">
             <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
@@ -307,7 +305,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
             </div>
           </div>
 
-
+          
           {/* Quick Access - Stacked Layout for All Screens */}
           <div className="flex flex-col gap-4 mb-4">
             {/* Last Read Section - Full Width Card */}
@@ -372,7 +370,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               </CardContent>
             </Card>
           </div>
-
+          
           <div>
             <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent text-center">Рӯйхати сураҳо</h2>
 
@@ -415,7 +413,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 </Button>
               </Card>
             )}
-
+            
             {/* Mobile surah list view */}
             {!isLoading && filteredSurahs && filteredSurahs.length > 0 && (
               <div className="md:hidden">
