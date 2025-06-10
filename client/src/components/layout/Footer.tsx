@@ -7,9 +7,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        
-
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Пайвандҳои зуд</h3>
@@ -46,13 +44,18 @@ export default function Footer() {
                   info@quran.tj
                 </a>
               </li>
+              <li className="text-gray-600 dark:text-gray-400 text-sm">
+                <a href="https://quran.tj" className="hover:text-primary dark:hover:text-accent">
+                  www.quran.tj
+                </a>
+              </li>
             </ul>
           </div>
 
           {/* Social Links */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Саҳифаҳои Иҷтимоӣ</h3>
-            <ul className="space-y-2">
+            <ul className="flex justify-center space-x-4">
               <li>
                 <a
                   href="https://www.instagram.com/balkhiverse"
@@ -85,13 +88,14 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-        </div>
 
-        {/* Copyright */}
-        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
-          <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
-            © {currentYear} Quran.tj - Ҳамаи ҳуқуқҳо ҳифз шудаанд
-          </p>
+          {/* Copyright */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100"></h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              © {currentYear} Quran.tj - Ҳамаи ҳуқуқҳо ҳифз шудаанд
+            </p>
+          </div>
         </div>
       </div>
     </footer>
