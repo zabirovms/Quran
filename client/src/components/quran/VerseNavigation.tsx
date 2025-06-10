@@ -1,103 +1,126 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, List, Loader2 } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Link, useLocation } from 'wouter';
+import { useSurahs } from '@/hooks/useQuran';
 
 interface VerseNavigationProps {
-  surahName: string;
-  surahNumber: number;
-  versesCount: number;
+  currentVerse: number;
+  totalVerses: number;
+  onNavigate: (verseNumber: number) => void;
+  currentSurahNumber: number;
 }
 
-export default function VerseNavigation({ 
-  surahName, 
-  surahNumber, 
-  versesCount 
+export default function VerseNavigation({
+  currentVerse,
+  totalVerses,
+  onNavigate,
+  currentSurahNumber
 }: VerseNavigationProps) {
-  const [visibleNav, setVisibleNav] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { data: surahs, isLoading } = useSurahs();
+  const [, navigate] = useLocation();
 
-  // Show navigation when scrolling down
-  useEffect(() => {
-    const handleScroll = () => {
-      setVisibleNav(window.scrollY > 300);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Scroll to specific verse and highlight it
-  const scrollToVerse = (verseNumber: number) => {
-    const verseElement = document.getElementById(`verse-${surahNumber}-${verseNumber}`);
-    if (verseElement) {
-      verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      
-      // Add highlight effect
-      verseElement.classList.add('verse-highlight');
-      setTimeout(() => {
-        verseElement.classList.remove('verse-highlight');
-      }, 2000);
-    }
+  const handleVerseClick = (verseNumber: number) => {
+    navigate(`/surah/${currentSurahNumber}/verse/${verseNumber}`);
+    setIsOpen(false);
   };
 
   return (
-    <div className={`sticky top-[64px] z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm py-2 px-4 mb-4 rounded-lg transition-opacity duration-300 ${visibleNav ? 'opacity-100' : 'opacity-0'}`}>
-      <div className="flex justify-between items-center">
-        <div className="text-sm font-medium flex items-center gap-1">
-          <span className="text-gray-600 dark:text-gray-400">Сураи {surahName}</span>
-        </div>
-        
+    <div className="container mx-auto px-4 py-2">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="flex items-center gap-1 h-8"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleVerseClick(Math.max(1, currentVerse - 1))}
+            disabled={currentVerse <= 1}
           >
-            <ArrowUp className="h-3 w-3" />
-            <span className="text-xs">Боло</span>
+            <ChevronLeft className="h-4 w-4" />
           </Button>
-          
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="flex items-center gap-1 h-8"
-              >
-                <ChevronDown className="h-3 w-3" />
-                <span className="text-xs">Оятҳо</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="h-[60vh]">
-              <SheetHeader>
-                <SheetTitle>Ба оят гузаред</SheetTitle>
-              </SheetHeader>
-              <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 mt-4 overflow-y-auto max-h-[40vh] p-2">
-                {Array.from({ length: versesCount }).map((_, i) => (
-                  <Button 
-                    key={i}
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-8 w-8"
-                    onClick={() => {
-                      scrollToVerse(i + 1);
-                    }}
-                  >
-                    {i + 1}
-                  </Button>
-                ))}
-              </div>
-            </SheetContent>
-          </Sheet>
+          <span className="text-sm font-medium">
+            Оят {currentVerse} аз {totalVerses}
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleVerseClick(Math.min(totalVerses, currentVerse + 1))}
+            disabled={currentVerse >= totalVerses}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
+
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <List className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetHeader>
+              <SheetTitle>Навигатсия</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-4">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Сураҳо</h3>
+                <ScrollArea className="h-[200px] rounded-md border p-2">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      {surahs?.map((surah) => (
+                        <Link 
+                          key={surah.number} 
+                          href={`/surah/${surah.number}`}
+                          className="block"
+                        >
+                          <Button
+                            variant={surah.number === currentSurahNumber ? "default" : "ghost"}
+                            className="w-full justify-start"
+                          >
+                            <span className="w-6 text-center">{surah.number}.</span>
+                            <span className="truncate">{surah.name_tajik}</span>
+                          </Button>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium mb-2">Оятҳо</h3>
+                <ScrollArea className="h-[300px] rounded-md border p-2">
+                  <div className="grid grid-cols-3 gap-2">
+                    {Array.from({ length: totalVerses }, (_, i) => i + 1).map((verse) => (
+                      <Button
+                        key={verse}
+                        variant={verse === currentVerse ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => handleVerseClick(verse)}
+                        className="w-full"
+                      >
+                        {verse}
+                      </Button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </div>
   );
-}
+} 
