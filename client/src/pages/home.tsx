@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useSurahs } from '@/hooks/useQuran';
 import { getArabicFontClass } from '@/lib/fonts';
 import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import { GlobalOverlayType } from '@/App';
 import { 
   Search, BookOpen, ChevronRight, ArrowUp, ArrowDown, Book
@@ -49,7 +50,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [lastRead, setLastRead] = useState<LastReadSection | null>(null);
   const [scrollDirection, setScrollDirection] = useState<'top' | 'bottom'>('top');
-  
+
   // Function to scroll to top or bottom
   const scrollToPosition = (direction: 'top' | 'bottom') => {
     if (direction === 'top') {
@@ -63,12 +64,12 @@ export default function Home({ onOpenOverlay }: HomeProps) {
   // Filter surahs based on search term
   const filterSurahs = useCallback(() => {
     if (!surahs || !surahs.length) return;
-    
+
     if (!searchTerm) {
       setFilteredSurahs(surahs);
       return;
     }
-    
+
     const term = searchTerm.toLowerCase();
     const filtered = surahs.filter(
       surah => 
@@ -76,15 +77,15 @@ export default function Home({ onOpenOverlay }: HomeProps) {
         surah.name_english.toLowerCase().includes(term) ||
         surah.number.toString().includes(term)
     );
-    
+
     setFilteredSurahs(filtered);
   }, [surahs, searchTerm]);
-  
+
   // Apply filtering when dependencies change
   useEffect(() => {
     filterSurahs();
   }, [filterSurahs]);
-  
+
   // Check local storage for last read position
   useEffect(() => {
     const storedPosition = localStorage.getItem('lastReadPosition');
@@ -93,7 +94,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       setLastRead(position);
     }
   }, []);
-  
+
   // Render surah list item
   const renderSurahItem = (surah: Surah) => (
     <Link 
@@ -124,7 +125,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       </Card>
     </Link>
   );
-  
+
   // Render loading skeleton for surah list
   const renderSkeletonItem = (index: number) => (
     <Card key={index} className="mb-2">
@@ -142,12 +143,12 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       </CardContent>
     </Card>
   );
-  
+
   // Render popular surah link
   const renderPopularSurahLink = (surah: PopularSurah) => {
     const baseLinkClass = "block p-2 rounded-md";
     const inactiveLinkClass = `${baseLinkClass} hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300`;
-    
+
     return (
       <Link 
         key={surah.number} 
@@ -187,7 +188,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
         }}
       />
       <Header onOpenOverlay={onOpenOverlay} />
-      
+
       {/* Scroll to top/bottom button */}
       <Button 
         variant="outline" 
@@ -197,7 +198,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       >
         {scrollDirection === 'top' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
       </Button>
-      
+
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="max-w-3xl mx-auto">
           <div className="mb-4 text-center">
@@ -205,7 +206,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               Қуръон бо Тафсири Осонбаён 
             </h1>
           </div>
-          
+
           {/* Popular Surahs Section - Moved to the top */}
           <div className="mb-8 bg-gradient-to-r from-primary/5 to-accent/5 p-5 rounded-lg border border-gray-100 dark:border-gray-700">
             <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
@@ -231,103 +232,82 @@ export default function Home({ onOpenOverlay }: HomeProps) {
             <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
               Абзорҳои исломӣ
             </h2>
-            <Swiper
-              modules={[Autoplay]}
-              spaceBetween={16}
-              slidesPerView="auto"
-              autoplay={{ delay: 3000, disableOnInteraction: false }}
-              style={{ overflow: 'hidden', paddingBottom: '1rem' }}
-            >
-              {/* Tasbeeh Counter Card */}
-              <SwiperSlide style={{ width: '280px' }}>
-                <Link href="/tasbeeh" className="block h-full">
-                  <Card className="h-full bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/20 dark:to-emerald-900/10 hover:shadow-md transition-all border-emerald-200/50 dark:border-emerald-800/30">
-                    <CardContent className="p-4 h-full flex flex-col">
-                      <h3 className="font-bold text-emerald-800 dark:text-emerald-300 text-lg mb-1">Тасбеҳгӯяк</h3>
-                      <p className="text-sm text-emerald-700/80 dark:text-emerald-300/70 mb-3">
-                        Абзори интерактивии зикрҳои исломӣ барои шумориши тасбеҳ
-                      </p>
-                      <div className="flex items-center mt-auto">
-                        <span className="inline-block bg-emerald-100 dark:bg-emerald-800/40 text-emerald-600 dark:text-emerald-300 rounded-full p-1 mr-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M21 6H3"></path>
-                            <circle cx="12" cy="14" r="6"></circle><path d="M12 10v4l2 2"></path>
-                          </svg>
-                        </span>
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400">Истифода бурдан</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </SwiperSlide>
+            <div className="max-w-[600px] mx-auto">
+              <Swiper
+                modules={[Autoplay]}
+                spaceBetween={16}
+                slidesPerView={1}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 16,
+                    centeredSlides: false
+                  }
+                }}
+                centeredSlides={true}
+                loop={true}
+                autoplay={{ 
+                  delay: 3000, 
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true
+                }}
+                className="py-2"
+              >
+                {/* Tasbeeh Counter Card */}
+                <SwiperSlide>
+                  <Link href="/tasbeeh" className="block h-full">
+                    <Card className="h-full bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/20 dark:to-emerald-900/10 hover:shadow-md transition-all border-emerald-200/50 dark:border-emerald-800/30">
+                      <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                        <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-2">
+                          <BookOpen className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <h3 className="text-base font-semibold mb-1">Тасбеҳгӯяк</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          Шумориши зикрҳо ва дуоҳо
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </SwiperSlide>
 
-              {/* Farzi Ayn Book Card */}
-              <SwiperSlide style={{ width: '280px' }}>
-                <Link href="/farzi-ayn" className="block h-full">
-                  <Card className="h-full bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/20 dark:to-amber-900/10 hover:shadow-md transition-all border-amber-200/50 dark:border-amber-800/30">
-                    <CardContent className="p-4 h-full flex flex-col">
-                      <h3 className="font-bold text-amber-800 dark:text-amber-300 text-lg mb-1">Фарзи Айн</h3>
-                      <p className="text-sm text-amber-700/80 dark:text-amber-300/70 mb-3">
-                        Китоби "Фарзи Айн" бо забони тоҷикӣ барои омӯзиши усули дин
-                      </p>
-                      <div className="flex items-center mt-auto">
-                        <Book className="h-4 w-4 text-amber-600 dark:text-amber-400 mr-2" />
-                        <span className="text-xs text-amber-600 dark:text-amber-400">Хондан</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </SwiperSlide>
+                {/* Learn Words Card */}
+                <SwiperSlide>
+                  <Link href="/learn-words" className="block h-full">
+                    <Card className="h-full bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 hover:shadow-md transition-all border-blue-200/50 dark:border-blue-800/30">
+                      <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-2">
+                          <Book className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <h3 className="text-base font-semibold mb-1">Омӯзиши калимаҳо</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          Омӯзиши калимаҳои Қуръон
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </SwiperSlide>
 
-              {/* Learn Quran Words Card */}
-              <SwiperSlide style={{ width: '280px' }}>
-                <Link href="/learn-words" className="block h-full">
-                  <Card className="h-full bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 hover:shadow-md transition-all border-blue-200/50 dark:border-blue-800/30">
-                    <CardContent className="p-4 h-full flex flex-col">
-                      <h3 className="font-bold text-blue-800 dark:text-blue-300 text-lg mb-1">Омӯзиши луғат</h3>
-                      <p className="text-sm text-blue-700/80 dark:text-blue-300/70 mb-3">
-                        100 калимаи серистеъмолтарини Қуръонро бо усули бозӣ омӯзед
-                      </p>
-                      <div className="flex items-center mt-auto">
-                        <svg className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 9h.01"/>
-                          <path d="M19 9a7 7 0 1 0-13-3"/>
-                          <path d="M3 13a7 7 0 0 0 13 3"/>
-                          <path d="M16 19a7 7 0 0 0 4-11"/>
-                          <path d="M9 21a7 7 0 0 0 8-4"/>
-                        </svg>
-                        <span className="text-xs text-blue-600 dark:text-blue-400">Омӯхтан</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </SwiperSlide>
-
-              {/* Quranic Duas Card */}
-              <SwiperSlide style={{ width: '280px' }}>
-                <Link href="/duas" className="block h-full">
-                  <Card className="h-full bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 hover:shadow-md transition-all border-purple-200/50 dark:border-purple-800/30">
-                    <CardContent className="p-4 h-full flex flex-col">
-                      <h3 className="font-bold text-purple-800 dark:text-purple-300 text-lg mb-1">Дуоҳои Қуръонӣ</h3>
-                      <p className="text-sm text-purple-700/80 dark:text-purple-300/70 mb-3">
-                        Маҷмӯаи дуоҳо аз Қуръони карим бо нишондиҳии қисми дуо
-                      </p>
-                      <div className="flex items-center mt-auto">
-                        <svg className="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M17 6.1H3"/>
-                          <path d="M21 12.1H3"/>
-                          <path d="M15.1 18H3"/>
-                        </svg>
-                        <span className="text-xs text-purple-600 dark:text-purple-400">Дуоҳо</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </SwiperSlide>
-            </Swiper>
+                {/* Duas Card */}
+                <SwiperSlide>
+                  <Link href="/duas" className="block h-full">
+                    <Card className="h-full bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 hover:shadow-md transition-all border-purple-200/50 dark:border-purple-800/30">
+                      <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                        <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-2">
+                          <BookOpen className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <h3 className="text-base font-semibold mb-1">Дуоҳо</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          Дуоҳои Қуръонӣ
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </SwiperSlide>
+              </Swiper>
+            </div>
           </div>
 
-          
+
           {/* Quick Access - Stacked Layout for All Screens */}
           <div className="flex flex-col gap-4 mb-4">
             {/* Last Read Section - Full Width Card */}
@@ -392,7 +372,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               </CardContent>
             </Card>
           </div>
-          
+
           <div>
             <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent text-center">Рӯйхати сураҳо</h2>
 
@@ -435,7 +415,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 </Button>
               </Card>
             )}
-            
+
             {/* Mobile surah list view */}
             {!isLoading && filteredSurahs && filteredSurahs.length > 0 && (
               <div className="md:hidden">
@@ -445,61 +425,8 @@ export default function Home({ onOpenOverlay }: HomeProps) {
           </div>
         </div>
       </main>
-      
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8 mt-8">
-        <div className="container mx-auto px-4 max-w-3xl">
-          
-          {/* Social Links - Enhanced for better visibility */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-center bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4">Шабакаҳои иҷтимоӣ</h3>
-            <div className="flex justify-center items-center space-x-8 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 shadow-sm">
-              <a 
-                href="https://www.instagram.com/balkhiverse" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex flex-col items-center text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary transition-colors duration-200"
-              >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center mb-2 shadow-md">
-                  <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium">Instagram</span>
-              </a>
-              <a 
-                href="https://t.me/balkhiverses" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex flex-col items-center text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary transition-colors duration-200"
-              >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center mb-2 shadow-md">
-                  <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.568 7.382c-.12.55-.45.678-.913.422l-2.53-1.862-1.219 1.175c-.138.134-.253.247-.516.247l.181-2.572 4.693-4.237c.203-.18-.044-.282-.316-.101L9.36 12.756l-2.532-.806c-.55-.172-.56-.557.128-.825l9.873-3.8c.42-.167.789.106.586.897z" />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium">Telegram</span>
-              </a>
-              <a 
-                href="https://www.facebook.com/aloliddinibalhi" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex flex-col items-center text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary transition-colors duration-200"
-              >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center mb-2 shadow-md">
-                  <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium">Facebook</span>
-              </a>
-            </div>
-          </div>
-          
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p>Қуръон бо Тафсири Осонбаён &copy; {new Date().getFullYear()}</p>
-          </div>
-        </div>
-      </footer>
+
+      <Footer />
     </div>
   );
 }

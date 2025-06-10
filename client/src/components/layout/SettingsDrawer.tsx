@@ -81,90 +81,6 @@ export function SettingsContent() {
         </Button>
       </div>
       
-      {/* Text Size - Simplified */}
-      <div className="space-y-2 border-t pt-4">
-        <div className="flex items-center justify-between">
-          <Label className="flex items-center gap-2">
-            <TextSelect className="h-4 w-4" />
-            <span>Андоза</span>
-          </Label>
-          <div className="flex items-center space-x-1">
-            <Minimize className="h-3 w-3 text-muted-foreground" />
-            <Slider 
-              id="text-size-slider"
-              defaultValue={[
-                textSize === 'small' ? 25 : 
-                textSize === 'medium' ? 50 : 
-                textSize === 'large' ? 75 : 100
-              ]}
-              value={[
-                textSize === 'small' ? 25 : 
-                textSize === 'medium' ? 50 : 
-                textSize === 'large' ? 75 : 100
-              ]}
-              max={100}
-              step={25}
-              onValueChange={(value) => {
-                const size = 
-                  value[0] <= 25 ? 'small' : 
-                  value[0] <= 50 ? 'medium' : 
-                  value[0] <= 75 ? 'large' : 'extra-large';
-                setTextSize(size as TextSizeType);
-              }}
-              className="w-24"
-            />
-            <Maximize className="h-3 w-3 text-muted-foreground" />
-          </div>
-        </div>
-      </div>
-      
-      {/* Line Spacing - Simplified */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label className="flex items-center gap-2">
-            <ArrowUpDown className="h-4 w-4" />
-            <span>Фосила</span>
-          </Label>
-          <div className="flex items-center space-x-1">
-            <span className="text-xs text-muted-foreground">Кам</span>
-            <Slider 
-              value={[lineSpacing * 50]}
-              min={60}
-              max={100}
-              step={10}
-              onValueChange={(value) => {
-                const spacing = value[0] / 50;
-                setLineSpacing(spacing);
-              }}
-              className="w-24"
-            />
-            <span className="text-xs text-muted-foreground">Зиёд</span>
-          </div>
-        </div>
-      </div>
-      
-      {/* Content View Mode - Simplified */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label className="flex items-center gap-2">
-            <LayoutGrid className="h-4 w-4" />
-            <span>Намоиш</span>
-          </Label>
-          <Select 
-            value={contentViewMode} 
-            onValueChange={(value) => setContentViewMode(value as ContentViewType)}
-          >
-            <SelectTrigger id="content-view-mode" className="w-28">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="compact">Фишурда</SelectItem>
-              <SelectItem value="comfortable">Мувофиқ</SelectItem>
-              <SelectItem value="expanded">Васеъ</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
       
       {/* Translation Selection - Simplified */}
       <div className="space-y-2 border-t pt-4">
@@ -208,7 +124,7 @@ export function SettingsContent() {
       
       <div className="mt-6 pt-4 border-t">
         <p className="text-xs text-muted-foreground text-center w-full">
-          Qurantaj 1.0.0
+          Quran.tj 1.0.0
         </p>
       </div>
     </div>
@@ -239,7 +155,7 @@ export function SettingsDrawer() {
         <SettingsContent />
         <SheetFooter className="mt-8">
           <p className="text-xs text-muted-foreground text-center w-full">
-            Нусхаи 1.0.0 | Барномасозӣ: Qurantaj
+            Quran.tj 1.0.0
           </p>
         </SheetFooter>
       </SheetContent>
