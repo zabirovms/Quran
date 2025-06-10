@@ -240,7 +240,8 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 breakpoints={{
                   640: {
                     slidesPerView: 2,
-                    spaceBetween: 16
+                    spaceBetween: 16,
+                    centeredSlides: false
                   }
                 }}
                 centeredSlides={true}
