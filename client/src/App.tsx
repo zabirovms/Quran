@@ -7,7 +7,7 @@ import BookmarksOverlay from "./components/overlay/BookmarksOverlay";
 import { DisplayProvider } from "./hooks/useDisplaySettings";
 import { ThemeProvider } from "./hooks/useTheme";
 import { AuthProvider } from "./hooks/useAuth";
-import Layout from "@/components/layout/Layout";
+import CookieConsent from "@/components/layout/CookieConsent";
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("@/pages/home"));
@@ -45,10 +45,9 @@ function Router() {
         isOpen={activeOverlay === 'bookmarks'} 
         onClose={closeOverlay} 
       />
-      <Layout onOpenOverlay={openOverlay}>
-        <Suspense fallback={<PageLoader />}>
-          <Switch>
-            <Route path="/" component={() => <HomePage onOpenOverlay={openOverlay} />} />
+      <Suspense fallback={<PageLoader />}>
+        <Switch>
+          <Route path="/" component={() => <HomePage onOpenOverlay={openOverlay} />} />
             <Route path="/surah/:number">
               {(params) => <Surah surahNumber={Number(params.number)} onOpenOverlay={openOverlay} />}
             </Route>
@@ -66,8 +65,7 @@ function Router() {
             <Route path="/duas" component={DuasPage} />
             <Route component={NotFound} />
           </Switch>
-        </Suspense>
-      </Layout>
+      </Suspense>
     </>
   );
 }
@@ -78,6 +76,7 @@ function App() {
       <ThemeProvider>
         <DisplayProvider>
           <TooltipProvider>
+            <CookieConsent />
             <Router />
           </TooltipProvider>
         </DisplayProvider>
