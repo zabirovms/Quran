@@ -218,12 +218,12 @@ export default function WordByWordText({
                   side={isMobile ? "top" : "bottom"} 
                   align="center"
                   sideOffset={isMobile ? 10 : 5}
-                  className="bg-white dark:bg-gray-800 z-[100] max-w-xs shadow-lg border border-gray-200 dark:border-gray-700 p-3"
+                  className="bg-white dark:bg-gray-800 z-[100] max-w-[200px] shadow-lg border border-gray-200 dark:border-gray-700 p-2"
                 >
                   {/* Translation with increased visibility for mobile */}
                   <div className={cn(
-                    "text-base text-gray-700 dark:text-gray-300 font-farsi text-right leading-relaxed",
-                    isMobile && "text-lg font-medium"
+                    "text-sm text-gray-700 dark:text-gray-300 font-farsi text-right leading-relaxed",
+                    isMobile && "text-base font-medium"
                   )}>
                     {word.translation || "тарҷума мавҷуд нест"}
                   </div>
