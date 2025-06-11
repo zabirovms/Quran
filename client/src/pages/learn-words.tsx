@@ -757,12 +757,12 @@ export default function LearnWords() {
                             >
                               {/* Front Face - (No changes needed here) */}
                               <div
-                                className="absolute w-full h-full flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-white to-slate-100 px-6 py-8 shadow-md"
+                                className="absolute w-full h-full flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-background to-muted px-6 py-8 shadow-md"
                                 style={{ backfaceVisibility: 'hidden' }}
                               >
-                                <h3 className="text-5xl font-bold mb-3 text-right text-slate-900 leading-snug">{currentWord.word}</h3>
+                                <h3 className="text-5xl font-bold mb-3 text-right text-foreground leading-snug">{currentWord.word}</h3>
                                 {showTransliteration && (
-                                  <p className="text-lg text-slate-500 text-right">{currentWord.transliteration_tajik}</p>
+                                  <p className="text-lg text-muted-foreground text-right">{currentWord.transliteration_tajik}</p>
                                 )}
                                 <Badge variant="secondary" className="mt-6 text-sm py-1 px-3">
                                   Зинаи #{currentWord.rank}
@@ -771,12 +771,12 @@ export default function LearnWords() {
 
                               {/* Back Face */}
                               <div
-                                className="absolute inset-0 flex flex-col items-start justify-start rounded-2xl bg-gradient-to-br from-slate-100 to-white px-6 py-6 shadow-md overflow-y-auto"
+                                className="absolute inset-0 flex flex-col items-start justify-start rounded-2xl bg-gradient-to-br from-muted to-background px-6 py-6 shadow-md overflow-y-auto"
                                 style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                               >
                                 {/* Translation */}
                                 {showTranslation && (
-                                  <p className="text-2xl font-semibold text-slate-900 leading-snug mb-4 text-center w-full">
+                                  <p className="text-2xl font-semibold text-foreground leading-snug mb-4 text-center w-full">
                                     {currentWord.translation_tajik}
                                   </p>
                                 )}
@@ -785,17 +785,17 @@ export default function LearnWords() {
                                 {showExample && currentWord.example && (
                                   <div className="w-full space-y-2">
                                     {/* Arabic Example */}
-                                    <p className="text-right text-xl font-bold text-indigo-900 select-text leading-snug" dir="rtl">
+                                    <p className="text-right text-xl font-bold text-primary select-text leading-snug" dir="rtl">
                                       {currentWord.example}
                                     </p>
 
                                     {/* Transliteration */}
-                                    <p className="text-sm italic text-indigo-700 select-text leading-snug">
+                                    <p className="text-sm italic text-muted-foreground select-text leading-snug">
                                       {currentWord.example_transliteration}
                                     </p>
 
                                     {/* Translation */}
-                                    <p className="text-base text-slate-700 select-text leading-snug">
+                                    <p className="text-base text-foreground select-text leading-snug">
                                       {currentWord.example_translation}
                                     </p>
                                   </div>
@@ -894,9 +894,9 @@ export default function LearnWords() {
                         <Button
                           key={index}
                           variant={
-                            selectedAnswer === index
-                              ? (option.rank === currentWord.rank ? 'success' : 'destructive')
-                              : (revealAnswers && option.rank === currentWord.rank ? 'success' : 'outline')
+                            selectedAnswer
+                              ? (option.rank === currentWord.rank ? 'default' : 'destructive')
+                              : (revealAnswers && option.rank === currentWord.rank ? 'default' : 'outline')
                           }
                           onClick={() => checkAnswer(index)}
                           disabled={revealAnswers}
@@ -932,7 +932,7 @@ export default function LearnWords() {
                           "p-4 text-center cursor-pointer rounded-lg shadow-sm transition-all duration-200 border-2 h-24 flex items-center justify-center",
                           pair.isMatched && "bg-green-100 dark:bg-green-900 opacity-0 pointer-events-none",
                           pair.isSelected && "border-primary ring-2 ring-primary",
-                          !pair.isMatched && !pair.isSelected && "hover:shadow-md bg-card"
+                          !pair.isMatched && !pair.isSelected && "hover:shadow-md bg-card text-foreground"
                         )}
                         onClick={() => handleMatchSelection(pair.id)}
                       >
@@ -951,9 +951,9 @@ export default function LearnWords() {
                 {/* Typing Mode */}
                 {gameMode === 'typing' && currentWord && (
                   <div className="flex flex-col items-center space-y-4 w-full">
-                    <Card className="w-full p-6 text-center bg-primary-foreground min-h-[120px] flex justify-center items-center">
+                    <Card className="w-full p-6 text-center bg-card min-h-[120px] flex justify-center items-center">
                       <CardContent className="p-0">
-                        <p className="text-4xl font-bold mb-2 text-right leading-tight">{currentWord.word}</p>
+                        <p className="text-4xl font-bold mb-2 text-right leading-tight text-foreground">{currentWord.word}</p>
                         {showTransliteration && (
                           <p className="text-lg text-muted-foreground text-right">{currentWord.transliteration_tajik}</p>
                         )}
@@ -983,7 +983,7 @@ export default function LearnWords() {
                       onChange={handleTyping}
                       placeholder="Тарҷумаро ин ҷо нависед..."
                       className={cn(
-                        "w-full p-3 border rounded-md text-center text-lg bg-input",
+                        "w-full p-3 border rounded-md text-center text-lg bg-input text-foreground",
                         typingInput.length > 0 && typingInput.toLowerCase() === currentWord.translation_tajik.toLowerCase()
                           ? "border-green-500 ring-2 ring-green-500"
                           : typingInput.length > 0 && typingInput.toLowerCase() !== currentWord.translation_tajik.toLowerCase()
@@ -1013,7 +1013,7 @@ export default function LearnWords() {
                 {/* Listening Mode */}
                 {gameMode === 'listening' && currentWord && (
                   <div className="flex flex-col items-center space-y-4 w-full">
-                    <Card className="w-full p-6 text-center bg-primary-foreground min-h-[200px] flex justify-center items-center">
+                    <Card className="w-full p-6 text-center bg-card min-h-[200px] flex justify-center items-center">
                       <CardContent className="p-0 flex flex-col items-center justify-center">
                         <Button
                           variant="default"
@@ -1022,9 +1022,9 @@ export default function LearnWords() {
                           disabled={isListening}
                           className="w-24 h-24 rounded-full flex items-center justify-center mb-4"
                         >
-                          <Volume2 className={cn("h-10 w-10 text-white", { "animate-pulse": isListening })} />
+                          <Volume2 className={cn("h-10 w-10 text-primary-foreground", { "animate-pulse": isListening })} />
                         </Button>
-                        <p className="text-xl text-muted-foreground mb-4">Калимаро гӯш кунед ва тарҷумаи онро фикр кунед.</p>
+                        <p className="text-xl text-muted-foreground dark:text-muted-foreground/80 mb-4">Калимаро гӯш кунед ва тарҷумаи онро фикр кунед.</p>
 
                         <AnimatePresence mode='wait'>
                           {isFlipped && (
