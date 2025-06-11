@@ -64,7 +64,7 @@ export default function CookieConsent() {
           >
             <div className="container mx-auto max-w-4xl">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="flex-1">
+                <div className="flex-1 text-center md:text-left">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     Истифодаи кукиҳо
                   </h3>
@@ -72,7 +72,7 @@ export default function CookieConsent() {
                     Мо кукиҳоро барои беҳтар кардани таҷрибаи шумо истифода мебарем. Шумо метавонед инро дар ҳар вақт иваз кунед.
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto justify-center md:justify-end">
                   <Button
                     variant="outline"
                     size="sm"
