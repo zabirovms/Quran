@@ -339,10 +339,29 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
 
   return (
     <div className="min-h-screen bg-background">
-      <SeoHead
-        title={`${surah?.name_tajik} - Қуръони Карим`}
-        description={`Сураи ${surah?.name_tajik} аз Қуръони Карим бо тарҷума ва тафсири тоҷикӣ`}
-      />
+      {surah && (
+        <SeoHead
+          title={`Сураи ${surah.name_tajik} (${surah.name_arabic})`}
+          description={`Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}.`}
+          structuredData={{
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": `Сураи ${surah.name_tajik} - Қуръони Карим бо тарҷумаи тоҷикӣ`,
+            "name": surah.name_tajik,
+            "alternativeHeadline": surah.name_arabic,
+            "author": {
+              "@type": "Organization",
+              "name": "Қуръони Тоҷикӣ"
+            },
+            "inLanguage": "tg",
+            "isPartOf": {
+              "@type": "WebSite",
+              "name": "Қуръони Тоҷикӣ",
+              "url": typeof window !== 'undefined' ? window.location.origin : ''
+            }
+          }}
+        />
+      )}
 
       <SmartSticky className="bg-background/80 backdrop-blur-sm border-b">
         <header className="container mx-auto px-4 py-1">
