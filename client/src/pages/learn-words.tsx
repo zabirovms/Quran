@@ -764,6 +764,26 @@ export default function LearnWords() {
                                 {showTransliteration && (
                                   <p className="text-lg text-muted-foreground text-right">{currentWord.transliteration_tajik}</p>
                                 )}
+                                <div className="flex justify-center w-full mt-4">
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={handleListening}
+                                          disabled={isListening}
+                                          className="h-12 w-12"
+                                        >
+                                          <Volume2 className={cn("h-6 w-6", { "animate-pulse": isListening })} />
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>Калимаро гӯш кунед</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                </div>
                                 <Badge variant="secondary" className="mt-6 text-sm py-1 px-3">
                                   Зинаи #{currentWord.rank}
                                 </Badge>
@@ -863,33 +883,16 @@ export default function LearnWords() {
                 {/* Quiz Mode */}
                 {gameMode === 'quiz' && currentWord && (
                   <div className="flex flex-col items-center space-y-6 w-full">
-                    <Card className="w-full p-6 text-center bg-primary-foreground min-h-[120px] flex justify-center items-center">
+                    <Card className="w-full p-6 text-center bg-card min-h-[120px] flex justify-center items-center">
                       <CardContent className="p-0">
-                        <p className="text-4xl font-bold mb-2 text-right leading-tight">{currentWord.word}</p>
+                        <p className="text-4xl font-bold mb-2 text-right leading-tight text-foreground">{currentWord.word}</p>
                         {showTransliteration && (
                           <p className="text-lg text-muted-foreground text-right">{currentWord.transliteration_tajik}</p>
                         )}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleListening}
-                                disabled={isListening}
-                                className="mt-2"
-                              >
-                                <Volume2 className={cn("h-5 w-5", { "animate-pulse": isListening })} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Калимаро гӯш кунед</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
                       </CardContent>
                     </Card>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+
+                    <div className="grid grid-cols-1 gap-3 w-full mt-4">
                       {quizOptions.map((option, index) => (
                         <Button
                           key={index}
@@ -899,18 +902,18 @@ export default function LearnWords() {
                               : (revealAnswers && option.rank === currentWord.rank ? 'default' : 'outline')
                           }
                           onClick={() => checkAnswer(index)}
-                          disabled={revealAnswers}
-                          className={cn("text-lg py-6 h-auto transition-colors duration-200", {
-                            "bg-green-100 text-green-800 border-2 border-green-500 dark:bg-green-900 dark:text-green-200": revealAnswers && option.rank === currentWord.rank,
-                            "bg-red-100 text-red-800 border-2 border-red-500 dark:bg-red-900 dark:text-red-200": revealAnswers && selectedAnswer === index && option.rank !== currentWord.rank,
-                          })}
+                          className={cn(
+                            "w-full py-6 text-base font-medium",
+                            selectedAnswer === index && option.rank === currentWord.rank && "bg-primary text-primary-foreground",
+                            selectedAnswer === index && option.rank !== currentWord.rank && "bg-destructive text-destructive-foreground",
+                            !selectedAnswer && revealAnswers && option.rank === currentWord.rank && "bg-primary text-primary-foreground"
+                          )}
                         >
                           {option.translation_tajik}
-                          {revealAnswers && option.rank === currentWord.rank && <Check className="ml-2 h-4 w-4" />}
-                          {revealAnswers && selectedAnswer === index && option.rank !== currentWord.rank && <X className="ml-2 h-4 w-4" />}
                         </Button>
                       ))}
                     </div>
+
                     {revealAnswers && (
                       <Button onClick={() => navigateWord('next')} className="mt-4 w-full sm:w-auto">
                         Калимаи навбатӣ <ChevronRight className="ml-2 h-4 w-4" />
@@ -921,7 +924,7 @@ export default function LearnWords() {
 
                 {/* Match Mode */}
                 {gameMode === 'match' && (
-                  <div className="grid grid-cols-2 gap-3 w-full">
+                  <div className="grid grid-cols-2 gap-2 w-full">
                     {matchPairs.map((pair) => (
                       <motion.div
                         key={pair.id}
@@ -929,20 +932,14 @@ export default function LearnWords() {
                         animate={{ opacity: pair.isMatched ? 0 : 1, scale: pair.isMatched ? 0.5 : 1 }}
                         transition={{ duration: 0.3 }}
                         className={cn(
-                          "p-4 text-center cursor-pointer rounded-lg shadow-sm transition-all duration-200 border-2 h-24 flex items-center justify-center",
+                          "p-2 text-center cursor-pointer rounded-lg shadow-sm transition-all duration-200 border-2 h-20 flex items-center justify-center",
                           pair.isMatched && "bg-green-100 dark:bg-green-900 opacity-0 pointer-events-none",
                           pair.isSelected && "border-primary ring-2 ring-primary",
                           !pair.isMatched && !pair.isSelected && "hover:shadow-md bg-card text-foreground"
                         )}
                         onClick={() => handleMatchSelection(pair.id)}
                       >
-                        <CardContent className="p-0 flex flex-col items-center justify-center">
-                          {pair.id % 2 === 0 ? ( // Even IDs for Arabic word, odd for Tajik translation
-                            <p className="text-xl font-bold text-right">{pair.word.word}</p>
-                          ) : (
-                            <p className="text-base">{pair.word.translation_tajik}</p>
-                          )}
-                        </CardContent>
+                        <p className="text-sm font-medium">{pair.word.word}</p>
                       </motion.div>
                     ))}
                   </div>
@@ -957,24 +954,6 @@ export default function LearnWords() {
                         {showTransliteration && (
                           <p className="text-lg text-muted-foreground text-right">{currentWord.transliteration_tajik}</p>
                         )}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleListening}
-                                disabled={isListening}
-                                className="mt-2"
-                              >
-                                <Volume2 className={cn("h-5 w-5", { "animate-pulse": isListening })} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Калимаро гӯш кунед</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
                       </CardContent>
                     </Card>
                     <Input
