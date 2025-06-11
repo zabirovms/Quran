@@ -240,11 +240,10 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 breakpoints={{
                   640: {
                     slidesPerView: 2,
-                    spaceBetween: 16,
-                    centeredSlides: false
+                    spaceBetween: 16
                   }
                 }}
-                centeredSlides={true}
+                centeredSlides={false}
                 loop={true}
                 autoplay={{ 
                   delay: 3000, 
