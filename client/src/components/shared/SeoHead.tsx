@@ -23,7 +23,25 @@ export default function SeoHead({
   author = 'Қуръон Тоҷикӣ'
 }: SeoHeadProps) {
   const siteName = 'Қуръони Карим';
-  const fullUrl = canonicalUrl || (typeof window !== 'undefined' ? window.location.href : '');
+  const baseUrl = 'https://www.quran.tj';
+  
+  // Handle canonical URL
+  let fullUrl = canonicalUrl;
+  if (!fullUrl && typeof window !== 'undefined') {
+    const url = new URL(window.location.href);
+    // Remove search parameters for canonical URL
+    if (url.search) {
+      fullUrl = url.pathname;
+    } else {
+      fullUrl = url.pathname + url.search;
+    }
+  }
+  
+  // Ensure full URL is absolute
+  if (fullUrl && !fullUrl.startsWith('http')) {
+    fullUrl = `${baseUrl}${fullUrl.startsWith('/') ? '' : '/'}${fullUrl}`;
+  }
+
   const fullTitle = `${title} | ${siteName}`;
   const image = imageUrl || '/logo.png';
   const defaultKeywords = ['қуръон', 'қуръони карим', 'тоҷикӣ', 'тарҷума', 'тафсир', 'тиловат', 'транслитератсия', 'забони тоҷикӣ', 'исломӣ'];
