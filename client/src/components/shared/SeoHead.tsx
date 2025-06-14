@@ -23,7 +23,7 @@ export default function SeoHead({
   author = 'Қуръон Тоҷикӣ'
 }: SeoHeadProps) {
   const siteName = 'Қуръони Карим';
-  const fullUrl = canonicalUrl || window.location.href;
+  const fullUrl = canonicalUrl || (typeof window !== 'undefined' ? window.location.href : '');
   const fullTitle = `${title} | ${siteName}`;
   const image = imageUrl || '/logo.png';
   const defaultKeywords = ['қуръон', 'қуръони карим', 'тоҷикӣ', 'тарҷума', 'тафсир', 'тиловат', 'транслитератсия', 'забони тоҷикӣ', 'исломӣ'];
@@ -63,9 +63,15 @@ export default function SeoHead({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
 
+      <meta name="robots" content="index, follow" />
+      <meta name="googlebot" content="index, follow" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="theme-color" content="#0c4532" />
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
+      
+      <meta httpEquiv="Content-Language" content="tg" />
+      <meta name="geo.region" content="TJ" />
     </Helmet>
   );
 }
