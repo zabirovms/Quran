@@ -341,7 +341,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
     <div className="min-h-screen bg-background">
       {surah && (
         <SeoHead
-          title={`Сураи ${surah.name_tajik} (${surah.name_arabic})`}
+          title={`Сураи ${surah.name_tajik}`}
           description={`Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}. Тарҷумаи тоҷикӣ ва тафсири осонбаён.`}
           canonicalUrl={`https://www.quran.tj/surah/${surah.number}`}
           structuredData={{
