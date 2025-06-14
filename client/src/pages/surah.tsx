@@ -342,7 +342,8 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
       {surah && (
         <SeoHead
           title={`Сураи ${surah.name_tajik} (${surah.name_arabic})`}
-          description={`Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}.`}
+          description={`Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}. Тарҷумаи тоҷикӣ ва тафсири осонбаён.`}
+          canonicalUrl={`https://www.quran.tj/surah/${surah.number}`}
           structuredData={{
             "@context": "https://schema.org",
             "@type": "Article",
@@ -357,9 +358,29 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
             "isPartOf": {
               "@type": "WebSite",
               "name": "Қуръони Тоҷикӣ",
-              "url": typeof window !== 'undefined' ? window.location.origin : ''
-            }
+              "url": "https://www.quran.tj"
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://www.quran.tj/surah/${surah.number}`
+            },
+            "keywords": [
+              `Сураи ${surah.name_tajik}`,
+              `Сураи ${surah.name_arabic}`,
+              "Қуръони Карим",
+              "тарҷумаи тоҷикӣ",
+              "тафсири осонбаён",
+              surah.revelation_type === 'Meccan' ? "Маккӣ" : "Маданӣ"
+            ].join(", ")
           }}
+          keywords={[
+            `Сураи ${surah.name_tajik}`,
+            `Сураи ${surah.name_arabic}`,
+            surah.name_english,
+            "Қуръони Карим",
+            "тарҷумаи тоҷикӣ",
+            "тафсири осонбаён"
+          ]}
         />
       )}
 
