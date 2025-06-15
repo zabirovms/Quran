@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme -->
-    <style name="Base.Theme.QuranTajik" parent="Theme.Material3.DayNight.DarkActionBar">
+    <style name="Base.Theme.QuranTajik" parent="Theme.Material3.DayNight">
         <!-- Primary brand color -->
         <item name="colorPrimary">#FF6200EE</item>
         <item name="colorPrimaryVariant">#FF3700B3</item>
@@ -12,6 +12,7 @@
         <item name="colorOnSecondary">#FF000000</item>
         <!-- Status bar color -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:windowLightStatusBar">true</item>
         <!-- Material 3 specific attributes -->
         <item name="materialColorPrimary">#FF6200EE</item>
         <item name="materialColorPrimaryContainer">#FFE8DEF8</item>
@@ -26,5 +27,10 @@
         <item name="materialColorSurfaceVariant">#FFE7E0EC</item>
         <item name="materialColorOnSurfaceVariant">#FF49454F</item>
         <item name="materialColorOutline">#FF79747E</item>
+        <!-- Window background -->
+        <item name="android:windowBackground">@android:color/white</item>
+        <!-- Full screen -->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 </resources> 
