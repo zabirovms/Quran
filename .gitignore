@@ -65,6 +65,7 @@ tafsir_chunk_*
 # Java files and build artifacts
 *.class
 *.jar
+!android/gradle/wrapper/gradle-wrapper.jar
 jqurantree-1.0.0-src/
 org/
 temp/
