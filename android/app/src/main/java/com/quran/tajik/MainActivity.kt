@@ -3,6 +3,7 @@ package com.quran.tajik
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.webkit.WebSettings
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -19,10 +20,22 @@ class MainActivity : AppCompatActivity() {
             setSupportZoom(true)
             builtInZoomControls = true
             displayZoomControls = false
+            
+            // Performance optimizations
+            cacheMode = WebSettings.LOAD_DEFAULT
+            setAppCacheEnabled(true)
+            databaseEnabled = true
+            
+            // Security settings
+            mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+            allowFileAccess = false
+            allowContentAccess = false
+            allowFileAccessFromFileURLs = false
+            allowUniversalAccessFromFileURLs = false
         }
 
         webView.webViewClient = WebViewClient()
-        webView.loadUrl("https://quran.tj")
+        webView.loadUrl("https://www.quran.tj")
     }
 
     override fun onBackPressed() {
