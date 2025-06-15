@@ -38,12 +38,54 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            bundle {
+                language {
+                    enableSplit = true
+                }
+                density {
+                    enableSplit = true
+                }
+                abi {
+                    enableSplit = true
+                }
+            }
         }
         debug {
             signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
         }
+    }
+
+    bundle {
+        storeArchive {
+            enable = true
+        }
+    }
+
+    aaptOptions {
+        cruncherEnabled = false
+        additionalParameters "--no-version-vectors"
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+        disable 'MissingTranslation'
+        disable 'ExtraTranslation'
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/license.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt', 'META-INF/notice.txt', 'META-INF/ASL2.0', 'META-INF/*.kotlin_module']
+        }
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+        preDexLibraries true
+        maxProcessCount 8
     }
 
     compileOptions {
@@ -57,15 +99,6 @@ android {
 
     buildFeatures {
         viewBinding true
-    }
-
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-    }
-
-    aaptOptions {
-        cruncherEnabled = false
     }
 }
 
