@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme for night mode -->
-    <style name="Base.Theme.QuranTajik" parent="Theme.Material3.DayNight">
+    <style name="Base.Theme.QuranTajik" parent="Theme.MaterialComponents.DayNight">
         <!-- Primary brand color -->
         <item name="colorPrimary">#FFD0BCFF</item>
         <item name="colorPrimaryVariant">#FFB69DF8</item>
@@ -13,20 +13,17 @@
         <!-- Status bar color -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:windowLightStatusBar">false</item>
-        <!-- Material 3 specific attributes -->
-        <item name="android:colorPrimary">#FFD0BCFF</item>
-        <item name="android:colorPrimaryContainer">#FF4F378B</item>
-        <item name="android:colorOnPrimary">#FF381E72</item>
-        <item name="android:colorOnPrimaryContainer">#FFEADDFF</item>
-        <item name="android:colorSecondary">#FF4AE8D4</item>
-        <item name="android:colorSecondaryContainer">#FF005144</item>
-        <item name="android:colorOnSecondary">#FF00382F</item>
-        <item name="android:colorOnSecondaryContainer">#FFCCFBF1</item>
-        <item name="android:colorSurface">#FF1C1B1F</item>
-        <item name="android:colorOnSurface">#FFE6E1E5</item>
-        <item name="android:colorSurfaceVariant">#FF49454F</item>
-        <item name="android:colorOnSurfaceVariant">#FFCAC4D0</item>
-        <item name="android:colorOutline">#FF938F99</item>
+        <!-- Surface colors -->
+        <item name="colorSurface">#FF1C1B1F</item>
+        <item name="colorOnSurface">#FFE6E1E5</item>
+        <item name="colorSurfaceVariant">#FF49454F</item>
+        <item name="colorOnSurfaceVariant">#FFCAC4D0</item>
+        <!-- Background colors -->
+        <item name="android:colorBackground">#FF1C1B1F</item>
+        <item name="colorOnBackground">#FFE6E1E5</item>
+        <!-- Error colors -->
+        <item name="colorError">#FFF2B8B5</item>
+        <item name="colorOnError">#FF601410</item>
         <!-- Window background -->
         <item name="android:windowBackground">@android:color/black</item>
         <!-- Full screen -->
