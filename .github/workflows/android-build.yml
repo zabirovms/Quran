@@ -26,6 +26,9 @@ jobs:
           echo "android.useAndroidX=true" >> android/gradle.properties
           echo "kotlin.code.style=official" >> android/gradle.properties
           echo "android.nonTransitiveRClass=true" >> android/gradle.properties
+          echo "org.gradle.caching=true" >> android/gradle.properties
+          echo "org.gradle.parallel=true" >> android/gradle.properties
+          echo "org.gradle.daemon=true" >> android/gradle.properties
 
       - name: Create debug keystore
         run: |
@@ -39,7 +42,8 @@ jobs:
       - name: Build with Gradle
         working-directory: android
         run: |
-          ./gradlew bundleRelease --stacktrace --info
+          ./gradlew clean
+          ./gradlew bundleRelease --stacktrace --info --no-daemon
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
