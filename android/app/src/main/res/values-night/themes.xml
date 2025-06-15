@@ -14,19 +14,19 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:windowLightStatusBar">false</item>
         <!-- Material 3 specific attributes -->
-        <item name="materialColorPrimary">#FFD0BCFF</item>
-        <item name="materialColorPrimaryContainer">#FF4F378B</item>
-        <item name="materialColorOnPrimary">#FF381E72</item>
-        <item name="materialColorOnPrimaryContainer">#FFEADDFF</item>
-        <item name="materialColorSecondary">#FF4AE8D4</item>
-        <item name="materialColorSecondaryContainer">#FF005144</item>
-        <item name="materialColorOnSecondary">#FF00382F</item>
-        <item name="materialColorOnSecondaryContainer">#FFCCFBF1</item>
-        <item name="materialColorSurface">#FF1C1B1F</item>
-        <item name="materialColorOnSurface">#FFE6E1E5</item>
-        <item name="materialColorSurfaceVariant">#FF49454F</item>
-        <item name="materialColorOnSurfaceVariant">#FFCAC4D0</item>
-        <item name="materialColorOutline">#FF938F99</item>
+        <item name="android:colorPrimary">#FFD0BCFF</item>
+        <item name="android:colorPrimaryContainer">#FF4F378B</item>
+        <item name="android:colorOnPrimary">#FF381E72</item>
+        <item name="android:colorOnPrimaryContainer">#FFEADDFF</item>
+        <item name="android:colorSecondary">#FF4AE8D4</item>
+        <item name="android:colorSecondaryContainer">#FF005144</item>
+        <item name="android:colorOnSecondary">#FF00382F</item>
+        <item name="android:colorOnSecondaryContainer">#FFCCFBF1</item>
+        <item name="android:colorSurface">#FF1C1B1F</item>
+        <item name="android:colorOnSurface">#FFE6E1E5</item>
+        <item name="android:colorSurfaceVariant">#FF49454F</item>
+        <item name="android:colorOnSurfaceVariant">#FFCAC4D0</item>
+        <item name="android:colorOutline">#FF938F99</item>
         <!-- Window background -->
         <item name="android:windowBackground">@android:color/black</item>
         <!-- Full screen -->
