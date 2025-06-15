@@ -1,0 +1,105 @@
+{
+  "name": "Қуръони Карим",
+  "short_name": "Қуръон",
+  "description": "Қуръони Карим бо тарҷумаи тоҷикӣ ва тафсири осонбаён",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0c4532",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Асосӣ"
+    },
+    {
+      "src": "/screenshots/surah.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Сура"
+    },
+    {
+      "src": "/screenshots/search.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Ҷустуҷӯ"
+    }
+  ],
+  "categories": ["books", "education", "lifestyle"],
+  "lang": "tg",
+  "dir": "rtl",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "shortcuts": [
+    {
+      "name": "Сураи Фотиҳа",
+      "short_name": "Фотиҳа",
+      "description": "Хондани Сураи Фотиҳа",
+      "url": "/surah/1",
+      "icons": [{ "src": "/icons/shortcut-1.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Сураи Ёсин",
+      "short_name": "Ёсин",
+      "description": "Хондани Сураи Ёсин",
+      "url": "/surah/36",
+      "icons": [{ "src": "/icons/shortcut-36.png", "sizes": "192x192" }]
+    }
+  ]
+} 
