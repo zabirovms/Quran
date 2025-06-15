@@ -20,6 +20,13 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Fix gradle.properties
+        run: |
+          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > android/gradle.properties
+          echo "android.useAndroidX=true" >> android/gradle.properties
+          echo "kotlin.code.style=official" >> android/gradle.properties
+          echo "android.nonTransitiveRClass=true" >> android/gradle.properties
+
       - name: Create debug keystore
         run: |
           mkdir -p android/app
