@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme for night mode -->
+    <style name="Base.Theme.QuranTajik" parent="Theme.Material3.DayNight.DarkActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">#FFD0BCFF</item>
+        <item name="colorPrimaryVariant">#FFB69DF8</item>
+        <item name="colorOnPrimary">#FF381E72</item>
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">#FF4AE8D4</item>
+        <item name="colorSecondaryVariant">#FF4AE8D4</item>
+        <item name="colorOnSecondary">#FF00382F</item>
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Material 3 specific attributes -->
+        <item name="materialColorPrimary">#FFD0BCFF</item>
+        <item name="materialColorPrimaryContainer">#FF4F378B</item>
+        <item name="materialColorOnPrimary">#FF381E72</item>
+        <item name="materialColorOnPrimaryContainer">#FFEADDFF</item>
+        <item name="materialColorSecondary">#FF4AE8D4</item>
+        <item name="materialColorSecondaryContainer">#FF005144</item>
+        <item name="materialColorOnSecondary">#FF00382F</item>
+        <item name="materialColorOnSecondaryContainer">#FFCCFBF1</item>
+        <item name="materialColorSurface">#FF1C1B1F</item>
+        <item name="materialColorOnSurface">#FFE6E1E5</item>
+        <item name="materialColorSurfaceVariant">#FF49454F</item>
+        <item name="materialColorOnSurfaceVariant">#FFCAC4D0</item>
+        <item name="materialColorOutline">#FF938F99</item>
+    </style>
+</resources> 
