@@ -25,12 +25,14 @@ export default function NotFound() {
           Шояд ин ишораест, ки ба Қуръон бозгардӣ.
         </p>
 
-        <Link href="/">
-          <Button className="flex items-center gap-2">
-            <Home className="h-4 w-4" />
-            <span>Ба саҳифаи асосӣ</span>
-          </Button>
-        </Link>
+        <div className="flex justify-center">
+          <Link href="/">
+            <Button className="flex items-center gap-2">
+              <Home className="h-4 w-4" />
+              <span>Ба саҳифаи асосӣ</span>
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
