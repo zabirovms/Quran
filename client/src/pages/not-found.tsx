@@ -13,11 +13,18 @@ export default function NotFound() {
       
       <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
         <h1 className="text-6xl font-bold text-primary dark:text-accent mb-4">404</h1>
-        <h2 className="text-2xl font-semibold mb-6">Саҳифа ёфт нашуд</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
-          Саҳифаи дархост кардаатон ёфт нашуд ё ҳазф шудааст.
+        <h2 className="text-2xl font-semibold mb-4">Саҳифа ёфт нашуд</h2>
+        <p className="text-gray-700 dark:text-gray-300 mb-6">
+          Шояд ин саҳифа дар оламе вуҷуд дошта бошад... <br />
+          Вале ту дар дигар олам ҳастӣ. Ва ин ҷо танҳо ин ёдоварист:
         </p>
-        
+        <blockquote className="italic text-gray-600 dark:text-gray-400 mb-6">
+          «Ҳар ки Аллоҳро ҷӯяд, Ӯ ӯро роҳнамоӣ мекунад.»
+        </blockquote>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">
+          Шояд ин ишораест, ки ба Қуръон бозгардӣ.
+        </p>
+
         <Link href="/">
           <Button className="flex items-center gap-2">
             <Home className="h-4 w-4" />
