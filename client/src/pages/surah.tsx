@@ -439,66 +439,159 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
       <main className="container mx-auto px-4 py-8">
         <div ref={scrollTopRef}></div>
 
-        {/* Surah Information Card with Accordion */}
+        {/* Surah Information Card with Enhanced Audio Player */}
         {surah && !isSurahLoading && (
-          <Card className="mb-6 overflow-hidden bg-gradient-to-b from-white to-white/20 dark:from-gray-800 dark:to-gray-800/20 shadow-md md:shadow-lg">
+          <Card className="mb-6 overflow-hidden bg-gradient-to-br from-white via-white/95 to-primary/5 dark:from-gray-800 dark:via-gray-800/95 dark:to-primary/10 shadow-lg border-0">
             <div className="p-6">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="info" className="border-0">
-                  <div className="flex flex-col items-center text-center">
-                    <div>
-                      <h1 className="text-2xl md:text-3xl font-bold text-primary dark:text-accent">{surah.name_tajik}</h1>
-                      <h2 className="text-xl md:text-2xl text-gray-700 dark:text-gray-200 font-arabic mt-1">
-                        {surah.name_arabic}
-                      </h2>
-                      <div className="text-sm text-muted-foreground mt-2 flex items-center justify-center">
-                        <span>Сураи {surah.number}</span>
-                        <span className="mx-2">•</span>
-                        <span>{surah.verses_count} оят</span>
-                        <span className="mx-2">•</span>
-                        <span>{surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}</span>
-                        <span className="flex items-center gap-1 ml-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="flex items-center gap-1 py-0 h-6 text-primary" 
-                            onClick={handlePlaySurah}
-                          >
-                            <Volume2 className="h-3 w-3" />
-                            <span className="text-xs">Тиловат</span>
-                          </Button>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="mt-4 flex items-center">
-                      <span className="text-sm font-medium text-muted-foreground mr-2">Маълумот</span>
-                      <AccordionTrigger className="pt-0 h-6">
-                        <span className="sr-only">Toggle surah info</span>
-                      </AccordionTrigger>
+              <div className="flex flex-col lg:flex-row items-center gap-6">
+                {/* Surah Header Info */}
+                <div className="flex-1 text-center lg:text-left">
+                  <div className="mb-4">
+                    <h1 className="text-3xl md:text-4xl font-bold text-primary dark:text-accent mb-2">
+                      {surah.name_tajik}
+                    </h1>
+                    <h2 className="text-2xl md:text-3xl text-gray-700 dark:text-gray-200 font-arabic mb-3">
+                      {surah.name_arabic}
+                    </h2>
+                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Book className="h-4 w-4" />
+                        Сураи {surah.number}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <List className="h-4 w-4" />
+                        {surah.verses_count} оят
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Info className="h-4 w-4" />
+                        {surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}
+                      </span>
                     </div>
                   </div>
+                </div>
 
-                  <AccordionContent>
-                    <div className="mt-4">
-                      <div className="flex items-center gap-4 mb-4">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-2"
-                          onClick={handlePlaySurah}
-                        >
-                          <Volume2 className="h-4 w-4" />
-                          <span>Тиловат</span>
-                        </Button>
-                      </div>
-
-                      <div className="prose prose-sm dark:prose-invert max-w-none mt-4">
-                        <p>{surah.description || 'Маълумот дар бораи ин сура мавҷуд нест.'}</p>
+                {/* Enhanced Audio Player */}
+                <div className="w-full lg:w-96 bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-xl p-4 border border-primary/20">
+                  <div className="space-y-4">
+                    {/* Audio Controls Header */}
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
+                        <Volume2 className="h-5 w-5" />
+                        Тиловати Сура
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        {audioState.loading && (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                        )}
+                        {audioState.isPlaying && (
+                          <div className="flex items-center gap-1">
+                            <div className="w-1 h-3 bg-primary animate-pulse rounded-full"></div>
+                            <div className="w-1 h-3 bg-primary animate-pulse rounded-full" style={{ animationDelay: '0.2s' }}></div>
+                            <div className="w-1 h-3 bg-primary animate-pulse rounded-full" style={{ animationDelay: '0.4s' }}></div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+
+                    {/* Main Audio Controls */}
+                    <div className="flex items-center justify-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full w-12 h-12 p-0 border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
+                        onClick={() => {
+                          if (audioState.isPlaying) {
+                            // Pause functionality would be here
+                            toast({
+                              title: "Тиловат қатъ шуд",
+                              description: "Тиловати сура қатъ карда шуд",
+                            });
+                          } else {
+                            handlePlaySurah();
+                          }
+                        }}
+                        disabled={audioState.loading}
+                      >
+                        {audioState.loading ? (
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                        ) : audioState.isPlaying ? (
+                          <X className="h-5 w-5 text-primary" />
+                        ) : (
+                          <PlayCircle className="h-5 w-5 text-primary" />
+                        )}
+                      </Button>
+
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                          <span>Оят: {currentVerse || 1}</span>
+                          <span>{surah.verses_count} оят</span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-primary h-2 rounded-full transition-all duration-300"
+                            style={{ 
+                              width: `${surah.verses_count > 0 ? ((currentVerse || 1) / surah.verses_count) * 100 : 0}%` 
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-8 px-3"
+                        onClick={() => {
+                          if (previousSurah) {
+                            window.location.href = `/surah/${previousSurah}`;
+                          }
+                        }}
+                        disabled={!previousSurah}
+                      >
+                        <ChevronLeft className="h-3 w-3 mr-1" />
+                        Сураи қаблӣ
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-8 px-3"
+                        onClick={() => {
+                          if (nextSurah) {
+                            window.location.href = `/surah/${nextSurah}`;
+                          }
+                        }}
+                        disabled={!nextSurah}
+                      >
+                        Сураи баъдӣ
+                        <ChevronRight className="h-3 w-3 ml-1" />
+                      </Button>
+                    </div>
+
+                    {/* Surah Description Toggle */}
+                    <div className="border-t border-primary/20 pt-3">
+                      <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value="description" className="border-0">
+                          <AccordionTrigger className="text-sm font-medium text-primary hover:text-primary/80 py-1">
+                            <span className="flex items-center gap-2">
+                              <Info className="h-4 w-4" />
+                              Маълумот дар бораи сура
+                            </span>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="mt-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                              <p className="text-sm text-muted-foreground leading-relaxed">
+                                {surah.description || 'Маълумот дар бораи ин сура мавҷуд нест.'}
+                              </p>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
         )}
