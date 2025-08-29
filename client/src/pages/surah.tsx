@@ -490,6 +490,27 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
                   </audio>
                 </div>
               </div>
+
+              {/* Surah Information Accordion */}
+              <div className="mt-6 pt-6 border-t border-primary/20">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="description" className="border-0">
+                    <AccordionTrigger className="text-sm font-medium text-primary hover:text-primary/80 py-2 px-4 bg-primary/5 hover:bg-primary/10 rounded-lg transition-colors">
+                      <span className="flex items-center gap-2">
+                        <Info className="h-4 w-4" />
+                        Маълумот дар бораи сура
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="mt-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-primary/10">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {surah.description || 'Маълумот дар бораи ин сура мавҷуд нест.'}
+                        </p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
             </div>
           </Card>
         )}
