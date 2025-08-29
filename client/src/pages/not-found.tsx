@@ -1,35 +1,35 @@
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 import SeoHead from '@/components/shared/SeoHead';
-import { Home } from 'lucide-react';
+import { Home, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-background/95 to-muted/20 p-4">
       <SeoHead
-        title="Саҳифа ёфт нашуд"
+        title="Саҳифа ёфт нашуд - 404"
         description="Саҳифаи дархост кардаатон ёфт нашуд. Лутфан ба саҳифаи асосӣ баргардед."
       />
       
-      <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
-        <h1 className="text-6xl font-bold text-primary dark:text-accent mb-4">404</h1>
-        <h2 className="text-2xl font-semibold mb-4">Саҳифа ёфт нашуд</h2>
-        <p className="text-gray-700 dark:text-gray-300 mb-6">
-          Шояд ин саҳифа дар оламе вуҷуд дошта бошад... <br />
-          Вале ту дар дигар олам ҳастӣ. Ва ин ҷо танҳо ин ёдоварист:
-        </p>
-        <blockquote className="italic text-gray-600 dark:text-gray-400 mb-6">
-          «Ҳар ки Аллоҳро ҷӯяд, Ӯ ӯро роҳнамоӣ мекунад.»
-        </blockquote>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
-          Шояд ин ишораест, ки ба Қуръон бозгардӣ.
+      <div className="w-full max-w-lg p-8 bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-border/40 text-center">
+        {/* 404 GIF Placeholder */}
+        <div className="w-32 h-32 mx-auto mb-6 bg-muted/50 rounded-full flex items-center justify-center">
+          <span className="text-4xl font-bold text-muted-foreground">404</span>
+        </div>
+        
+        <h1 className="text-4xl font-bold text-primary mb-4">404</h1>
+        <h2 className="text-2xl font-semibold mb-4 text-foreground">
+          Ба фикрам шумо роҳгум задед
+        </h2>
+        <p className="text-lg text-muted-foreground mb-8">
+          чунин саҳифа вуҷуд надорад!
         </p>
 
-        <div className="flex justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/">
-            <Button className="flex items-center gap-2">
+            <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90">
               <Home className="h-4 w-4" />
-              <span>Ба саҳифаи асосӣ</span>
+              <span>Бозгашт</span>
             </Button>
           </Link>
         </div>
