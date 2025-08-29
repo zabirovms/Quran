@@ -177,7 +177,15 @@ export default function VerseItem({ verse, surahName, isLoading = false }: Verse
         duration: 2000 // 2 seconds duration
       });
     } else {
-      addBookmark.mutate(verse.id);
+      addBookmark.mutate({
+        verseId: verse.id,
+        verseKey: verse.unique_key,
+        surahNumber: verse.surah_id,
+        verseNumber: verse.verse_number,
+        arabicText: arabicText,
+        tajikText: verse.tajik_text,
+        surahName: surahName
+      });
       toast({
         title: "Захира шуд", 
         description: "Оят ба захирагоҳ илова шуд.",
