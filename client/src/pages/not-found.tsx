@@ -11,24 +11,25 @@ export default function NotFound() {
         description="Саҳифаи дархост кардаатон ёфт нашуд. Лутфан ба саҳифаи асосӣ баргардед."
       />
       
-      <div className="w-full max-w-lg p-8 bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-border/40 text-center">
-        {/* 404 GIF Placeholder */}
-        <div className="w-32 h-32 mx-auto mb-6 bg-muted/50 rounded-full flex items-center justify-center">
-          <span className="text-4xl font-bold text-muted-foreground">404</span>
-        </div>
-        
-        <h1 className="text-4xl font-bold text-primary mb-4">404</h1>
-        <h2 className="text-2xl font-semibold mb-4 text-foreground">
+      {/* 404 GIF */}
+      <div className="mb-8">
+        <img src="/bg.gif" alt="404 Error" className="w-64 h-64 object-contain" />
+      </div>
+      
+      {/* Error Message */}
+      <div className="text-center space-y-6">
+        <h1 className="text-6xl font-bold text-primary">404</h1>
+        <h2 className="text-3xl font-semibold text-foreground">
           Ба фикрам шумо роҳгум задед
         </h2>
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-xl text-muted-foreground">
           чунин саҳифа вуҷуд надорад!
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="pt-4">
           <Link href="/">
-            <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90">
-              <Home className="h-4 w-4" />
+            <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-lg px-8 py-3">
+              <Home className="h-5 w-5" />
               <span>Бозгашт</span>
             </Button>
           </Link>
