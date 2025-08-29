@@ -19,7 +19,8 @@ import {
   Share2,
   Filter,
   Grid3X3,
-  List
+  List,
+  ExternalLink
 } from 'lucide-react';
 import SeoHead from '@/components/shared/SeoHead';
 
@@ -34,6 +35,7 @@ interface VideoItem {
   likes: number;
   thumbnailUrl: string;
   videoUrl: string;
+  youtubeId: string;
   subtitles: string[];
   language: string;
   uploadDate: string;
@@ -42,93 +44,67 @@ interface VideoItem {
 const sampleVideos: VideoItem[] = [
   {
     id: '1',
-    title: 'Сураи Ёсин - Тиловати зебо',
-    description: 'Тиловати зебои Сураи Ёсин бо тарҷумаи тоҷикӣ ва субтитрҳо',
+    title: 'Сураи Муъминун (Сура Ал-Муминун)',
+    description: 'Тиловати зебои Сураи Муъминун бо тарҷумаи тоҷикӣ ва субтитрҳо',
     category: 'Сураҳо',
     reciter: 'Шайх Абдур-Раҳмон ас-Судайс',
     duration: '15:32',
     views: 45678,
     likes: 1234,
-    thumbnailUrl: '/api/placeholder/400/225',
-    videoUrl: '/videos/surah-yasin.mp4',
+    thumbnailUrl: `https://img.youtube.com/vi/oPrXRnF7rCo/maxresdefault.jpg`,
+    videoUrl: 'https://youtu.be/oPrXRnF7rCo',
+    youtubeId: 'oPrXRnF7rCo',
     subtitles: ['Тоҷикӣ', 'Русӣ', 'Инглисӣ'],
     language: 'Арабӣ',
     uploadDate: '2024-01-15'
   },
   {
     id: '2',
-    title: 'Сураи Мулк - Тиловати хушовоз',
-    description: 'Тиловати хушовози Сураи Мулк бо тафсири осонбаён',
+    title: 'Сураи Фотиҳа (Сура Ал-Фатиха)',
+    description: 'Тиловати хушовози Сураи Фотиҳа бо тафсири осонбаён',
     category: 'Сураҳо',
     reciter: 'Шайх Мишари Рашид ал-Афаси',
     duration: '8:45',
     views: 23456,
     likes: 890,
-    thumbnailUrl: '/api/placeholder/400/225',
-    videoUrl: '/videos/surah-mulk.mp4',
+    thumbnailUrl: `https://img.youtube.com/vi/2DARwxIBTY0/maxresdefault.jpg`,
+    videoUrl: 'https://youtu.be/2DARwxIBTY0',
+    youtubeId: '2DARwxIBTY0',
     subtitles: ['Тоҷикӣ', 'Русӣ'],
     language: 'Арабӣ',
     uploadDate: '2024-01-12'
   },
   {
     id: '3',
-    title: 'Сураи Раҳмон - Тиловати зебо',
-    description: 'Тиловати зебои Сураи Раҳмон бо тарҷума ва тафсир',
+    title: 'Сураи Набаъ (Сура Ан-Наба)',
+    description: 'Тиловати зебои Сураи Набаъ бо тарҷума ва тафсир',
     category: 'Сураҳо',
     reciter: 'Шайх Аҳмад ал-Аҷми',
     duration: '12:18',
     views: 34567,
     likes: 1123,
-    thumbnailUrl: '/api/placeholder/400/225',
-    videoUrl: '/videos/surah-rahman.mp4',
+    thumbnailUrl: `https://img.youtube.com/vi/rApE4VAfqg8/maxresdefault.jpg`,
+    videoUrl: 'https://youtu.be/rApE4VAfqg8',
+    youtubeId: 'rApE4VAfqg8',
     subtitles: ['Тоҷикӣ', 'Русӣ', 'Инглисӣ'],
     language: 'Арабӣ',
     uploadDate: '2024-01-10'
   },
   {
     id: '4',
-    title: 'Дуоҳои Қуръонӣ - Видео дастур',
-    description: 'Дастури дуоҳои Қуръонӣ бо тавзеҳот ва тарҷума',
-    category: 'Дуоҳо',
-    reciter: 'Устод Абдуллоҳ',
-    duration: '25:12',
-    views: 18923,
-    likes: 567,
-    thumbnailUrl: '/api/placeholder/400/225',
-    videoUrl: '/videos/quranic-duas.mp4',
-    subtitles: ['Тоҷикӣ'],
-    language: 'Тоҷикӣ',
-    uploadDate: '2024-01-08'
-  },
-  {
-    id: '5',
-    title: 'Фарзҳои исломӣ - Дастури видео',
-    description: 'Дастури видеоӣ дар бораи фарзҳои исломӣ',
-    category: 'Фарзҳо',
-    reciter: 'Устод Муҳаммад',
-    duration: '32:45',
-    views: 15678,
-    likes: 789,
-    thumbnailUrl: '/api/placeholder/400/225',
-    videoUrl: '/videos/islamic-duties.mp4',
-    subtitles: ['Тоҷикӣ', 'Русӣ'],
-    language: 'Тоҷикӣ',
-    uploadDate: '2024-01-05'
-  },
-  {
-    id: '6',
-    title: 'Қиссаҳои пайғамбарон - Қиссаи Муҳаммад ﷺ',
-    description: 'Қиссаи зиндагии пайғамбари ислом Муҳаммад ﷺ',
-    category: 'Таърих',
-    reciter: 'Устод Аҳмад',
-    duration: '45:20',
-    views: 27890,
-    likes: 1456,
-    thumbnailUrl: '/api/placeholder/400/225',
-    videoUrl: '/videos/prophet-muhammad-story.mp4',
+    title: 'Сураи Ар-Раҳмон (Сура Ар-Рахман)',
+    description: 'Тиловати зебои Сураи Ар-Раҳмон бо тарҷума ва тафсир',
+    category: 'Сураҳо',
+    reciter: 'Шайх Абдур-Раҳмон ас-Судайс',
+    duration: '18:25',
+    views: 56789,
+    likes: 2345,
+    thumbnailUrl: `https://img.youtube.com/vi/nsipUP3Tk0Q/maxresdefault.jpg`,
+    videoUrl: 'https://youtu.be/nsipUP3Tk0Q',
+    youtubeId: 'nsipUP3Tk0Q',
     subtitles: ['Тоҷикӣ', 'Русӣ', 'Инглисӣ'],
-    language: 'Тоҷикӣ',
-    uploadDate: '2024-01-03'
+    language: 'Арабӣ',
+    uploadDate: '2024-01-08'
   }
 ];
 
@@ -206,6 +182,10 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
   const handleShare = (video: VideoItem) => {
     // Implement share functionality
     console.log('Sharing video:', video.title);
+  };
+
+  const handleWatchOnYouTube = (video: VideoItem) => {
+    window.open(video.videoUrl, '_blank');
   };
 
   const formatViews = (views: number) => {
@@ -328,14 +308,10 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                       <Button
                         size="lg"
                         variant="secondary"
-                        onClick={() => handlePlayVideo(video.id)}
+                        onClick={() => handleWatchOnYouTube(video)}
                         className="rounded-full w-16 h-16"
                       >
-                        {playingVideo === video.id ? (
-                          <Pause className="h-8 w-8" />
-                        ) : (
-                          <Play className="h-8 w-8 ml-1" />
-                        )}
+                        <Play className="h-8 w-8 ml-1" />
                       </Button>
                     </div>
                     
@@ -380,10 +356,17 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                     {/* Action Buttons */}
                     <div className="flex items-center gap-2">
                       <Button 
+                        onClick={() => handleWatchOnYouTube(video)}
+                        className="flex-1"
+                        size="sm"
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Дар YouTube назар
+                      </Button>
+                      <Button 
                         onClick={() => handleLike(video)}
                         variant="outline" 
                         size="sm"
-                        className="flex-1"
                       >
                         <Heart className="h-4 w-4 mr-1" />
                         {video.likes}
@@ -392,10 +375,8 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                         onClick={() => handleShare(video)}
                         variant="outline" 
                         size="sm"
-                        className="flex-1"
                       >
                         <Share2 className="h-4 w-4 mr-1" />
-                        Бахшида
                       </Button>
                     </div>
                   </CardContent>

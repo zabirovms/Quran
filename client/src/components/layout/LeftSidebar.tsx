@@ -23,6 +23,7 @@ export function LeftSidebar() {
   const [isMobile, setIsMobile] = useState(false);
   const [location] = useLocation();
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Check screen size on mount and when resized
@@ -46,8 +47,8 @@ export function LeftSidebar() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // Handle hover events
-  const handleMouseEnter = () => {
+  // Handle hover events on the button
+  const handleButtonMouseEnter = () => {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
@@ -56,11 +57,26 @@ export function LeftSidebar() {
     }
   };
 
-  const handleMouseLeave = () => {
+  const handleButtonMouseLeave = () => {
     if (!isMobile) {
       hoverTimeoutRef.current = setTimeout(() => {
         setCollapsed(true);
       }, 300); // Small delay to prevent flickering
+    }
+  };
+
+  // Handle hover events on the sidebar
+  const handleSidebarMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+  };
+
+  const handleSidebarMouseLeave = () => {
+    if (!isMobile) {
+      hoverTimeoutRef.current = setTimeout(() => {
+        setCollapsed(true);
+      }, 300);
     }
   };
 
@@ -144,31 +160,26 @@ export function LeftSidebar() {
         ></div>
       )}
     
-      {/* Toggle button (always visible) - Integrated with header */}
+      {/* Toggle button at top left - Integrated with header */}
       <button
+        ref={buttonRef}
         onClick={handleToggle}
+        onMouseEnter={handleButtonMouseEnter}
+        onMouseLeave={handleButtonMouseLeave}
         className={cn(
-          "fixed z-50 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-2 shadow-md transition-all",
-          collapsed 
-            ? "left-4 bottom-16" 
-            : isMobile 
-              ? "left-[calc(250px+0.5rem)] bottom-16" 
-              : "left-[calc(280px+0.5rem)] bottom-16"
+          "fixed z-50 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-2 shadow-md transition-all top-4 left-4",
+          !collapsed && "bg-primary/90"
         )}
         aria-label={collapsed ? "Open navigation" : "Close navigation"}
       >
-        {collapsed ? (
-          <Menu className="h-5 w-5" />
-        ) : (
-          <ChevronLeft className="h-5 w-5" />
-        )}
+        <Menu className="h-5 w-5" />
       </button>
       
       {/* Left Sidebar */}
       <aside 
         ref={sidebarRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleSidebarMouseEnter}
+        onMouseLeave={handleSidebarMouseLeave}
         className={cn(
           "fixed top-0 left-0 z-40 h-screen bg-background border-r transition-all duration-300 ease-in-out overflow-hidden",
           collapsed 
