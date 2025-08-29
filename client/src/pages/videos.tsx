@@ -124,7 +124,7 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
   const [selectedLanguage, setSelectedLanguage] = useState('Ҳама');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filteredVideos, setFilteredVideos] = useState(sampleVideos);
-  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
   // Filter videos based on search, category and language
   const filterVideos = () => {
@@ -170,8 +170,8 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
     filterVideos();
   };
 
-  const handlePlayVideo = (videoId: string) => {
-    setPlayingVideo(playingVideo === videoId ? null : videoId);
+  const handleVideoSelect = (video: VideoItem) => {
+    setSelectedVideo(video);
   };
 
   const handleLike = (video: VideoItem) => {
@@ -223,6 +223,78 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
               Тиловати Қуръон, дуоҳо ва маълумотҳои исломӣ бо субтитрҳои тоҷикӣ
             </p>
           </div>
+
+          {/* Selected Video Player */}
+          {selectedVideo && (
+            <div className="mb-8">
+              <Card className="overflow-hidden">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-xl mb-2">{selectedVideo.title}</CardTitle>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {selectedVideo.description}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedVideo(null)}
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="aspect-video w-full">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}?rel=0&modestbranding=1`}
+                      title={selectedVideo.title}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                      <div className="flex items-center gap-4">
+                        <span>Тиловаткунанда: {selectedVideo.reciter}</span>
+                        <span>Забон: {selectedVideo.language}</span>
+                        <span>Давра: {selectedVideo.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() => handleLike(selectedVideo)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          <Heart className="h-4 w-4 mr-1" />
+                          {selectedVideo.likes}
+                        </Button>
+                        <Button
+                          onClick={() => handleShare(selectedVideo)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          <Share2 className="h-4 w-4 mr-1" />
+                          Бахшида
+                        </Button>
+                        <Button
+                          onClick={() => handleWatchOnYouTube(selectedVideo)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Дар YouTube
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           {/* Search and Filters */}
           <div className="mb-6 space-y-4">
@@ -294,7 +366,7 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
           {filteredVideos.length > 0 ? (
             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
               {filteredVideos.map((video) => (
-                <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleVideoSelect(video)}>
                   {/* Video Thumbnail */}
                   <div className="aspect-video bg-gray-200 dark:bg-gray-800 relative group">
                     <img
@@ -305,14 +377,9 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                     
                     {/* Play Button Overlay */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Button
-                        size="lg"
-                        variant="secondary"
-                        onClick={() => handleWatchOnYouTube(video)}
-                        className="rounded-full w-16 h-16"
-                      >
-                        <Play className="h-8 w-8 ml-1" />
-                      </Button>
+                      <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
+                        <Play className="h-8 w-8 ml-1 text-gray-800" />
+                      </div>
                     </div>
                     
                     {/* Duration Badge */}
@@ -356,15 +423,21 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                     {/* Action Buttons */}
                     <div className="flex items-center gap-2">
                       <Button 
-                        onClick={() => handleWatchOnYouTube(video)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleVideoSelect(video);
+                        }}
                         className="flex-1"
                         size="sm"
                       >
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Дар YouTube назар
+                        <Play className="h-4 w-4 mr-2" />
+                        Назар
                       </Button>
                       <Button 
-                        onClick={() => handleLike(video)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLike(video);
+                        }}
                         variant="outline" 
                         size="sm"
                       >
@@ -372,7 +445,10 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                         {video.likes}
                       </Button>
                       <Button 
-                        onClick={() => handleShare(video)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShare(video);
+                        }}
                         variant="outline" 
                         size="sm"
                       >
