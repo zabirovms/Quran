@@ -11,17 +11,18 @@ export default function NotFound() {
         description="Саҳифаи дархост кардаатон ёфт нашуд. Лутфан ба саҳифаи асосӣ баргардед."
       />
 
-      {/* Error Message */}
-      <div className="text-center space-y-6">
+      {/* Error Message - 404 */}
+      <div className="text-center mb-4"> {/* Added mb-4 for closer spacing */}
         <h1 className="text-6xl font-bold text-primary">404</h1>
       </div>
       
       {/* 404 GIF */}
-      <div className="my-8">
+      <div className="mb-4"> {/* Added mb-4 for closer spacing */}
         <img src="/bg.gif" alt="404 Error" className="w-96 h-96 object-contain" />
       </div>
 
-      <div className="text-center space-y-6">
+      {/* Other Error Messages and Button */}
+      <div className="text-center space-y-4"> {/* Adjusted space-y for closer content */}
         <h2 className="text-3xl font-semibold text-foreground">
           Ба фикрам шумо роҳгум задед
         </h2>
@@ -29,7 +30,7 @@ export default function NotFound() {
           чунин саҳифа вуҷуд надорад!
         </p>
 
-        <div className="pt-4">
+        <div className="pt-4 flex justify-center"> {/* Added flex justify-center here */}
           <Link href="/">
             <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-lg px-8 py-3">
               <Home className="h-5 w-5" />
