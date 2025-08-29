@@ -1,21 +1,24 @@
 import { useState } from 'react';
-import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { GlobalOverlayType } from '@/App';
 import { 
   Search, 
-  Image, 
-  Download, 
-  Heart, 
+  Heart,
   Share2,
+  Download,
+  Eye,
   Filter,
   Grid3X3,
-  List
+  List,
+  BookOpen,
+  Star,
+  Calendar,
+  User
 } from 'lucide-react';
 import SeoHead from '@/components/shared/SeoHead';
 
@@ -24,77 +27,131 @@ interface PictureItem {
   title: string;
   description: string;
   category: string;
-  imageUrl: string;
-  tags: string[];
+  source: string;
+  surah: string;
+  verse: string;
+  author: string;
+  imagePath: string;
   likes: number;
-  downloads: number;
+  views: number;
+  uploadDate: string;
+  tags: string[];
 }
 
-const samplePictures: PictureItem[] = [
+const quranicQuotes: PictureItem[] = [
   {
     id: '1',
-    title: 'Хаттотии "Бисмиллоҳ"',
-    description: 'Хаттотии зебои "Бисмиллоҳир-раҳмонир-раҳим" бо услуби настаълиқ',
-    category: 'Хаттотӣ',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['хаттотӣ', 'бисмиллоҳ', 'настаълиқ'],
+    title: 'Қуръон 73:2 (Сураи Муззаммил)',
+    description: 'Иқтибоси зебо аз Сураи Муззаммил - ояти 2',
+    category: 'Иқтибосҳо',
+    source: 'Сураи Муззаммил',
+    surah: '73',
+    verse: '2',
+    author: 'Хаттот',
+    imagePath: '/QuraniQuotes/Қуръон 73^2 (Сураи Муззаммил).jpg',
     likes: 156,
-    downloads: 89
+    views: 2340,
+    uploadDate: '2024-01-15',
+    tags: ['Сураи Муззаммил', 'Оят 2', 'Хаттотӣ', 'Исломӣ']
   },
   {
     id: '2',
-    title: 'Масҷиди Набавӣ',
-    description: 'Сурати зебои Масҷиди Набавӣ дар Мадинаи Мунаввара',
-    category: 'Масҷидҳо',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['масҷид', 'мадина', 'ислом'],
+    title: 'Қуръон 20:55 (Сураи Тоҳо)',
+    description: 'Иқтибоси зебо аз Сураи Тоҳо - ояти 55',
+    category: 'Иқтибосҳо',
+    source: 'Сураи Тоҳо',
+    surah: '20',
+    verse: '55',
+    author: 'Хаттот',
+    imagePath: '/QuraniQuotes/Қуръон 20^55 (Сураи Тоҳо).jpg',
     likes: 234,
-    downloads: 156
+    views: 3456,
+    uploadDate: '2024-01-12',
+    tags: ['Сураи Тоҳо', 'Оят 55', 'Хаттотӣ', 'Исломӣ']
   },
   {
     id: '3',
-    title: 'Гулҳои исломӣ',
-    description: 'Нақши гулҳои зебои исломӣ бо рангҳои гуногун',
-    category: 'Нақшҳо',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['гулҳо', 'нақш', 'рангҳо'],
-    likes: 98,
-    downloads: 67
+    title: 'Фазилати Шаби Қадр',
+    description: 'Иқтибоси зебо дар бораи фазилати Шаби Қадр',
+    category: 'Фазилатҳо',
+    source: 'Шаби Қадр',
+    surah: '97',
+    verse: '1-5',
+    author: 'Хаттот',
+    imagePath: '/QuraniQuotes/Фазилати Шаби Қадр.jpg',
+    likes: 189,
+    views: 2789,
+    uploadDate: '2024-01-10',
+    tags: ['Шаби Қадр', 'Фазилат', 'Хаттотӣ', 'Исломӣ']
   },
   {
     id: '4',
-    title: 'Қуръони Карим',
-    description: 'Сурати зебои Қуръони Карим бо хаттотии зебо',
-    category: 'Хаттотӣ',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['қуръон', 'хаттотӣ', 'ислом'],
-    likes: 312,
-    downloads: 198
+    title: 'Қуръон 17:24 (Сураи Исро)',
+    description: 'Иқтибоси зебо аз Сураи Исро - ояти 24',
+    category: 'Иқтибосҳо',
+    source: 'Сураи Исро',
+    surah: '17',
+    verse: '24',
+    author: 'Хаттот',
+    imagePath: '/QuraniQuotes/Қуръон 17^24 (Сураи Исро).jpg',
+    likes: 145,
+    views: 2123,
+    uploadDate: '2024-01-08',
+    tags: ['Сураи Исро', 'Оят 24', 'Хаттотӣ', 'Исломӣ']
   },
   {
     id: '5',
-    title: 'Каъбаи Мушарафа',
-    description: 'Сурати зебои Каъбаи Мушарафа дар Масҷидул-ҳаром',
-    category: 'Масҷидҳо',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['каъба', 'макка', 'ҳаҷ'],
-    likes: 445,
-    downloads: 289
+    title: 'Дуоҳои Шаби Қадр',
+    description: 'Иқтибоси зебо аз дуоҳои Шаби Қадр',
+    category: 'Дуоҳо',
+    source: 'Шаби Қадр',
+    surah: '97',
+    verse: '1-5',
+    author: 'Хаттот',
+    imagePath: '/QuraniQuotes/Дуоҳои Шаби Қадр.jpg',
+    likes: 267,
+    views: 3890,
+    uploadDate: '2024-01-05',
+    tags: ['Шаби Қадр', 'Дуоҳо', 'Хаттотӣ', 'Исломӣ']
   },
   {
     id: '6',
-    title: 'Дуоҳои Қуръонӣ',
-    description: 'Нақши дуоҳои Қуръонӣ бо хаттотии зебо',
-    category: 'Хаттотӣ',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['дуо', 'хаттотӣ', 'қуръон'],
+    title: 'Қуръон 26:32 (Сураи Шуаро)',
+    description: 'Иқтибоси зебо аз Сураи Шуаро - ояти 32',
+    category: 'Иқтибосҳо',
+    source: 'Сураи Шуаро',
+    surah: '26',
+    verse: '32',
+    author: 'Хаттот',
+    imagePath: '/QuraniQuotes/Қуръон 26^32 (Сураи Шуаро).jpg',
     likes: 178,
-    downloads: 123
+    views: 2567,
+    uploadDate: '2024-01-03',
+    tags: ['Сураи Шуаро', 'Оят 32', 'Хаттотӣ', 'Исломӣ']
+  },
+  {
+    id: '7',
+    title: 'Такбири Иди Қурбон (Такбироти Ташриқ)',
+    description: 'Иқтибоси зебо аз такбироти Иди Қурбон',
+    category: 'Такбирҳо',
+    source: 'Иди Қурбон',
+    surah: '22',
+    verse: '28',
+    author: 'Хаттот',
+    imagePath: '/QuraniQuotes/Такбири Иди Қурбон (Такбироти Ташриқ).jpg',
+    likes: 198,
+    views: 3123,
+    uploadDate: '2024-01-01',
+    tags: ['Иди Қурбон', 'Такбир', 'Хаттотӣ', 'Исломӣ']
   }
 ];
 
 const categories = [
-  'Ҳама', 'Хаттотӣ', 'Масҷидҳо', 'Нақшҳо', 'Таърихӣ', 'Зебоишиносӣ'
+  'Ҳама', 'Иқтибосҳо', 'Фазилатҳо', 'Дуоҳо', 'Такбирҳо'
+];
+
+const sources = [
+  'Ҳама', 'Сураи Муззаммил', 'Сураи Тоҳо', 'Шаби Қадр', 'Сураи Исро', 'Сураи Шуаро', 'Иди Қурбон'
 ];
 
 interface PicturesProps {
@@ -104,23 +161,30 @@ interface PicturesProps {
 export default function Pictures({ onOpenOverlay }: PicturesProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Ҳама');
+  const [selectedSource, setSelectedSource] = useState('Ҳама');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [filteredPictures, setFilteredPictures] = useState(samplePictures);
+  const [filteredPictures, setFilteredPictures] = useState(quranicQuotes);
+  const [selectedPicture, setSelectedPicture] = useState<PictureItem | null>(null);
 
-  // Filter pictures based on search and category
+  // Filter pictures based on search, category and source
   const filterPictures = () => {
-    let filtered = samplePictures;
+    let filtered = quranicQuotes;
 
     if (selectedCategory !== 'Ҳама') {
-      filtered = filtered.filter(pic => pic.category === selectedCategory);
+      filtered = filtered.filter(picture => picture.category === selectedCategory);
+    }
+
+    if (selectedSource !== 'Ҳама') {
+      filtered = filtered.filter(picture => picture.source === selectedSource);
     }
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(pic => 
-        pic.title.toLowerCase().includes(term) ||
-        pic.description.toLowerCase().includes(term) ||
-        pic.tags.some(tag => tag.toLowerCase().includes(term))
+      filtered = filtered.filter(picture => 
+        picture.title.toLowerCase().includes(term) ||
+        picture.description.toLowerCase().includes(term) ||
+        picture.author.toLowerCase().includes(term) ||
+        picture.tags.some(tag => tag.toLowerCase().includes(term))
       );
     }
 
@@ -142,31 +206,52 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
     filterPictures();
   };
 
-  const handleDownload = (picture: PictureItem) => {
-    // Implement download functionality
-    console.log('Downloading:', picture.title);
+  const handleSourceChange = (source: string) => {
+    setSelectedSource(source);
+    filterPictures();
+  };
+
+  const handlePictureSelect = (picture: PictureItem) => {
+    setSelectedPicture(picture);
   };
 
   const handleLike = (picture: PictureItem) => {
     // Implement like functionality
-    console.log('Liking:', picture.title);
+    console.log('Liking picture:', picture.title);
   };
 
   const handleShare = (picture: PictureItem) => {
     // Implement share functionality
-    console.log('Sharing:', picture.title);
+    console.log('Sharing picture:', picture.title);
+  };
+
+  const handleDownload = (picture: PictureItem) => {
+    // Implement download functionality
+    const link = document.createElement('a');
+    link.href = picture.imagePath;
+    link.download = picture.title;
+    link.click();
+  };
+
+  const formatViews = (views: number) => {
+    if (views >= 1000000) {
+      return `${(views / 1000000).toFixed(1)}M`;
+    } else if (views >= 1000) {
+      return `${(views / 1000).toFixed(1)}K`;
+    }
+    return views.toString();
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <SeoHead
-        title="Суратҳои исломӣ - Хаттотӣ, масҷидҳо ва нақшҳо"
-        description="Суратҳои зебои исломӣ, хаттотӣ, масҷидҳо ва нақшҳо. Боргирии суратҳои исломӣ бо сифати баланд."
+        title="Иқтибосҳо аз Қуръон - суратҳо исломӣ"
+        description="Иқтибосҳои зебо аз Қуръони Карим бо хаттотии исломӣ ва суратҳои зебо."
         structuredData={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          "name": "Суратҳои исломӣ",
-          "description": "Суратҳои зебои исломӣ, хаттотӣ ва нақшҳо",
+          "name": "Иқтибосҳо аз Қуръон",
+          "description": "Суратҳои исломӣ аз Қуръони Карим",
           "url": `${window.location.origin}/pictures`
         }}
       />
@@ -177,12 +262,88 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
           {/* Page Header */}
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-              Суратҳои исломӣ
+              Иқтибосҳо аз Қуръон
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Хаттотӣ, масҷидҳо, нақшҳо ва суратҳои зебои исломӣ
+              суратҳо исломӣ
             </p>
           </div>
+
+          {/* Selected Picture Modal */}
+          {selectedPicture && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
+              <div className="max-w-4xl w-full max-h-full overflow-auto bg-white dark:bg-gray-900 rounded-lg">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h2 className="text-xl font-bold mb-2">{selectedPicture.title}</h2>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        {selectedPicture.description}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="h-4 w-4" />
+                          {selectedPicture.source}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Star className="h-4 w-4" />
+                          {selectedPicture.surah}:{selectedPicture.verse}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <User className="h-4 w-4" />
+                          {selectedPicture.author}
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedPicture(null)}
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <img
+                    src={selectedPicture.imagePath}
+                    alt={selectedPicture.title}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                </div>
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => handleLike(selectedPicture)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Heart className="h-4 w-4 mr-1" />
+                        {selectedPicture.likes}
+                      </Button>
+                      <Button
+                        onClick={() => handleShare(selectedPicture)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Share2 className="h-4 w-4 mr-1" />
+                        Бахшида
+                      </Button>
+                    </div>
+                    <Button
+                      onClick={() => handleDownload(selectedPicture)}
+                      variant="default"
+                      size="sm"
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      Боргирӣ
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Search and Filters */}
           <div className="mb-6 space-y-4">
@@ -190,7 +351,7 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
             <div className="relative max-w-md mx-auto">
               <Input
                 type="text"
-                placeholder="Ҷустуҷӯи суратҳо..."
+                placeholder="Ҷустуҷӯи иқтибосҳо..."
                 className="pl-10 pr-4 py-2"
                 value={searchTerm}
                 onChange={handleSearch}
@@ -198,18 +359,35 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
 
-            {/* Category Filters */}
-            <div className="flex flex-wrap justify-center gap-2">
-              {categories.map((category) => (
-                <Badge
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  className="cursor-pointer hover:bg-primary/10"
-                  onClick={() => handleCategoryChange(category)}
-                >
-                  {category}
-                </Badge>
-              ))}
+            {/* Category and Source Filters */}
+            <div className="flex flex-wrap justify-center gap-4">
+              <div className="flex flex-wrap gap-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Категория:</span>
+                {categories.map((category) => (
+                  <Badge
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    className="cursor-pointer hover:bg-primary/10"
+                    onClick={() => handleCategoryChange(category)}
+                  >
+                    {category}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Манбаъ:</span>
+                {sources.map((source) => (
+                  <Badge
+                    key={source}
+                    variant={selectedSource === source ? "default" : "outline"}
+                    className="cursor-pointer hover:bg-primary/10"
+                    onClick={() => handleSourceChange(source)}
+                  >
+                    {source}
+                  </Badge>
+                ))}
+              </div>
             </div>
 
             {/* View Mode Toggle */}
@@ -237,58 +415,95 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
           {filteredPictures.length > 0 ? (
             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
               {filteredPictures.map((picture) => (
-                <Card key={picture.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="aspect-video bg-gray-200 dark:bg-gray-800 relative group">
+                <Card key={picture.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => handlePictureSelect(picture)}>
+                  {/* Picture */}
+                  <div className="aspect-square bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
                     <img
-                      src={picture.imageUrl}
+                      src={picture.imagePath}
                       alt={picture.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                      <Button
+                    
+                    {/* Overlay with info */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <Eye className="h-8 w-8 mx-auto mb-2" />
+                        <span className="text-sm">Назар кардан</span>
+                      </div>
+                    </div>
+                    
+                    {/* Category Badge */}
+                    <div className="absolute top-2 left-2 bg-primary/90 text-white px-2 py-1 rounded text-xs">
+                      {picture.category}
+                    </div>
+                    
+                    {/* Source Badge */}
+                    <div className="absolute top-2 right-2 bg-secondary/90 text-white px-2 py-1 rounded text-xs">
+                      {picture.source}
+                    </div>
+                  </div>
+                  
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <Badge variant="outline" className="text-xs">
+                        {picture.surah}:{picture.verse}
+                      </Badge>
+                      <span className="text-xs text-gray-500">
+                        {formatViews(picture.views)} назар
+                      </span>
+                    </div>
+                    
+                    <h3 className="font-semibold mb-2 line-clamp-2">{picture.title}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                      {picture.description}
+                    </p>
+                    
+                    <div className="space-y-2 mb-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">Манбаъ:</span>
+                        <span className="font-medium">{picture.source}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">Хаттот:</span>
+                        <span className="font-medium">{picture.author}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePictureSelect(picture);
+                        }}
+                        className="flex-1"
                         size="sm"
-                        variant="secondary"
-                        onClick={() => handleDownload(picture)}
                       >
-                        <Download className="h-4 w-4 mr-1" />
-                        Боргирӣ
+                        <Eye className="h-4 w-4 mr-2" />
+                        Назар
                       </Button>
-                      <Button
+                      <Button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLike(picture);
+                        }}
+                        variant="outline" 
                         size="sm"
-                        variant="secondary"
-                        onClick={() => handleLike(picture)}
                       >
                         <Heart className="h-4 w-4 mr-1" />
                         {picture.likes}
                       </Button>
-                      <Button
+                      <Button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownload(picture);
+                        }}
+                        variant="outline" 
                         size="sm"
-                        variant="secondary"
-                        onClick={() => handleShare(picture)}
                       >
-                        <Share2 className="h-4 w-4 mr-1" />
+                        <Download className="h-4 w-4 mr-1" />
                       </Button>
-                    </div>
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <Badge variant="outline" className="text-xs">
-                        {picture.category}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {picture.downloads} боргирӣ
-                      </span>
-                    </div>
-                    <h3 className="font-semibold mb-2">{picture.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                      {picture.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {picture.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -296,16 +511,17 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Image className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Ягон сурат ёфт нашуд
+                Ягон иқтибос ёфт нашуд
               </h3>
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                Лутфан дар ҷустуҷӯ ё категория тағйир диҳед
+                Лутфан дар ҷустуҷӯ ё филтрҳо тағйир диҳед
               </p>
               <Button onClick={() => {
                 setSearchTerm('');
                 setSelectedCategory('Ҳама');
+                setSelectedSource('Ҳама');
               }}>
                 Тоза кардани филтрҳо
               </Button>

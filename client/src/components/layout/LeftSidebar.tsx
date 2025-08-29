@@ -121,8 +121,8 @@ export function LeftSidebar() {
     {
       href: "/pictures",
       icon: Image,
-      label: "Суратҳо",
-      description: "Суратҳои исломӣ"
+      label: "Иқтибосҳо аз Қуръон",
+      description: "суратҳо исломӣ"
     },
     {
       href: "/downloads",
