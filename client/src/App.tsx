@@ -17,6 +17,10 @@ const Projects = lazy(() => import("@/pages/projects"));
 const TasbeehCounter = lazy(() => import("@/pages/tasbeeh"));
 const LearnWords = lazy(() => import("@/pages/learn-words"));
 const DuasPage = lazy(() => import("@/pages/duas"));
+const PicturesPage = lazy(() => import("@/pages/pictures"));
+const DownloadsPage = lazy(() => import("@/pages/downloads"));
+const VideosPage = lazy(() => import("@/pages/videos"));
+const ArticlesPage = lazy(() => import("@/pages/articles"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 // Loading component for better UX
@@ -63,6 +67,10 @@ function Router() {
             <Route path="/tasbeeh" component={TasbeehCounter} />
             <Route path="/learn-words" component={LearnWords} />
             <Route path="/duas" component={DuasPage} />
+            <Route path="/pictures" component={() => <PicturesPage onOpenOverlay={openOverlay} />} />
+            <Route path="/downloads" component={() => <DownloadsPage onOpenOverlay={openOverlay} />} />
+            <Route path="/videos" component={() => <VideosPage onOpenOverlay={openOverlay} />} />
+            <Route path="/articles" component={() => <ArticlesPage onOpenOverlay={openOverlay} />} />
             <Route component={NotFound} />
           </Switch>
       </Suspense>
