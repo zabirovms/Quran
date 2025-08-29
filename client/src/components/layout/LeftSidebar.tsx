@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { 
@@ -19,9 +19,11 @@ import {
 import { Link, useLocation } from 'wouter';
 
 export function LeftSidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [location] = useLocation();
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Check screen size on mount and when resized
   useEffect(() => {
@@ -43,6 +45,31 @@ export function LeftSidebar() {
     // Cleanup
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
+
+  // Handle hover events
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    if (!isMobile) {
+      setCollapsed(false);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      hoverTimeoutRef.current = setTimeout(() => {
+        setCollapsed(true);
+      }, 300); // Small delay to prevent flickering
+    }
+  };
+
+  // Handle click events for mobile
+  const handleToggle = () => {
+    if (isMobile) {
+      setCollapsed(!collapsed);
+    }
+  };
 
   const navigationItems = [
     {
@@ -117,9 +144,9 @@ export function LeftSidebar() {
         ></div>
       )}
     
-      {/* Toggle button (always visible) */}
+      {/* Toggle button (always visible) - Integrated with header */}
       <button
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={handleToggle}
         className={cn(
           "fixed z-50 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-2 shadow-md transition-all",
           collapsed 
@@ -139,6 +166,9 @@ export function LeftSidebar() {
       
       {/* Left Sidebar */}
       <aside 
+        ref={sidebarRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={cn(
           "fixed top-0 left-0 z-40 h-screen bg-background border-r transition-all duration-300 ease-in-out overflow-hidden",
           collapsed 

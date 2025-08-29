@@ -1,27 +1,14 @@
-import { Home } from 'lucide-react'; // Add Home icon import
 import { useTheme } from '@/hooks/useTheme';
 import { useDisplaySettings } from '@/hooks/useDisplaySettings';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useState } from 'react';
 import { GlobalOverlayType } from '@/App';
 import { Surah } from '@shared/schema';
 import { Link, useLocation } from 'wouter';
 import { 
   Search, BookmarkIcon, ChevronLeft, ChevronRight, 
-  Menu, FolderKanban, Settings, BookOpen
+  Settings
 } from 'lucide-react';
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetTrigger,
-  SheetClose,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter
-} from '@/components/ui/sheet';
-import { HeaderSettings } from './HeaderSettings';
-import { Separator } from '@/components/ui/separator';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,7 +37,6 @@ export default function Header({
   const { theme, setTheme } = useTheme();
   const { wordByWordMode, toggleWordByWordMode } = useDisplaySettings();
   const [location, navigate] = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Navigate to the previous/next surah if available
   const goToPreviousSurah = () => {
@@ -81,70 +67,18 @@ export default function Header({
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
-  const isFarziAynPage = location === '/farzi-ayn';
-  const isProjectsPage = location === '/projects';
   const isHomePage = location === '/';
 
   return (
     <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          {isHomePage && (
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-gray-600 dark:text-gray-300"
-                  aria-label="Menu"
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[250px]">
-                <SheetHeader>
-                  <SheetTitle>Меню</SheetTitle>
-                </SheetHeader>
-                <div className="py-6 px-1 space-y-3">
-                  <Link
-                    href="/"
-                    className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
-                  >
-                    <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
-                    <span>Асосӣ</span>
-                  </Link>
-                  <Link
-                    href="/farzi-ayn"
-                    className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
-                  >
-                    <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
-                    <span>Фарзи Айн</span>
-                  </Link>
-                  <Link
-                    href="/projects"
-                    className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
-                  >
-                    <FolderKanban className="h-5 w-5 text-primary dark:text-accent" />
-                    <span>Лоиҳаҳои мо</span>
-                  </Link>
-                </div>
-              </SheetContent>
-            </Sheet>
-          )}
-
-          {(isFarziAynPage || isProjectsPage) ? (
-            <Link href="/">
-              <Button variant="ghost" size="icon" aria-label="Home">
-                <Home className="h-5 w-5 text-primary dark:text-accent" />
-              </Button>
-            </Link>
-          ) : (
-            <Link href="/">
-              <h1 className="text-xl font-bold text-primary dark:text-accent cursor-pointer">
-                Қуръони Карим
-              </h1>
-            </Link>
-          )}
+          {/* Home link - always visible */}
+          <Link href="/">
+            <h1 className="text-xl font-bold text-primary dark:text-accent cursor-pointer">
+              Қуръони Карим
+            </h1>
+          </Link>
         </div>
 
         <div className="flex items-center space-x-3">
