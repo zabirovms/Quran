@@ -160,7 +160,7 @@ export function LeftSidebar() {
         ></div>
       )}
     
-      {/* Toggle button at top left - Integrated with header */}
+      {/* Toggle button positioned to work with header */}
       <button
         ref={buttonRef}
         onClick={handleToggle}

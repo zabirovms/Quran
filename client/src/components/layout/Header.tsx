@@ -73,8 +73,8 @@ export default function Header({
     <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          {/* Home link - always visible */}
-          <Link href="/">
+          {/* Home link - positioned to work with hamburger button */}
+          <Link href="/" className="ml-12">
             <h1 className="text-xl font-bold text-primary dark:text-accent cursor-pointer">
               Қуръони Карим
             </h1>
