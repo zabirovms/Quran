@@ -2,7 +2,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getArabicFontClass } from '@/lib/fonts';
-import { useBookmarks, useRemoveBookmark } from '@/hooks/useBookmarks';
+import { useBookmarksWithVerses, useRemoveBookmark } from '@/hooks/useBookmarks';
 import { useToast } from '@/hooks/use-toast';
 import { X, Trash2, BookmarkIcon } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -14,7 +14,7 @@ interface BookmarksOverlayProps {
 }
 
 export default function BookmarksOverlay({ isOpen, onClose }: BookmarksOverlayProps) {
-  const { data: bookmarks, isLoading } = useBookmarks();
+  const { data: bookmarks, isLoading } = useBookmarksWithVerses();
   const removeBookmark = useRemoveBookmark();
   const { toast } = useToast();
   const [, navigate] = useLocation();
@@ -27,20 +27,20 @@ export default function BookmarksOverlay({ isOpen, onClose }: BookmarksOverlayPr
   };
   
   // Handle bookmark deletion
-  const handleDeleteBookmark = (bookmarkId: number, e: React.MouseEvent) => {
+  const handleDeleteBookmark = (bookmarkId: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent navigation when clicking delete
     
     removeBookmark.mutate(bookmarkId, {
       onSuccess: () => {
         toast({
-          title: "Bookmark removed",
-          description: "Verse removed from bookmarks.",
+          title: "Ҳазф шуд",
+          description: "Оят аз захирагоҳ ҳазф шуд",
         });
       },
       onError: () => {
         toast({
-          title: "Error",
-          description: "Failed to remove bookmark.",
+          title: "Хатогӣ",
+          description: "Ҳазф кардани захира номуваффақ буд",
           variant: "destructive"
         });
       }
@@ -88,7 +88,7 @@ export default function BookmarksOverlay({ isOpen, onClose }: BookmarksOverlayPr
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        Илова шуда дар {format(new Date(bookmark.created_at), 'MMM d, yyyy')}
+                        Илова шуда дар {format(new Date(bookmark.createdAt), 'MMM d, yyyy')}
                       </p>
                       <div className={`${getArabicFontClass('sm')} text-right text-base mb-1 line-clamp-1`}>
                         {verse.arabic_text}
@@ -99,7 +99,6 @@ export default function BookmarksOverlay({ isOpen, onClose }: BookmarksOverlayPr
                       size="icon"
                       className="text-red-500 hover:text-red-700"
                       onClick={(e) => handleDeleteBookmark(bookmark.id, e)}
-                      disabled={removeBookmark.isPending}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

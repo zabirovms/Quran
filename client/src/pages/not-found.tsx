@@ -11,29 +11,29 @@ export default function NotFound() {
         description="Саҳифаи дархост кардаатон ёфт нашуд. Лутфан ба саҳифаи асосӣ баргардед."
       />
 
-      {/* Error Message - 404 */}
-      <div className="text-center mb-4"> {/* Added mb-4 for closer spacing */}
-        <h1 className="text-6xl font-bold text-primary">404</h1>
+      {/* Error Message - 404 (No bottom margin) */}
+      <div className="text-center">
+        <h1 className="text-5xl font-bold text-primary">404</h1> {/* Smaller text */}
       </div>
       
-      {/* 404 GIF */}
-      <div className="mb-4"> {/* Added mb-4 for closer spacing */}
-        <img src="/bg.gif" alt="404 Error" className="w-96 h-96 object-contain" />
+      {/* 404 GIF (No top/bottom margin) */}
+      <div>
+        <img src="/bg.gif" alt="404 Error" className="w-[30rem] h-[30rem] object-contain" /> {/* Even larger GIF using arbitrary value */}
       </div>
 
-      {/* Other Error Messages and Button */}
-      <div className="text-center space-y-4"> {/* Adjusted space-y for closer content */}
-        <h2 className="text-3xl font-semibold text-foreground">
+      {/* Other Error Messages and Button (No top margin, reduced space-y) */}
+      <div className="text-center space-y-2"> {/* Reduced space between elements */}
+        <h2 className="text-2xl font-semibold text-foreground"> {/* Smaller text */}
           Ба фикрам шумо роҳгум задед
         </h2>
-        <p className="text-xl text-muted-foreground">
+        <p className="text-lg text-muted-foreground"> {/* Smaller text */}
           чунин саҳифа вуҷуд надорад!
         </p>
 
-        <div className="pt-4 flex justify-center"> {/* Added flex justify-center here */}
+        <div className="pt-4 flex justify-center">
           <Link href="/">
-            <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-lg px-8 py-3">
-              <Home className="h-5 w-5" />
+            <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-md px-6 py-2"> {/* Smaller button text/padding */}
+              <Home className="h-4 w-4" /> {/* Smaller icon */}
               <span>Бозгашт</span>
             </Button>
           </Link>
