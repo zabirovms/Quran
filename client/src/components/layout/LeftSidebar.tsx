@@ -1,0 +1,212 @@
+import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { 
+  ChevronRight, 
+  ChevronLeft, 
+  Home,
+  BookOpen,
+  Image,
+  Download,
+  Video,
+  FileText,
+  Book,
+  FolderKanban,
+  Settings,
+  User,
+  Menu
+} from 'lucide-react';
+import { Link, useLocation } from 'wouter';
+
+export function LeftSidebar() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [location] = useLocation();
+
+  // Check screen size on mount and when resized
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      
+      // Auto-collapse on mobile
+      if (window.innerWidth < 768) {
+        setCollapsed(true);
+      }
+    };
+
+    // Initial check
+    checkScreenSize();
+    
+    // Add event listener
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const navigationItems = [
+    {
+      href: "/",
+      icon: Home,
+      label: "Асосӣ",
+      description: "Саҳифаи асосӣ"
+    },
+    {
+      href: "/farzi-ayn",
+      icon: BookOpen,
+      label: "Фарзи Айн",
+      description: "Фарзҳои исломӣ"
+    },
+    {
+      href: "/tasbeeh",
+      icon: Book,
+      label: "Тасбеҳгӯяк",
+      description: "Шумориши зикрҳо"
+    },
+    {
+      href: "/learn-words",
+      icon: BookOpen,
+      label: "Омӯзиши калимаҳо",
+      description: "Калимаҳои Қуръон"
+    },
+    {
+      href: "/duas",
+      icon: BookOpen,
+      label: "Дуоҳо",
+      description: "Дуоҳои Қуръонӣ"
+    },
+    {
+      href: "/pictures",
+      icon: Image,
+      label: "Суратҳо",
+      description: "Суратҳои исломӣ"
+    },
+    {
+      href: "/downloads",
+      icon: Download,
+      label: "Боргирӣ",
+      description: "Қуръон ба PDF"
+    },
+    {
+      href: "/videos",
+      icon: Video,
+      label: "Видеоҳо",
+      description: "Тиловат бо субтитр"
+    },
+    {
+      href: "/articles",
+      icon: FileText,
+      label: "Мақолаҳо",
+      description: "Маълумотҳои исломӣ"
+    },
+    {
+      href: "/projects",
+      icon: FolderKanban,
+      label: "Лоиҳаҳо",
+      description: "Лоиҳаҳои мо"
+    }
+  ];
+
+  return (
+    <>
+      {/* Mobile overlay when sidebar is expanded */}
+      {!collapsed && isMobile && (
+        <div 
+          className="fixed inset-0 bg-black/30 z-40"
+          onClick={() => setCollapsed(true)}
+        ></div>
+      )}
+    
+      {/* Toggle button (always visible) */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className={cn(
+          "fixed z-50 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-2 shadow-md transition-all",
+          collapsed 
+            ? "left-4 bottom-16" 
+            : isMobile 
+              ? "left-[calc(250px+0.5rem)] bottom-16" 
+              : "left-[calc(280px+0.5rem)] bottom-16"
+        )}
+        aria-label={collapsed ? "Open navigation" : "Close navigation"}
+      >
+        {collapsed ? (
+          <Menu className="h-5 w-5" />
+        ) : (
+          <ChevronLeft className="h-5 w-5" />
+        )}
+      </button>
+      
+      {/* Left Sidebar */}
+      <aside 
+        className={cn(
+          "fixed top-0 left-0 z-40 h-screen bg-background border-r transition-all duration-300 ease-in-out overflow-hidden",
+          collapsed 
+            ? "w-0 opacity-0" 
+            : isMobile 
+              ? "w-[250px] opacity-100" 
+              : "w-[280px] opacity-100"
+        )}
+      >
+        <div className="flex flex-col h-full">
+          {/* Sidebar header */}
+          <div className="p-4 border-b">
+            <h2 className="font-semibold mb-3 flex items-center justify-between">
+              <span className="text-primary dark:text-accent">Қуръони Карим</span>
+              <button 
+                onClick={() => setCollapsed(true)}
+                className="p-1 hover:bg-muted rounded-full"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </h2>
+          </div>
+          
+          {/* Navigation menu */}
+          <nav className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-2">
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location === item.href;
+                
+                return (
+                  <Link key={item.href} href={item.href}>
+                    <Button
+                      variant={isActive ? "default" : "ghost"}
+                      className={cn(
+                        "w-full justify-start h-auto py-3 px-3",
+                        isActive && "bg-primary text-primary-foreground"
+                      )}
+                    >
+                      <div className="flex items-center gap-3 w-full">
+                        <Icon className="h-5 w-5 flex-shrink-0" />
+                        <div className="flex flex-col items-start text-left">
+                          <span className="font-medium">{item.label}</span>
+                          <span className="text-xs opacity-70">{item.description}</span>
+                        </div>
+                      </div>
+                    </Button>
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+
+          {/* User section at bottom */}
+          <div className="p-4 border-t">
+            <div className="flex items-center gap-3 p-2 hover:bg-muted rounded-md cursor-pointer">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <User className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Истифодабаранда</p>
+                <p className="text-xs text-muted-foreground">Танзимот</p>
+              </div>
+              <Settings className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+} 
