@@ -112,7 +112,15 @@ export default function CompactVerseItem({ verse, surahName, isLoading = false }
     } else {
       setIsBookmarkPending(true);
       addBookmark.mutate(
-        verse.id,
+        {
+          verseId: verse.id,
+          verseKey: verse.unique_key,
+          surahNumber: verse.surah_id,
+          verseNumber: verse.verse_number,
+          arabicText: arabicText,
+          tajikText: verse.tajik_text,
+          surahName: surahName
+        },
         {
           onSuccess: () => {
             toast({
