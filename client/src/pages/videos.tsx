@@ -171,6 +171,7 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
   };
 
   const handleVideoSelect = (video: VideoItem) => {
+    console.log('Selected video:', video.title, 'YouTube ID:', video.youtubeId);
     setSelectedVideo(video);
   };
 
@@ -195,6 +196,11 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
       return `${(views / 1000).toFixed(1)}K`;
     }
     return views.toString();
+  };
+
+  // Generate YouTube embed URL with proper parameters
+  const getYouTubeEmbedUrl = (youtubeId: string) => {
+    return `https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&showinfo=1&controls=1&autoplay=0`;
   };
 
   return (
@@ -246,14 +252,15 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <div className="aspect-video w-full">
+                  <div className="aspect-video w-full bg-gray-900">
                     <iframe
-                      src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}?rel=0&modestbranding=1`}
+                      src={getYouTubeEmbedUrl(selectedVideo.youtubeId)}
                       title={selectedVideo.title}
                       className="w-full h-full"
                       frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
+                      loading="lazy"
                     ></iframe>
                   </div>
                   <div className="p-4">
