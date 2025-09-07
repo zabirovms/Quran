@@ -7,6 +7,7 @@ import { insertBookmarkSchema, insertSearchHistorySchema } from "@shared/schema"
 import { z } from "zod";
 import fetch from "node-fetch";
 import { registerWordServiceRoutes, extractSimpleWordAnalysis } from "./word-service";
+import { generateSurahPdfBuffer } from "./pdf";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes - prefix all routes with /api
@@ -156,12 +157,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bookmark = await storage.createBookmark(validatedData);
       console.log("Created bookmark:", bookmark);
       res.status(201).json(bookmark);
-    } catch (error) {
-      console.error("Error creating bookmark:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid bookmark data", errors: error.errors });
+    } catch (err) {
+      console.error("Error creating bookmark:", err);
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid bookmark data", errors: err.errors });
       }
-      res.status(500).json({ message: "Error creating bookmark", error: error.message });
+      const message = err instanceof Error ? err.message : String(err);
+      res.status(500).json({ message: "Error creating bookmark", error: message });
     }
   });
 
@@ -389,6 +391,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error loading duas data:', error);
       res.status(500).json({ message: "Failed to load duas data", error: String(error) });
+    }
+  });
+
+  // Export Surah as PDF (Arabic + Tajik + Tafsir)
+  apiRouter.get("/export/surah/:number.pdf", async (req: Request, res: Response) => {
+    try {
+      const surahNumber = parseInt(req.params.number);
+      if (isNaN(surahNumber)) {
+        return res.status(400).json({ message: "Invalid surah number" });
+      }
+
+      const pdfBuffer = await generateSurahPdfBuffer(surahNumber);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename=surah-${surahNumber}.pdf`);
+      res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=60");
+      return res.send(pdfBuffer);
+    } catch (err) {
+      const anyErr = err as { status?: number; message?: string };
+      const status = anyErr && typeof anyErr.status === 'number' ? anyErr.status : 500;
+      const message = anyErr && typeof anyErr.message === 'string' ? anyErr.message : "Failed to generate PDF";
+      return res.status(status).json({ message });
     }
   });
 
