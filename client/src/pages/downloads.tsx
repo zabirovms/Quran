@@ -16,7 +16,9 @@ import {
   Star,
   Filter,
   Grid3X3,
-  List
+  List,
+  Eye,
+  ExternalLink
 } from 'lucide-react';
 import SeoHead from '@/components/shared/SeoHead';
 
@@ -41,13 +43,14 @@ const sampleDownloads: DownloadItem[] = [
     title: 'Қуръони Карим - Тарҷумаи тоҷикӣ',
     description: 'Қуръони Карим бо тарҷумаи пурраи тоҷикӣ ва тафсири осонбаён',
     category: 'Қуръон',
-    fileSize: '15.2 MB',
+    fileSize: '259 MB',
     format: 'PDF',
     language: 'Тоҷикӣ',
     downloads: 12456,
     rating: 4.8,
     lastUpdated: '2024-01-15',
-    downloadUrl: '/downloads/quran-tajik.pdf'
+    downloadUrl: '/downloads/quran-tj.pdf',
+    previewUrl: '/downloads/quran-tj.pdf'
   },
   {
     id: '2',
@@ -189,6 +192,13 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
     console.log('Downloading:', item.title);
   };
 
+  const handlePreview = (item: DownloadItem) => {
+    if (item.previewUrl) {
+      // Open PDF in new tab for preview
+      window.open(item.previewUrl, '_blank');
+    }
+  };
+
   const renderStars = (rating: number) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -229,12 +239,25 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
         <div className="max-w-7xl mx-auto">
           {/* Page Header */}
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+              <Download className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3">
               Боргирии матнҳо
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Қуръони Карим, дуоҳо, фарзҳои исломӣ ва матнҳои дигар
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Қуръони Карим, дуоҳо, фарзҳои исломӣ ва матнҳои дигар бо имконияти намоиш ва боргирӣ
             </p>
+            <div className="mt-4 flex justify-center gap-4 text-sm text-gray-500">
+              <span className="flex items-center gap-1">
+                <FileText className="h-4 w-4" />
+                {filteredDownloads.length} файл
+              </span>
+              <span className="flex items-center gap-1">
+                <BookOpen className="h-4 w-4" />
+                Матнҳои исломӣ
+              </span>
+            </div>
           </div>
 
           {/* Search and Filters */}
@@ -307,16 +330,27 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
           {filteredDownloads.length > 0 ? (
             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
               {filteredDownloads.map((item) => (
-                <Card key={item.id} className="hover:shadow-lg transition-shadow">
+                <Card key={item.id} className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-l-4 border-l-primary/20">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <CardTitle className="text-lg mb-2">{item.title}</CardTitle>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <BookOpen className="h-5 w-5 text-primary" />
+                          <CardTitle className="text-lg">{item.title}</CardTitle>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 leading-relaxed">
                           {item.description}
                         </p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="secondary" className="text-xs">
+                            {item.category}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {item.language}
+                          </Badge>
+                        </div>
                       </div>
-                      <Badge variant="outline" className="ml-2">
+                      <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20">
                         {item.format}
                       </Badge>
                     </div>
@@ -352,15 +386,28 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
                       </span>
                     </div>
                     
-                    {/* Download Button */}
-                    <Button 
-                      onClick={() => handleDownload(item)}
-                      className="w-full"
-                      size="sm"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Боргирӣ
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      {item.previewUrl && (
+                        <Button 
+                          onClick={() => handlePreview(item)}
+                          variant="outline"
+                          className="flex-1"
+                          size="sm"
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Намоиш
+                        </Button>
+                      )}
+                      <Button 
+                        onClick={() => handleDownload(item)}
+                        className="flex-1"
+                        size="sm"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Боргирӣ
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
