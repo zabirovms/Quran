@@ -25,6 +25,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Link } from 'wouter';
 import SeoHead from '@/components/shared/SeoHead';
+import BackToHome from '@/components/shared/BackToHome';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Tasbeeh {
@@ -186,13 +187,12 @@ export default function TasbeehCounter() {
       />
 
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/95">
+        {/* Back to Home Button */}
+        <BackToHome variant="creative" position="top-left" />
+        
         {/* Header */}
         <header className="border-b px-4 py-3 bg-background/80 backdrop-blur sticky top-0 z-10">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <Home className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium text-sm">Асосӣ</span>
-            </Link>
 
             <div className="text-center flex-1 flex justify-center">
               <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">

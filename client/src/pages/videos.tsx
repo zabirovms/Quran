@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import BackToHome from '@/components/shared/BackToHome';
 import { GlobalOverlayType } from '@/App';
 import { 
   Search, 
@@ -217,6 +218,9 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
         }}
       />
       <Header onOpenOverlay={onOpenOverlay} />
+      
+      {/* Back to Home Button */}
+      <BackToHome variant="creative" position="top-left" />
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">

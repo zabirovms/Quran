@@ -33,6 +33,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Link } from 'wouter';
 import SeoHead from '@/components/shared/SeoHead';
+import BackToHome from '@/components/shared/BackToHome';
 import { useToast } from '@/hooks/use-toast';
 import {
   Select,
@@ -540,14 +541,12 @@ export default function LearnWords() {
         title="Омӯзиши калимаҳои Қуръон"
         description="Калимаҳои аз ҳама бештар истифодашавандаро дар Қуръон тавассути шеваҳои интерактивӣ омӯзед."
       />
+      
+      {/* Back to Home Button */}
+      <BackToHome variant="creative" position="top-left" />
 
       {/* Fixed Header Bar for Mobile */}
       <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-md border-b px-4 py-3 flex items-center justify-between">
-        <Link href="/">
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <Home className="h-5 w-5" />
-          </Button>
-        </Link>
         <h1 className="text-xl font-bold text-primary truncate mx-2">
           Омӯзиши калимаҳо
         </h1>

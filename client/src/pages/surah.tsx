@@ -31,6 +31,7 @@ import { Link } from 'wouter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import SeoHead from '@/components/shared/SeoHead';
+import BackToHome from '@/components/shared/BackToHome';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useDisplaySettings } from '@/hooks/useDisplaySettings';
@@ -435,6 +436,9 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
           />
         </div>
       </SmartSticky>
+      
+      {/* Back to Home Button */}
+      <BackToHome variant="creative" position="top-left" />
 
       <main className="container mx-auto px-4 py-8">
         <div ref={scrollTopRef}></div>

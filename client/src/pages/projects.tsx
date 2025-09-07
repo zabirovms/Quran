@@ -1,5 +1,6 @@
 import { GlobalOverlayType } from '@/App';
 import Header from '@/components/layout/Header';
+import BackToHome from '@/components/shared/BackToHome';
 import SeoHead from '@/components/shared/SeoHead';
 
 interface ProjectsProps {
@@ -27,6 +28,9 @@ export default function Projects({ onOpenOverlay }: ProjectsProps) {
         }}
       />
       <Header onOpenOverlay={onOpenOverlay} />
+      
+      {/* Back to Home Button */}
+      <BackToHome variant="creative" position="top-left" />
       
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
