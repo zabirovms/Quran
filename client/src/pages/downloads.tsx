@@ -183,8 +183,9 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
   const handleDownload = (item: DownloadItem) => {
     // Create a temporary link element to trigger download
     const link = document.createElement('a');
-    link.href = item.downloadUrl;
+    link.href = `${window.location.origin}${item.downloadUrl}`;
     link.download = item.title;
+    link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -194,8 +195,9 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
 
   const handlePreview = (item: DownloadItem) => {
     if (item.previewUrl) {
-      // Open PDF in new tab for preview
-      window.open(item.previewUrl, '_blank');
+      // Open PDF in new tab for preview with proper URL
+      const pdfUrl = `${window.location.origin}${item.previewUrl}`;
+      window.open(pdfUrl, '_blank');
     }
   };
 

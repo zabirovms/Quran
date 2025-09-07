@@ -83,7 +83,14 @@ export function serveStatic(app: Express) {
     index: false, // Don't serve index.html for directory requests
     maxAge: '1y', // Cache static assets for 1 year
     etag: true,
-    lastModified: true
+    lastModified: true,
+    setHeaders: (res, path) => {
+      // Set proper headers for PDF files
+      if (path.endsWith('.pdf')) {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Cache-Control', 'public, max-age=2592000'); // 1 month
+      }
+    }
   }));
 
   // Serve index.html for all other routes
