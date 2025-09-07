@@ -49,8 +49,8 @@ const sampleDownloads: DownloadItem[] = [
     downloads: 12456,
     rating: 4.8,
     lastUpdated: '2024-01-15',
-    downloadUrl: '/downloads/quran-tj.pdf',
-    previewUrl: '/downloads/quran-tj.pdf'
+    downloadUrl: '/downloads/quran-tajik.pdf',
+    previewUrl: '/downloads/quran-tajik.pdf'
   },
   {
     id: '2',
@@ -183,8 +183,9 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
   const handleDownload = (item: DownloadItem) => {
     // Create a temporary link element to trigger download
     const link = document.createElement('a');
-    link.href = item.downloadUrl;
+    link.href = `${window.location.origin}${item.downloadUrl}`;
     link.download = item.title;
+    link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -194,8 +195,9 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
 
   const handlePreview = (item: DownloadItem) => {
     if (item.previewUrl) {
-      // Open PDF in new tab for preview
-      window.open(item.previewUrl, '_blank');
+      // Open PDF in new tab for preview with proper URL
+      const pdfUrl = `${window.location.origin}${item.previewUrl}`;
+      window.open(pdfUrl, '_blank');
     }
   };
 
@@ -332,58 +334,45 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
               {filteredDownloads.map((item) => (
                 <Card key={item.id} className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-l-4 border-l-primary/20">
                   <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <BookOpen className="h-5 w-5 text-primary" />
-                          <CardTitle className="text-lg">{item.title}</CardTitle>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 leading-relaxed">
-                          {item.description}
-                        </p>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {item.category}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {item.language}
-                          </Badge>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BookOpen className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {item.category}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {item.language}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
                         {item.format}
                       </Badge>
                     </div>
                   </CardHeader>
                   
-                  <CardContent className="space-y-3">
-                    {/* File Info */}
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Андозаи файл:</span>
-                      <span className="font-medium">{item.fileSize}</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Забон:</span>
-                      <span className="font-medium">{item.language}</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Боргирӣ:</span>
-                      <span className="font-medium">{item.downloads.toLocaleString()}</span>
-                    </div>
-                    
-                    {/* Rating */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        {renderStars(item.rating)}
-                        <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
-                          ({item.rating})
-                        </span>
+                  <CardContent className="space-y-4">
+                    {/* PDF Preview */}
+                    {item.id === '1' && (
+                      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-2 border-dashed border-gray-300 dark:border-gray-600">
+                        <div className="text-center">
+                          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            Намоиши саҳифаи 3
+                          </p>
+                          <div className="bg-white dark:bg-gray-700 rounded border p-2 min-h-[200px] flex items-center justify-center">
+                            <p className="text-gray-500 text-sm">
+                              PDF Preview - Page 3<br/>
+                              <span className="text-xs">(Preview will be loaded here)</span>
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-xs text-gray-500">
-                        {new Date(item.lastUpdated).toLocaleDateString('tg-TJ')}
-                      </span>
+                    )}
+                    
+                    {/* File Info */}
+                    <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                      <span>Андозаи файл: <strong>{item.fileSize}</strong></span>
                     </div>
                     
                     {/* Action Buttons */}
