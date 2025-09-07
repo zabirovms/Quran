@@ -49,8 +49,8 @@ const sampleDownloads: DownloadItem[] = [
     downloads: 12456,
     rating: 4.8,
     lastUpdated: '2024-01-15',
-    downloadUrl: '/quran-tajik.pdf',
-    previewUrl: '/quran-tajik.pdf'
+    downloadUrl: '/test-quran.pdf',
+    previewUrl: '/test-quran.pdf'
   },
   {
     id: '2',
@@ -195,8 +195,9 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
 
   const handlePreview = (item: DownloadItem) => {
     if (item.previewUrl) {
-      // Open PDF in new tab for preview with proper URL
+      // Simple approach - just open the PDF directly
       const pdfUrl = `${window.location.origin}${item.previewUrl}`;
+      console.log('Opening PDF URL:', pdfUrl);
       window.open(pdfUrl, '_blank');
     }
   };
