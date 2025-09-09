@@ -7,7 +7,7 @@ import { Surah } from '@shared/schema';
 import { Link, useLocation } from 'wouter';
 import { 
   Search, BookmarkIcon, ChevronLeft, ChevronRight, 
-  Settings, Home
+  Settings, Home, Menu
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -73,6 +73,16 @@ export default function Header({
     <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
+          {/* Left-side hamburger to toggle the left sidebar */}
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Навигатсия"
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-left-sidebar'))}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
           {/* Inline Home button (hidden on homepage) */}
           {!isHomePage && (
             <Link href="/">

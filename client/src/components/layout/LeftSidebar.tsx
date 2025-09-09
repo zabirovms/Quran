@@ -80,12 +80,14 @@ export function LeftSidebar() {
     }
   };
 
-  // Handle click events for mobile
-  const handleToggle = () => {
-    if (isMobile) {
-      setCollapsed(!collapsed);
-    }
-  };
+  // Handle toggle from header or mobile
+  const handleToggle = () => setCollapsed(c => !c);
+
+  useEffect(() => {
+    const handler = () => setCollapsed(c => !c);
+    window.addEventListener('toggle-left-sidebar' as any, handler as any);
+    return () => window.removeEventListener('toggle-left-sidebar' as any, handler as any);
+  }, []);
 
   const navigationItems = [
     {
@@ -160,20 +162,7 @@ export function LeftSidebar() {
         ></div>
       )}
     
-      {/* Toggle button positioned to work with header */}
-      <button
-        ref={buttonRef}
-        onClick={handleToggle}
-        onMouseEnter={handleButtonMouseEnter}
-        onMouseLeave={handleButtonMouseLeave}
-        className={cn(
-          "fixed z-50 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-2 shadow-md transition-all top-4 left-4",
-          !collapsed && "bg-primary/90"
-        )}
-        aria-label={collapsed ? "Open navigation" : "Close navigation"}
-      >
-        <Menu className="h-5 w-5" />
-      </button>
+      {/* Toggle button removed to avoid floating overlap; controlled via header */}
       
       {/* Left Sidebar */}
       <aside 
