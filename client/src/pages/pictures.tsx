@@ -19,7 +19,7 @@ const newImages: PictureItem[] = [
   { id: 'n2', title: 'Қуръон 24:35 (Сураи Нур)', imagePath: '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png' },
   { id: 'n3', title: 'Қуръон 29:69 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^69 (Сураи Анкабут).png' },
   { id: 'n4', title: 'Қуръон 53:32 (Сураи Наҷм)', imagePath: '/QuraniQuotes/Қуръон 53^32 (Сураи Наҷм).png' },
-  { id: 'n5', title: 'Қуръон 55:13 (Сураи Раҳмон)', imagePath: '/QurаниQuotes/Қуръон 55^13 (Сураи Раҳмон).png' },
+  { id: 'n5', title: 'Қуръон 55:13 (Сураи Раҳмон)', imagePath: '/QuraniQuotes/Қуръон 55^13 (Сураи Раҳмон).png' },
   { id: 'n6', title: 'Қуръон 9:51 (Сураи Тавба)', imagePath: '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png' },
 ];
 
