@@ -32,9 +32,9 @@ export default function NotFound() {
 
         <div className="pt-4 flex justify-center">
           <Link href="/">
-            <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-md px-6 py-2"> {/* Smaller button text/padding */}
-              <Home className="h-4 w-4" /> {/* Smaller icon */}
-              <span>Бозгашт</span>
+            <Button className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-md px-6 py-2">
+              <Home className="h-4 w-4" />
+              <span>Асосӣ</span>
             </Button>
           </Link>
         </div>
