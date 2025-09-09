@@ -42,6 +42,20 @@ interface DownloadItem {
 
 const sampleDownloads: DownloadItem[] = [
   {
+    id: '0',
+    title: 'Қуръони Карим - Тарҷумаи тоҷикӣ (PDF пурра)',
+    description: 'Нусхаи пурраи Қуръони Карим бо тарҷумаи тоҷикӣ',
+    category: 'Қуръон',
+    fileSize: '—',
+    format: 'PDF',
+    language: 'Тоҷикӣ',
+    downloads: 0,
+    rating: 5,
+    lastUpdated: '2024-01-20',
+    downloadUrl: 'http://34.8.8.40/quran-tajik.pdf',
+    previewUrl: 'http://34.8.8.40/quran-tajik.pdf'
+  },
+  {
     id: '1',
     title: 'Қуръони Карим - Тарҷумаи тоҷикӣ',
     description: 'Қуръони Карим бо тарҷумаи пурраи тоҷикӣ ва тафсири осонбаён',
@@ -240,20 +254,6 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
         }}
       />
       <Header onOpenOverlay={onOpenOverlay} />
-
-      {/* Inline Back to Home - aligned with page layout */}
-      <div className="container mx-auto px-4 mt-3">
-        <Link href="/">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2 text-primary hover:text-primary/90"
-          >
-            <Home className="h-4 w-4" />
-            <span className="hidden sm:inline">Асосӣ</span>
-          </Button>
-        </Link>
-      </div>
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">

@@ -61,16 +61,6 @@ export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
       />
       <Header onOpenOverlay={onOpenOverlay} />
 
-      {/* Inline Back to Home */}
-      <div className="container mx-auto px-4 mt-3">
-        <Link href="/">
-          <Button variant="ghost" size="sm" className="flex gap-2 items-center text-primary hover:text-primary/90">
-            <Home className="h-4 w-4" />
-            <span className="hidden sm:inline">Асосӣ</span>
-          </Button>
-        </Link>
-      </div>
-
       <main
         className="container mx-auto px-4 py-6 flex-grow overflow-y-auto scrollbar-hide"
         style={{ fontFamily: "'Palatino Linotype', 'Book Antiqua', serif", lineHeight: 1.6, color: "#333" }}

@@ -7,7 +7,7 @@ import { Surah } from '@shared/schema';
 import { Link, useLocation } from 'wouter';
 import { 
   Search, BookmarkIcon, ChevronLeft, ChevronRight, 
-  Settings
+  Settings, Home, Menu
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -73,8 +73,16 @@ export default function Header({
     <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          {/* Home link - positioned to work with hamburger button */}
-          <Link href="/" className="ml-12">
+          {/* Inline Home button (hidden on homepage) */}
+          {!isHomePage && (
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-primary hover:text-primary/90">
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Асосӣ</span>
+              </Button>
+            </Link>
+          )}
+          <Link href="/" className="ml-2">
             <h1 className="text-xl font-bold text-primary dark:text-accent cursor-pointer">
               Қуръони Карим
             </h1>
@@ -82,43 +90,48 @@ export default function Header({
         </div>
 
         <div className="flex items-center space-x-3">
-          {isHomePage && (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onOpenOverlay('search')}
-                aria-label="Search"
-              >
-                <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onOpenOverlay('search')}
+            aria-label="Search"
+          >
+            <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onOpenOverlay('bookmarks')}
+            aria-label="Bookmarks"
+          >
+            <BookmarkIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Theme Toggle">
+                <Settings className="h-5 w-5 text-gray-600 dark:text-gray-300" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onOpenOverlay('bookmarks')}
-                aria-label="Bookmarks"
-              >
-                <BookmarkIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Theme Toggle">
-                    <Settings className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Theme</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <div className="flex items-center justify-between w-full">
-                      <span>Dark Mode</span>
-                      <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Theme</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <div className="flex items-center justify-between w-full">
+                  <span>Dark Mode</span>
+                  <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* Hamburger to toggle sidebar/settings */}
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Menu"
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-sidebar'))}
+          >
+            <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          </Button>
         </div>
       </div>
       

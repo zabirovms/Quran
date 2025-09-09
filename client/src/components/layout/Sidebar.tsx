@@ -37,6 +37,13 @@ export function Sidebar() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
+  // Listen for a global toggle from the header hamburger
+  useEffect(() => {
+    const handler = () => setCollapsed(c => !c);
+    window.addEventListener('toggle-sidebar' as any, handler as any);
+    return () => window.removeEventListener('toggle-sidebar' as any, handler as any);
+  }, []);
+
   return (
     <>
       {/* Mobile overlay when sidebar is expanded */}
@@ -47,25 +54,7 @@ export function Sidebar() {
         ></div>
       )}
     
-      {/* Toggle button (always visible) */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className={cn(
-          "fixed z-50 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-2 shadow-md transition-all",
-          collapsed 
-            ? "right-4 bottom-16" 
-            : isMobile 
-              ? "right-[calc(250px+0.5rem)] bottom-16" 
-              : "right-[calc(280px+0.5rem)] bottom-16"
-        )}
-        aria-label={collapsed ? "Open settings" : "Close settings"}
-      >
-        {collapsed ? (
-          <Settings className="h-5 w-5" />
-        ) : (
-          <ChevronRight className="h-5 w-5" />
-        )}
-      </button>
+      {/* Toggle button removed; now controlled by header hamburger */}
       
       {/* Sidebar */}
       <aside 
