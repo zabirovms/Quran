@@ -16,7 +16,17 @@ interface PictureItem {
   imagePath: string;
 }
 
+const newImages: PictureItem[] = [
+  { id: 'n1', title: 'Қуръон 2:286 (Сураи Бақара)', imagePath: '/QuraniQuotes/Қуръон 2^286 (Сураи Бақара).png' },
+  { id: 'n2', title: 'Қуръон 24:35 (Сураи Нур)', imagePath: '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png' },
+  { id: 'n3', title: 'Қуръон 29:69 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^69 (Сураи Анкабут).png' },
+  { id: 'n4', title: 'Қуръон 53:32 (Сураи Наҷм)', imagePath: '/QuraniQuotes/Қуръон 53^32 (Сураи Наҷм).png' },
+  { id: 'n5', title: 'Қуръон 55:13 (Сураи Раҳмон)', imagePath: '/QurаниQuotes/Қуръон 55^13 (Сураи Раҳмон).png' },
+  { id: 'n6', title: 'Қуръон 9:51 (Сураи Тавба)', imagePath: '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png' },
+];
+
 const quranicQuotes: PictureItem[] = [
+  ...newImages,
   { id: '1', title: 'Қуръон 73:2 (Сураи Муззаммил)', imagePath: '/QuraniQuotes/Қуръон 73^2 (Сураи Муззаммил).jpg' },
   { id: '2', title: 'Қуръон 20:55 (Сураи Тоҳо)', imagePath: '/QuraniQuotes/Қуръон 20^55 (Сураи Тоҳо).jpg' },
   { id: '3', title: 'Фазилати Шаби Қадр', imagePath: '/QuraniQuotes/Фазилати Шаби Қадр.jpg' },
@@ -141,8 +151,8 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
             <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
               {filteredPictures.map((picture) => (
                 <Card key={picture.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePictureSelect(picture)}>
-                  <div className="aspect-square bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                    <img src={picture.imagePath} alt={picture.title} className="w-full h-full object-cover" />
+                  <div className="bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
+                    <img src={picture.imagePath} alt={picture.title} className="w-full h-auto" />
                   </div>
                   <div className="p-3 text-center text-sm font-medium">
                     {picture.title}
