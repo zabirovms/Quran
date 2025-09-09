@@ -22,6 +22,7 @@ const DownloadsPage = lazy(() => import("@/pages/downloads"));
 const VideosPage = lazy(() => import("@/pages/videos"));
 const ArticlesPage = lazy(() => import("@/pages/articles"));
 const NotFound = lazy(() => import("@/pages/not-found"));
+const LoginPage = lazy(() => import("@/pages/login"));
 
 // Loading component for better UX
 const PageLoader = () => (
@@ -71,7 +72,7 @@ function Router() {
             <Route path="/downloads" component={() => <DownloadsPage onOpenOverlay={openOverlay} />} />
             <Route path="/videos" component={() => <VideosPage onOpenOverlay={openOverlay} />} />
             <Route path="/articles" component={() => <ArticlesPage onOpenOverlay={openOverlay} />} />
-            <Route path="/login" component={() => import('@/pages/login').then(m => <m.default />)} />
+            <Route path="/login" component={LoginPage} />
             <Route component={NotFound} />
           </Switch>
       </Suspense>
