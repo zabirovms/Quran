@@ -3,12 +3,10 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-// Removed floating BackToHome in favor of inline control
-import { Home } from 'lucide-react';
-import { Link } from 'wouter';
 import { GlobalOverlayType } from '@/App';
 import { Download, Share2, X } from 'lucide-react';
 import SeoHead from '@/components/shared/SeoHead';
+import { useEffect } from 'react';
 
 interface PictureItem {
   id: string;
@@ -48,12 +46,10 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
   // Filter pictures based on search, category and source
   const filterPictures = () => setFilteredPictures(quranicQuotes);
 
-  // Apply filtering when dependencies change
-  useState(() => {
+  // Initialize list
+  useEffect(() => {
     filterPictures();
-  });
-
-  const handleSearch = (_e: React.ChangeEvent<HTMLInputElement>) => {};
+  }, []);
 
   const handlePictureSelect = (picture: PictureItem) => {
     setSelectedPicture(picture);
@@ -77,14 +73,7 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
     link.click();
   };
 
-  const formatViews = (views: number) => {
-    if (views >= 1000000) {
-      return `${(views / 1000000).toFixed(1)}M`;
-    } else if (views >= 1000) {
-      return `${(views / 1000).toFixed(1)}K`;
-    }
-    return views.toString();
-  };
+  // no counters in minimalist view
 
   return (
     <div className="min-h-screen flex flex-col">
