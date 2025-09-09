@@ -25,7 +25,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Link } from 'wouter';
 import SeoHead from '@/components/shared/SeoHead';
-import BackToHome from '@/components/shared/BackToHome';
+// Removed floating BackToHome usage
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Tasbeeh {

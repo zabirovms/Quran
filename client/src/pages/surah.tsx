@@ -439,7 +439,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
         </div>
       </SmartSticky>
       
-      {/* Removed floating BackToHome - using inline header button instead */
+      {/* Removed floating BackToHome - using inline header button instead */}
 
       <main className="container mx-auto px-4 py-8">
         <div ref={scrollTopRef}></div>
