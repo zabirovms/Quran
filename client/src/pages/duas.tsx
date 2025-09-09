@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Home, Book, Search } from 'lucide-react';
 import DuaCard from '@/components/quran/DuaCard';
-import BackToHome from '@/components/shared/BackToHome';
+// Removed floating BackToHome in favor of a single inline control
 import duasData from '@/data/quranic_duas.json';
 
 interface Dua {
@@ -28,14 +28,18 @@ export default function DuasPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Back to Home Button */}
-      <BackToHome variant="creative" position="top-left" />
       
       {/* Header */}
       <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
         <div className="container flex h-14 max-w-screen-2xl items-center px-4">
           <div className="flex w-full justify-between items-center">
             <div className="flex items-center gap-2">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="flex gap-2 items-center text-primary hover:text-primary/90">
+                  <Home className="h-4 w-4" />
+                  <span className="hidden sm:inline">Асосӣ</span>
+                </Button>
+              </Link>
               <Link href="/duas">
                 <Button variant="ghost" size="sm" className="flex gap-2 items-center">
                   <Book className="h-4 w-4" />

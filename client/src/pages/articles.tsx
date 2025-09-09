@@ -5,7 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import BackToHome from '@/components/shared/BackToHome';
+// Removed floating BackToHome in favor of inline control
+import { Home } from 'lucide-react';
+import { Link } from 'wouter';
 import { GlobalOverlayType } from '@/App';
 import { 
   Search, 
@@ -230,8 +232,15 @@ export default function Articles({ onOpenOverlay }: ArticlesProps) {
       />
       <Header onOpenOverlay={onOpenOverlay} />
       
-      {/* Back to Home Button */}
-      <BackToHome variant="creative" position="top-left" />
+      {/* Inline Back to Home */}
+      <div className="container mx-auto px-4 mt-3">
+        <Link href="/">
+          <Button variant="ghost" size="sm" className="flex gap-2 items-center text-primary hover:text-primary/90">
+            <Home className="h-4 w-4" />
+            <span className="hidden sm:inline">Асосӣ</span>
+          </Button>
+        </Link>
+      </div>
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">

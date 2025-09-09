@@ -31,7 +31,7 @@ import { Link } from 'wouter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import SeoHead from '@/components/shared/SeoHead';
-import BackToHome from '@/components/shared/BackToHome';
+// Removed floating BackToHome in favor of single inline header control
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useDisplaySettings } from '@/hooks/useDisplaySettings';
@@ -389,14 +389,16 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
         <header className="container mx-auto px-4 py-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-primary hover:text-primary/80">
-                <ArrowLeft className="h-6 w-6" />
+              <Link href="/">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 text-primary hover:text-primary/90"
+                >
+                  <Home className="h-4 w-4" />
+                  <span className="hidden sm:inline">Асосӣ</span>
+                </Button>
               </Link>
-              <div>
-                <h1 className="text-1xl font-bold text-foreground">
-                  Ба Асосӣ
-                </h1>
-              </div>
             </div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" onClick={() => onOpenOverlay('search')}>
@@ -437,8 +439,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
         </div>
       </SmartSticky>
       
-      {/* Back to Home Button */}
-      <BackToHome variant="creative" position="top-left" />
+      {/* Removed floating BackToHome - using inline header button instead */
 
       <main className="container mx-auto px-4 py-8">
         <div ref={scrollTopRef}></div>

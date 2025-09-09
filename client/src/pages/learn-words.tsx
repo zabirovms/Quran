@@ -542,11 +542,18 @@ export default function LearnWords() {
         description="Калимаҳои аз ҳама бештар истифодашавандаро дар Қуръон тавассути шеваҳои интерактивӣ омӯзед."
       />
       
-      {/* Back to Home Button */}
-      <BackToHome variant="creative" position="top-left" />
+      {/* Inline back control in header instead of floating button */}
 
       {/* Fixed Header Bar for Mobile */}
       <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-md border-b px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Link href="/">
+            <Button variant="ghost" size="sm" className="flex gap-2 items-center text-primary hover:text-primary/90">
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Асосӣ</span>
+            </Button>
+          </Link>
+        </div>
         <h1 className="text-xl font-bold text-primary truncate mx-2">
           Омӯзиши калимаҳо
         </h1>

@@ -187,12 +187,19 @@ export default function TasbeehCounter() {
       />
 
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/95">
-        {/* Back to Home Button */}
-        <BackToHome variant="creative" position="top-left" />
+        {/* Inline back control in header instead of floating button */}
         
         {/* Header */}
         <header className="border-b px-4 py-3 bg-background/80 backdrop-blur sticky top-0 z-10">
           <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="flex gap-2 items-center text-primary hover:text-primary/90">
+                  <Home className="h-4 w-4" />
+                  <span className="hidden sm:inline">Асосӣ</span>
+                </Button>
+              </Link>
+            </div>
 
             <div className="text-center flex-1 flex justify-center">
               <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
