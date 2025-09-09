@@ -71,6 +71,7 @@ function Router() {
             <Route path="/downloads" component={() => <DownloadsPage onOpenOverlay={openOverlay} />} />
             <Route path="/videos" component={() => <VideosPage onOpenOverlay={openOverlay} />} />
             <Route path="/articles" component={() => <ArticlesPage onOpenOverlay={openOverlay} />} />
+            <Route path="/login" component={() => <LoginPage />} />
             <Route component={NotFound} />
           </Switch>
       </Suspense>

@@ -198,22 +198,22 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
   };
 
   const handleDownload = (item: DownloadItem) => {
-    // Create a temporary link element to trigger download
+    const isAbsolute = /^https?:\/\//i.test(item.downloadUrl);
+    const href = isAbsolute ? item.downloadUrl : `${window.location.origin}${item.downloadUrl}`;
     const link = document.createElement('a');
-    link.href = `${window.location.origin}${item.downloadUrl}`;
+    link.href = href;
     link.download = item.title;
     link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
-    console.log('Downloading:', item.title);
+    console.log('Downloading:', item.title, href);
   };
 
   const handlePreview = (item: DownloadItem) => {
     if (item.previewUrl) {
-      // Simple approach - just open the PDF directly
-      const pdfUrl = `${window.location.origin}${item.previewUrl}`;
+      const isAbsolute = /^https?:\/\//i.test(item.previewUrl);
+      const pdfUrl = isAbsolute ? item.previewUrl : `${window.location.origin}${item.previewUrl}`;
       console.log('Opening PDF URL:', pdfUrl);
       window.open(pdfUrl, '_blank');
     }
