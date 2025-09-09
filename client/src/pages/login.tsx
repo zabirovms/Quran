@@ -1,81 +1,93 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
 import { Link } from 'wouter';
 import SeoHead from '@/components/shared/SeoHead';
+import './login.css';
 
 export default function LoginPage() {
   const [isRegister, setIsRegister] = useState(false);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
+    <div className="auth-page-root">
       <SeoHead title={isRegister ? 'Сабтином' : 'Вуруд'} description="Воридшавӣ ё сабтином ба сомона" />
 
-      {/* Decorative shapes */}
-      <div className="pointer-events-none absolute -right-20 -top-10 h-[700px] w-[900px] rotate-6 skew-y-12 bg-gradient-to-br from-background to-primary/30 dark:from-background dark:to-accent/20 rounded-3xl blur-0" />
-      <div className="pointer-events-none absolute left-20 top-[60%] h-[800px] w-[900px] -rotate-6 -skew-y-12 bg-background border-t-2 border-primary/40 dark:border-accent/40 rounded-3xl" />
+      <div className={"auth-container" + (isRegister ? ' active' : '')}>
+        <div className="curved-shape"></div>
+        <div className="curved-shape2"></div>
 
-      <Card className="relative w-[90%] max-w-3xl grid grid-cols-1 md:grid-cols-2 overflow-hidden border-primary/40 dark:border-accent/40 shadow-[0_0_25px_rgba(6,182,212,0.15)]">
-        {/* Form side */}
-        <div className="p-8 md:p-10 flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-primary dark:text-accent text-center mb-2">
-            {isRegister ? 'Сабтином' : 'Вуруд'}
-          </h2>
-          <p className="text-sm text-muted-foreground text-center mb-6">
-            {isRegister ? 'Ҳисоби нав эҷод кунед' : 'Ба ҳисоби худ ворид шавед'}
-          </p>
-
-          <form className="space-y-5">
-            <div>
-              <Input type="text" placeholder="Номи корбар" required className="bg-transparent" />
+        {/* Login form */}
+        <div className="form-box Login">
+          <h2 className="animation" style={{ ['--D' as any]: 0, ['--S' as any]: 21 }}>Вуруд</h2>
+          <form>
+            <div className="input-box animation" style={{ ['--D' as any]: 1, ['--S' as any]: 22 }}>
+              <input type="text" required />
+              <label>Номи корбар</label>
             </div>
-            {isRegister && (
-              <div>
-                <Input type="email" placeholder="Почта" required className="bg-transparent" />
-              </div>
-            )}
-            <div>
-              <Input type="password" placeholder="Гузарвожа" required className="bg-transparent" />
+            <div className="input-box animation" style={{ ['--D' as any]: 2, ['--S' as any]: 23 }}>
+              <input type="password" required />
+              <label>Гузарвожа</label>
             </div>
-            <Button type="submit" variant="outline" className="w-full border-primary/60 dark:border-accent/60">
-              {isRegister ? 'Сабтином шудан' : 'Ворид шудан'}
-            </Button>
+            <div className="input-box animation" style={{ ['--D' as any]: 3, ['--S' as any]: 24 }}>
+              <button className="btn" type="submit">Ворид шудан</button>
+            </div>
+            <div className="regi-link animation" style={{ ['--D' as any]: 4, ['--S' as any]: 25 }}>
+              <p>
+                Ҳоло ҳисоб надоред?
+                <br />
+                <button type="button" className="linklike" onClick={() => setIsRegister(true)}>Ҳисоб кушоед</button>
+              </p>
+            </div>
           </form>
-
-          <div className="text-center mt-4 text-sm">
-            {isRegister ? (
-              <>
-                <span>Аллакай ҳисоб доред? </span>
-                <button className="text-primary dark:text-accent font-semibold" onClick={() => setIsRegister(false)}>Ворид шавед</button>
-              </>
-            ) : (
-              <>
-                <span>Ҳоло ҳисоб надоред? </span>
-                <button className="text-primary dark:text-accent font-semibold" onClick={() => setIsRegister(true)}>Ҳисоб кушоед</button>
-              </>
-            )}
-          </div>
-
-          <div className="mt-6 text-center">
-            <Link href="/">
-              <Button variant="ghost">Ба Асосӣ</Button>
-            </Link>
-          </div>
         </div>
 
-        {/* Info side */}
-        <div className="hidden md:flex flex-col justify-center p-10 bg-gradient-to-tr from-primary/10 to-accent/10">
-          <h2 className="text-4xl font-extrabold text-primary dark:text-accent mb-4 uppercase leading-tight">
-            {isRegister ? 'Сабтином шавед!' : 'Хуш омадед!'}
-          </h2>
-          <p className="text-muted-foreground">
-            {isRegister
-              ? 'Бо сабти ном шумо метавонед аз тамоми имкониятҳои мо истифода баред ва таҷрибаи шахсии худро дошта бошед.'
-              : 'Барои идома додани истифодаи хизматрасониҳо, лутфан ба ҳисоби худ ворид шавед.'}
+        {/* Login info */}
+        <div className="info-content Login">
+          <h2 className="animation" style={{ ['--D' as any]: 0, ['--S' as any]: 20 }}>ХУШ ОМАДЕД!</h2>
+          <p className="animation" style={{ ['--D' as any]: 1, ['--S' as any]: 21 }}>
+            Барои идома додани истифодаи хизматрасониҳо, лутфан ба ҳисоби худ ворид шавед.
           </p>
         </div>
-      </Card>
+
+        {/* Register form */}
+        <div className="form-box Register">
+          <h2 className="animation" style={{ ['--li' as any]: 17, ['--S' as any]: 0 }}>Сабтином</h2>
+          <form>
+            <div className="input-box animation" style={{ ['--li' as any]: 18, ['--S' as any]: 1 }}>
+              <input type="text" required />
+              <label>Номи корбар</label>
+            </div>
+            <div className="input-box animation" style={{ ['--li' as any]: 19, ['--S' as any]: 2 }}>
+              <input type="email" required />
+              <label>Почта</label>
+            </div>
+            <div className="input-box animation" style={{ ['--li' as any]: 19, ['--S' as any]: 3 }}>
+              <input type="password" required />
+              <label>Гузарвожа</label>
+            </div>
+            <div className="input-box animation" style={{ ['--li' as any]: 20, ['--S' as any]: 4 }}>
+              <button className="btn" type="submit">Сабтином шудан</button>
+            </div>
+            <div className="regi-link animation" style={{ ['--li' as any]: 21, ['--S' as any]: 5 }}>
+              <p>
+                Аллакай ҳисоб доред?
+                <br />
+                <button type="button" className="linklike" onClick={() => setIsRegister(false)}>Ворид шавед</button>
+              </p>
+            </div>
+          </form>
+        </div>
+
+        {/* Register info */}
+        <div className="info-content Register">
+          <h2 className="animation" style={{ ['--li' as any]: 17, ['--S' as any]: 0 }}>Сабтином шавед!</h2>
+          <p className="animation" style={{ ['--li' as any]: 18, ['--S' as any]: 1 }}>
+            Бо сабти ном шумо метавонед аз тамоми имкониятҳои мо истифода баред ва таҷрибаи шахсии худро дошта бошед.
+          </p>
+        </div>
+      </div>
+
+      <div className="back-home">
+        <Link href="/">Ба Асосӣ</Link>
+      </div>
     </div>
   );
 }

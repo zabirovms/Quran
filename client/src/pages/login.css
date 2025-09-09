@@ -1,0 +1,87 @@
+:root {
+  --bg: #0b0f13;
+  --text: #ffffff;
+  --primary: rgb(6 182 212); /* tailwind cyan-500 approximate */
+  --accent: rgb(236 72 153); /* tailwind pink-500 approximate */
+  --muted: rgba(255,255,255,0.7);
+}
+
+.auth-page-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--text);
+  position: relative;
+}
+
+.auth-container {
+  position: relative;
+  width: 750px;
+  max-width: 95vw;
+  height: 450px;
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 25px var(--primary);
+  overflow: hidden;
+}
+
+.auth-container .form-box {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+}
+
+.form-box.Login { left: 0; }
+.form-box.Register { right: 0; padding: 0 60px; }
+
+.animation { transform: translateX(0%); transition: .7s; opacity: 1; }
+.auth-container.active .form-box.Login .animation { transform: translateX(-120%); opacity: 0; }
+.form-box.Register .animation { transform: translateX(120%); opacity: 0; filter: blur(10px); }
+.auth-container.active .form-box.Register .animation { transform: translateX(0%); opacity: 1; filter: blur(0px); }
+
+.form-box h2 { font-size: 32px; text-align: center; }
+.form-box .input-box { position: relative; width: 100%; height: 50px; margin-top: 25px; }
+.input-box input { width: 100%; height: 100%; background: transparent; border: none; outline: none; font-size: 16px; color: var(--text); font-weight: 600; border-bottom: 2px solid var(--text); padding-right: 23px; transition: .5s; }
+.input-box input:focus { border-bottom: 2px solid var(--primary); }
+.input-box label { position: absolute; top: 50%; left: 0; transform: translateY(-50%); font-size: 16px; color: var(--text); transition: .5s; }
+.input-box input:focus ~ label { top: -5px; color: var(--primary); }
+
+.btn { position: relative; width: 100%; height: 45px; background: transparent; border-radius: 40px; cursor: pointer; font-size: 16px; font-weight: 600; border: 2px solid var(--primary); overflow: hidden; z-index: 1; color: var(--text); }
+.btn::before { content: ""; position: absolute; height: 300%; width: 100%; background: linear-gradient(var(--bg), var(--primary), var(--bg), var(--primary)); top: -100%; left: 0; z-index: -1; transition: .5s; }
+.btn:hover::before { top: 0; }
+
+.regi-link { font-size: 14px; text-align: center; margin: 20px 0 10px; }
+.regi-link .linklike { text-decoration: none; color: var(--primary); font-weight: 600; background: none; border: none; cursor: pointer; }
+.regi-link .linklike:hover { text-decoration: underline; }
+
+.info-content { position: absolute; top: 0; height: 100%; width: 50%; display: flex; justify-content: center; flex-direction: column; padding: 0 40px; }
+.info-content.Login { right: 0; text-align: right; padding: 0 40px 60px 150px; }
+.auth-container.active .info-content.Login .animation { transform: translateX(120%); opacity: 0; filter: blur(10px); }
+.info-content.Register { left: 0; text-align: left; padding: 0 150px 60px 38px; pointer-events: none; }
+.info-content.Register .animation { transform: translateX(-120%); opacity: 0; filter: blur(10px); }
+.auth-container.active .info-content.Register .animation { transform: translateX(0%); opacity: 1; filter: blur(0); }
+.info-content h2 { text-transform: uppercase; font-size: 36px; line-height: 1.3; color: var(--text); }
+.info-content p { font-size: 16px; color: var(--muted); }
+
+.curved-shape { position: absolute; right: 0; top: -5px; height: 600px; width: 850px; background: linear-gradient(45deg, var(--bg), var(--primary)); transform: rotate(10deg) skewY(40deg); transform-origin: bottom right; transition: 1.5s ease; }
+.auth-container.active .curved-shape { transform: rotate(0deg) skewY(0deg); }
+.curved-shape2 { position: absolute; left: 250px; top: 100%; height: 700px; width: 850px; background: var(--bg); border-top: 3px solid var(--primary); transform: rotate(0deg) skewY(0deg); transform-origin: bottom left; transition: 1.5s ease; }
+.auth-container.active .curved-shape2 { transform: rotate(-11deg) skewY(-41deg); }
+
+.back-home { position: absolute; bottom: 16px; left: 16px; }
+.back-home a { color: var(--primary); text-decoration: none; font-weight: 600; }
+.back-home a:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+  .auth-container { height: auto; min-height: 520px; }
+  .form-box { width: 100% !important; position: relative !important; }
+  .info-content { display: none; }
+}
+
+
