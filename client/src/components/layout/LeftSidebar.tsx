@@ -235,16 +235,17 @@ export function LeftSidebar() {
 
           {/* User section at bottom */}
           <div className="p-4 border-t">
-            <div className="flex items-center gap-3 p-2 hover:bg-muted rounded-md cursor-pointer">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-4 w-4 text-primary" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">Истифодабаранда</p>
-                <p className="text-xs text-muted-foreground">Танзимот</p>
-              </div>
-              <Settings className="h-4 w-4 text-muted-foreground" />
-            </div>
+            <Link href="/login">
+              <Button className="w-full justify-start gap-3" variant="outline">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium">Вуруд / Сабтином</p>
+                  <p className="text-xs text-muted-foreground">Ба ҳисоби худ ворид шавед</p>
+                </div>
+              </Button>
+            </Link>
           </div>
         </div>
       </aside>

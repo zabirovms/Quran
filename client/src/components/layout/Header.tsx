@@ -7,7 +7,7 @@ import { Surah } from '@shared/schema';
 import { Link, useLocation } from 'wouter';
 import { 
   Search, BookmarkIcon, ChevronLeft, ChevronRight, 
-  Settings, Home, Menu
+  Settings, Home
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -123,15 +123,7 @@ export default function Header({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* Hamburger to toggle sidebar/settings */}
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Menu"
-            onClick={() => window.dispatchEvent(new CustomEvent('toggle-sidebar'))}
-          >
-            <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-          </Button>
+          {/* Sidebar is opened via the top-left hover/tap hamburger */}
         </div>
       </div>
       
