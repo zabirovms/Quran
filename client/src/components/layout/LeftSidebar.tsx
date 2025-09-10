@@ -84,9 +84,17 @@ export function LeftSidebar() {
   const handleToggle = () => setCollapsed(c => !c);
 
   useEffect(() => {
-    const handler = () => setCollapsed(c => !c);
-    window.addEventListener('toggle-left-sidebar' as any, handler as any);
-    return () => window.removeEventListener('toggle-left-sidebar' as any, handler as any);
+    const toggleHandler = () => setCollapsed(c => !c);
+    const openHandler = () => !isMobile && setCollapsed(false);
+    const closeHandler = () => !isMobile && setCollapsed(true);
+    window.addEventListener('toggle-left-sidebar' as any, toggleHandler as any);
+    window.addEventListener('open-left-sidebar' as any, openHandler as any);
+    window.addEventListener('close-left-sidebar' as any, closeHandler as any);
+    return () => {
+      window.removeEventListener('toggle-left-sidebar' as any, toggleHandler as any);
+      window.removeEventListener('open-left-sidebar' as any, openHandler as any);
+      window.removeEventListener('close-left-sidebar' as any, closeHandler as any);
+    };
   }, []);
 
   const navigationItems = [
