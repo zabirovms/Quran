@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,22 +9,7 @@ import Footer from '@/components/layout/Footer';
 import { Home } from 'lucide-react';
 import { Link } from 'wouter';
 import { GlobalOverlayType } from '@/App';
-import { 
-  Search, 
-  Play, 
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  Clock,
-  Eye,
-  Heart,
-  Share2,
-  Filter,
-  Grid3X3,
-  List,
-  ExternalLink
-} from 'lucide-react';
+import { Search, Play } from 'lucide-react';
 import SeoHead from '@/components/shared/SeoHead';
 
 interface VideoItem {
@@ -34,8 +19,6 @@ interface VideoItem {
   category: string;
   reciter: string;
   duration: string;
-  views: number;
-  likes: number;
   thumbnailUrl: string;
   videoUrl: string;
   youtubeId: string;
@@ -52,8 +35,6 @@ const sampleVideos: VideoItem[] = [
     category: 'Сураҳо',
     reciter: 'Шайх Абдур-Раҳмон ас-Судайс',
     duration: '15:32',
-    views: 45678,
-    likes: 1234,
     thumbnailUrl: `https://img.youtube.com/vi/oPrXRnF7rCo/maxresdefault.jpg`,
     videoUrl: 'https://youtu.be/oPrXRnF7rCo',
     youtubeId: 'oPrXRnF7rCo',
@@ -68,8 +49,6 @@ const sampleVideos: VideoItem[] = [
     category: 'Сураҳо',
     reciter: 'Шайх Мишари Рашид ал-Афаси',
     duration: '8:45',
-    views: 23456,
-    likes: 890,
     thumbnailUrl: `https://img.youtube.com/vi/2DARwxIBTY0/maxresdefault.jpg`,
     videoUrl: 'https://youtu.be/2DARwxIBTY0',
     youtubeId: '2DARwxIBTY0',
@@ -84,8 +63,6 @@ const sampleVideos: VideoItem[] = [
     category: 'Сураҳо',
     reciter: 'Шайх Аҳмад ал-Аҷми',
     duration: '12:18',
-    views: 34567,
-    likes: 1123,
     thumbnailUrl: `https://img.youtube.com/vi/rApE4VAfqg8/maxresdefault.jpg`,
     videoUrl: 'https://youtu.be/rApE4VAfqg8',
     youtubeId: 'rApE4VAfqg8',
@@ -100,8 +77,6 @@ const sampleVideos: VideoItem[] = [
     category: 'Сураҳо',
     reciter: 'Шайх Абдур-Раҳмон ас-Судайс',
     duration: '18:25',
-    views: 56789,
-    likes: 2345,
     thumbnailUrl: `https://img.youtube.com/vi/nsipUP3Tk0Q/maxresdefault.jpg`,
     videoUrl: 'https://youtu.be/nsipUP3Tk0Q',
     youtubeId: 'nsipUP3Tk0Q',
@@ -115,7 +90,7 @@ const categories = [
   'Ҳама', 'Сураҳо', 'Дуоҳо', 'Фарзҳо', 'Таърих', 'Тафсир', 'Таълимӣ'
 ];
 
-const languages = ['Ҳама', 'Арабӣ', 'Тоҷикӣ', 'Русӣ', 'Инглисӣ'];
+// Simplified: focusing on categories and search only
 
 interface VideosProps {
   onOpenOverlay: (type: GlobalOverlayType) => void;
@@ -124,8 +99,6 @@ interface VideosProps {
 export default function Videos({ onOpenOverlay }: VideosProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Ҳама');
-  const [selectedLanguage, setSelectedLanguage] = useState('Ҳама');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filteredVideos, setFilteredVideos] = useState(sampleVideos);
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
@@ -135,10 +108,6 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
 
     if (selectedCategory !== 'Ҳама') {
       filtered = filtered.filter(video => video.category === selectedCategory);
-    }
-
-    if (selectedLanguage !== 'Ҳама') {
-      filtered = filtered.filter(video => video.language === selectedLanguage);
     }
 
     if (searchTerm) {
@@ -154,52 +123,32 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
   };
 
   // Apply filtering when dependencies change
-  useState(() => {
+  useEffect(() => {
     filterVideos();
-  });
+  }, [searchTerm, selectedCategory]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    filterVideos();
   };
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    filterVideos();
   };
 
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguage(language);
-    filterVideos();
-  };
+  // language filter removed
 
   const handleVideoSelect = (video: VideoItem) => {
     console.log('Selected video:', video.title, 'YouTube ID:', video.youtubeId);
     setSelectedVideo(video);
   };
 
-  const handleLike = (video: VideoItem) => {
-    // Implement like functionality
-    console.log('Liking video:', video.title);
-  };
-
-  const handleShare = (video: VideoItem) => {
-    // Implement share functionality
-    console.log('Sharing video:', video.title);
-  };
+  // removed likes/share for a minimal UI
 
   const handleWatchOnYouTube = (video: VideoItem) => {
     window.open(video.videoUrl, '_blank');
   };
 
-  const formatViews = (views: number) => {
-    if (views >= 1000000) {
-      return `${(views / 1000000).toFixed(1)}M`;
-    } else if (views >= 1000) {
-      return `${(views / 1000).toFixed(1)}K`;
-    }
-    return views.toString();
-  };
+  // views formatting removed
 
   // Generate YouTube embed URL with proper parameters
   const getYouTubeEmbedUrl = (youtubeId: string) => {
@@ -243,26 +192,12 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
             </p>
           </div>
 
-          {/* Selected Video Player */}
+          {/* Selected Video Player - simplified header */}
           {selectedVideo && (
             <div className="mb-8">
               <Card className="overflow-hidden">
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">{selectedVideo.title}</CardTitle>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {selectedVideo.description}
-                      </p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedVideo(null)}
-                    >
-                      ✕
-                    </Button>
-                  </div>
+                  <CardTitle className="text-xl">{selectedVideo.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="aspect-video w-full bg-gray-900">
@@ -276,47 +211,20 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                       loading="lazy"
                     ></iframe>
                   </div>
-                  <div className="p-4">
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                      <div className="flex items-center gap-4">
-                        <span>Тиловаткунанда: {selectedVideo.reciter}</span>
-                        <span>Забон: {selectedVideo.language}</span>
-                        <span>Давра: {selectedVideo.duration}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          onClick={() => handleLike(selectedVideo)}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <Heart className="h-4 w-4 mr-1" />
-                          {selectedVideo.likes}
-                        </Button>
-                        <Button
-                          onClick={() => handleShare(selectedVideo)}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <Share2 className="h-4 w-4 mr-1" />
-                          Бахшида
-                        </Button>
-                        <Button
-                          onClick={() => handleWatchOnYouTube(selectedVideo)}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          Дар YouTube
-                        </Button>
-                      </div>
-                    </div>
+                  <div className="p-4 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <span>Тиловаткунанда: <span className="font-medium text-foreground">{selectedVideo.reciter}</span></span>
+                      <span>Забон: <span className="font-medium text-foreground">{selectedVideo.language}</span></span>
+                      <span>Давра: <span className="font-medium text-foreground">{selectedVideo.duration}</span></span>
+                      <Button variant="outline" size="sm" onClick={() => setSelectedVideo(null)} className="ml-auto">Бастан</Button>
+                  </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
           )}
 
-          {/* Search and Filters */}
+          {/* Search and Category filter only */}
           <div className="mb-6 space-y-4">
             {/* Search Bar */}
             <div className="relative max-w-md mx-auto">
@@ -330,7 +238,7 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
 
-            {/* Category and Language Filters */}
+            {/* Category filter */}
             <div className="flex flex-wrap justify-center gap-4">
               <div className="flex flex-wrap gap-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Категория:</span>
@@ -345,46 +253,13 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                   </Badge>
                 ))}
               </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Забон:</span>
-                {languages.map((language) => (
-                  <Badge
-                    key={language}
-                    variant={selectedLanguage === language ? "default" : "outline"}
-                    className="cursor-pointer hover:bg-primary/10"
-                    onClick={() => handleLanguageChange(language)}
-                  >
-                    {language}
-                  </Badge>
-                ))}
-              </div>
             </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex justify-center">
-              <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid3X3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            
           </div>
 
-          {/* Videos Grid/List */}
+          {/* Videos Grid */}
           {filteredVideos.length > 0 ? (
-            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+            <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
               {filteredVideos.map((video) => (
                 <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleVideoSelect(video)}>
                   {/* Video Thumbnail */}
@@ -414,21 +289,16 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                   </div>
                   
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <Badge variant="outline" className="text-xs">
-                        {video.category}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {formatViews(video.views)} назар
-                      </span>
-                    </div>
+                    <Badge variant="outline" className="text-xs mb-2">
+                      {video.category}
+                    </Badge>
                     
                     <h3 className="font-semibold mb-2 line-clamp-2">{video.title}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                       {video.description}
                     </p>
                     
-                    <div className="space-y-2 mb-3">
+                    <div className="space-y-2 mb-1">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600 dark:text-gray-400">Тиловаткунанда:</span>
                         <span className="font-medium">{video.reciter}</span>
@@ -440,41 +310,17 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                       </div>
                     </div>
                     
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleVideoSelect(video);
-                        }}
-                        className="flex-1"
-                        size="sm"
-                      >
-                        <Play className="h-4 w-4 mr-2" />
-                        Назар
-                      </Button>
-                      <Button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLike(video);
-                        }}
-                        variant="outline" 
-                        size="sm"
-                      >
-                        <Heart className="h-4 w-4 mr-1" />
-                        {video.likes}
-                      </Button>
-                      <Button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShare(video);
-                        }}
-                        variant="outline" 
-                        size="sm"
-                      >
-                        <Share2 className="h-4 w-4 mr-1" />
-                      </Button>
-                    </div>
+                    <Button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleVideoSelect(video);
+                      }}
+                      className="w-full"
+                      size="sm"
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      Дидан
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -491,7 +337,6 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
               <Button onClick={() => {
                 setSearchTerm('');
                 setSelectedCategory('Ҳама');
-                setSelectedLanguage('Ҳама');
               }}>
                 Тоза кардани филтрҳо
               </Button>
