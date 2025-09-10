@@ -49,6 +49,7 @@ interface MosqueMarker {
 export default function MosquesPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
+  const searchControlRef = useRef<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [loadingMap, setLoadingMap] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,17 +71,27 @@ export default function MosquesPage() {
         });
         setMapInstance(map);
 
-        // Add a search layer for "масҷид" points using Yandex search API
-        // We use ymaps.suggest and ymaps.geocode as simple helpers.
-        // For nearby search, we can use ymaps.geocode with a query and bounded area.
+        // Collection for our placemarks
         mosqueLayer = new ymaps.GeoObjectCollection({}, {
           preset: 'islands#blueIcon',
           hasBalloon: true,
         });
         map.geoObjects.add(mosqueLayer);
 
-        // Initial search for mosques in the current viewport
-        searchMosques(ymaps, map, mosqueLayer, 'масҷид');
+        // Use Yandex SearchControl so results include organizations
+        const searchControl = new ymaps.control.SearchControl({
+          options: {
+            provider: 'yandex#search',
+            noPlacemark: true,
+            useMapBounds: true,
+            noPopup: true,
+          }
+        });
+        map.controls.add(searchControl);
+        searchControlRef.current = searchControl;
+
+        // Initial search for mosques in the current viewport (with fallbacks)
+        runSearch(ymaps, map, mosqueLayer, searchControl, ['масҷид', 'мечеть', 'mosque', 'masjid']);
 
         // Update results when map area changes (throttled)
         let throttle: number | null = null;
@@ -88,7 +99,13 @@ export default function MosquesPage() {
           if (throttle) return;
           throttle = window.setTimeout(() => {
             throttle = null;
-            searchMosques(ymaps, map, mosqueLayer, searchQuery || 'масҷид');
+            runSearch(
+              ymaps,
+              map,
+              mosqueLayer,
+              searchControl,
+              [searchQuery || 'масҷид', 'мечеть', 'mosque', 'masjid']
+            );
           }, 800);
         });
       })
@@ -121,10 +138,22 @@ export default function MosquesPage() {
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!mapInstance || !window.ymaps) return;
+    if (!mapInstance || !window.ymaps || !searchControlRef.current) return;
     const ymaps = window.ymaps;
-    const query = searchQuery.trim() || 'масҷид';
-    searchMosques(ymaps, mapInstance, null, query);
+    const query = (searchQuery || '').trim();
+
+    // If coordinates entered, center map and search around
+    const coordMatch = query.match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
+    if (coordMatch) {
+      const lat = parseFloat(coordMatch[1]);
+      const lon = parseFloat(coordMatch[2]);
+      if (Number.isFinite(lat) && Number.isFinite(lon)) {
+        mapInstance.setCenter([lat, lon], 15, { duration: 300 });
+      }
+    }
+
+    const searchControl = searchControlRef.current;
+    runSearch(ymaps, mapInstance, null, searchControl, [query || 'масҷид', 'мечеть', 'mosque', 'masjid']);
   };
 
   return (
@@ -186,44 +215,63 @@ export default function MosquesPage() {
   );
 }
 
-function searchMosques(ymaps: any, map: any, collection: any | null, query: string) {
-  const currentBounds = map.getBounds();
-  if (!currentBounds) return;
-  const [southWest, northEast] = currentBounds;
+async function runSearch(
+  ymaps: any,
+  map: any,
+  collection: any | null,
+  searchControl: any,
+  queries: string[]
+) {
+  const bounds = map.getBounds();
+  if (!bounds) return;
 
-  // Clear existing markers if collection is provided
+  // Prepare target collection
+  const targetCollection = collection || new ymaps.GeoObjectCollection({}, { preset: 'islands#blueIcon' });
   if (collection) {
-    collection.removeAll();
+    targetCollection.removeAll();
   }
 
-  ymaps.geocode(query, {
-    results: 50,
-    boundedBy: currentBounds,
-    strictBounds: true,
-  }).then((res: any) => {
-    const geoObjects = res.geoObjects;
-    const count = geoObjects.getLength();
-    const newCollection = collection || new ymaps.GeoObjectCollection({}, { preset: 'islands#blueIcon' });
-    for (let i = 0; i < count; i++) {
-      const obj = geoObjects.get(i);
-      const coords = obj.geometry.getCoordinates();
-      const name = obj.properties.get('name');
-      const description = obj.properties.get('description') || '';
-      const address = obj.getAddressLine?.() || obj.properties.get('metaDataProperty.GeocoderMetaData.text');
-      const placemark = new ymaps.Placemark(coords, {
-        balloonContentHeader: name,
-        balloonContentBody: address || description,
-        hintContent: name,
-      }, {
-        preset: 'islands#blueIcon',
-        openBalloonOnClick: true,
-      });
-      newCollection.add(placemark);
+  // Configure search to use current map bounds
+  searchControl.options.set('boundedBy', bounds);
+  searchControl.options.set('strictBounds', true);
+  searchControl.options.set('useMapBounds', true);
+
+  const seen = new Set<string>();
+
+  for (const q of queries) {
+    const query = (q || '').trim();
+    if (!query) continue;
+    try {
+      // Perform search and wait for results to load
+      // search returns a promise-like object in v2.1
+      await searchControl.search(query);
+      const results = searchControl.getResultsArray();
+      for (const obj of results) {
+        const coords = obj.geometry.getCoordinates();
+        const name = obj.properties.get('name');
+        const description = obj.properties.get('description') || '';
+        const address = obj.getAddressLine?.() || obj.properties.get('metaDataProperty.GeocoderMetaData.text');
+        const key = `${name}|${coords[0].toFixed(6)},${coords[1].toFixed(6)}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const placemark = new ymaps.Placemark(coords, {
+          balloonContentHeader: name,
+          balloonContentBody: address || description,
+          hintContent: name,
+        }, {
+          preset: 'islands#blueIcon',
+          openBalloonOnClick: true,
+        });
+        targetCollection.add(placemark);
+      }
+    } catch (err) {
+      // Swallow individual query errors to continue fallbacks
     }
-    if (!collection) {
-      // If we had no collection, add it once
-      map.geoObjects.add(newCollection);
-    }
-  });
+  }
+
+  if (!collection) {
+    // If we had no collection, add it once
+    map.geoObjects.add(targetCollection);
+  }
 }
 
