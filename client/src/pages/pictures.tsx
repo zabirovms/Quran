@@ -162,8 +162,30 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
             <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
               {filteredPictures.map((picture) => (
                 <Card key={picture.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePictureSelect(picture)}>
-                  <div className="bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
-                    <img src={picture.imagePath} alt={picture.title} className="w-full h-auto" />
+                  <div className="bg-gray-200 dark:bg-gray-800 relative overflow-hidden aspect-square">
+                    <img 
+                      src={picture.imagePath} 
+                      alt={picture.title} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => {
+                        console.error('Image failed to load:', picture.imagePath);
+                        e.currentTarget.style.display = 'none';
+                        // Show placeholder
+                        const placeholder = e.currentTarget.parentElement?.querySelector('.placeholder');
+                        if (placeholder) {
+                          (placeholder as HTMLElement).style.display = 'flex';
+                        }
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', picture.imagePath);
+                      }}
+                    />
+                    <div className="placeholder absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400" style={{display: 'none'}}>
+                      <div className="text-center">
+                        <BookOpen className="h-8 w-8 mx-auto mb-2" />
+                        <p className="text-sm">Сурат боргирӣ нашудааст</p>
+                      </div>
+                    </div>
                   </div>
                   <div className="p-3 text-center text-sm font-medium">
                     {picture.title}
