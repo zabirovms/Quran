@@ -50,6 +50,7 @@ export default function MosquesPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
   const searchControlRef = useRef<any>(null);
+  const mosqueLayerRef = useRef<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [loadingMap, setLoadingMap] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +78,7 @@ export default function MosquesPage() {
           hasBalloon: true,
         });
         map.geoObjects.add(mosqueLayer);
+        mosqueLayerRef.current = mosqueLayer;
 
         // Use Yandex SearchControl so results include organizations
         const searchControl = new ymaps.control.SearchControl({
@@ -85,6 +87,7 @@ export default function MosquesPage() {
             noPlacemark: true,
             useMapBounds: true,
             noPopup: true,
+            noCentering: true,
           }
         });
         map.controls.add(searchControl);
@@ -92,22 +95,6 @@ export default function MosquesPage() {
 
         // Initial search for mosques in the current viewport (with fallbacks)
         runSearch(ymaps, map, mosqueLayer, searchControl, ['масҷид', 'мечеть', 'mosque', 'masjid']);
-
-        // Update results when map area changes (throttled)
-        let throttle: number | null = null;
-        map.events.add('boundschange', () => {
-          if (throttle) return;
-          throttle = window.setTimeout(() => {
-            throttle = null;
-            runSearch(
-              ymaps,
-              map,
-              mosqueLayer,
-              searchControl,
-              [searchQuery || 'масҷид', 'мечеть', 'mosque', 'masjid']
-            );
-          }, 800);
-        });
       })
       .catch((e) => setError((e as Error).message))
       .finally(() => setLoadingMap(false));
@@ -153,7 +140,15 @@ export default function MosquesPage() {
     }
 
     const searchControl = searchControlRef.current;
-    runSearch(ymaps, mapInstance, null, searchControl, [query || 'масҷид', 'мечеть', 'mosque', 'masjid']);
+    runSearch(ymaps, mapInstance, mosqueLayerRef.current, searchControl, [query || 'масҷид', 'мечеть', 'mosque', 'masjid']);
+  };
+
+  const searchCurrentArea = () => {
+    if (!mapInstance || !window.ymaps || !searchControlRef.current) return;
+    const ymaps = window.ymaps;
+    const searchControl = searchControlRef.current;
+    const query = (searchQuery || 'масҷид').trim();
+    runSearch(ymaps, mapInstance, mosqueLayerRef.current, searchControl, [query, 'мечеть', 'mosque', 'masjid']);
   };
 
   return (
@@ -193,6 +188,9 @@ export default function MosquesPage() {
             <Button type="submit">Ҷустуҷӯ</Button>
             <Button type="button" variant="outline" onClick={locateMe} title="Ҷойгиршавии ман">
               <Target className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="secondary" onClick={searchCurrentArea}>
+              Ҷустуҷӯ дар ин минтақа
             </Button>
           </form>
 
