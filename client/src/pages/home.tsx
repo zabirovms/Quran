@@ -12,7 +12,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { GlobalOverlayType } from '@/App';
 import { 
-  Search, BookOpen, ChevronRight, ArrowUp, ArrowDown, Book
+  Search, BookOpen, ChevronRight, ArrowUp, ArrowDown, Book, Image as ImageIcon, Play, Download as DownloadIcon
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Surah } from '@shared/schema';
@@ -208,6 +208,49 @@ export default function Home({ onOpenOverlay }: HomeProps) {
             </h1>
           </div>
 
+          {/* Featured content strip: quick access to Pictures, Videos, Downloads */}
+          <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Link href="/pictures" className="block">
+              <Card className="p-4 hover:shadow-md transition-colors bg-gradient-to-br from-primary/5 to-accent/5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <ImageIcon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Иқтибосҳо</p>
+                    <p className="text-xs text-muted-foreground">Суратҳои Қуръонӣ</p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/videos" className="block">
+              <Card className="p-4 hover:shadow-md transition-colors bg-gradient-to-br from-primary/5 to-accent/5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Play className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Видеоҳо</p>
+                    <p className="text-xs text-muted-foreground">Тиловат бо субтитр</p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+            <Link href="/downloads" className="block">
+              <Card className="p-4 hover:shadow-md transition-colors bg-gradient-to-br from-primary/5 to-accent/5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <DownloadIcon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Боргириҳо</p>
+                    <p className="text-xs text-muted-foreground">Қуръон ба PDF/аудио</p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          </div>
+
           {/* Popular Surahs Section - Moved to the top */}
           <div className="mb-8 bg-gradient-to-r from-primary/5 to-accent/5 p-5 rounded-lg border border-gray-100 dark:border-gray-700">
             <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
@@ -304,6 +347,90 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                   </Link>
                 </SwiperSlide>
               </Swiper>
+            </div>
+          </div>
+
+          {/* Pictures preview */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-primary dark:text-accent mb-3 text-center">Иқтибосҳо аз Қуръон</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {[
+                '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png',
+                '/QuraniQuotes/Қуръон 55^13 (Сураи Раҳмон).png',
+                '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png',
+              ].map((src) => (
+                <Link key={src} href="/pictures" className="block">
+                  <Card className="overflow-hidden hover:shadow-md transition-all">
+                    <img src={src} alt="Quranic quote" className="w-full h-full object-cover" />
+                  </Card>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-3 text-center">
+              <Link href="/pictures">
+                <Button size="sm" variant="outline">Дидани ҳама</Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Videos preview */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-primary dark:text-accent mb-3 text-center">Видеоҳои Қуръонӣ</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { id: 'oPrXRnF7rCo', title: 'Сураи Муъминун' },
+                { id: '2DARwxIBTY0', title: 'Сураи Фотиҳа' },
+                { id: 'rApE4VAfqg8', title: 'Сураи Набаъ' },
+              ].map((v) => (
+                <Link key={v.id} href="/videos" className="block">
+                  <Card className="overflow-hidden hover:shadow-md transition-all">
+                    <div className="relative aspect-video bg-muted">
+                      <img src={`https://img.youtube.com/vi/${v.id}/hqdefault.jpg`} alt={v.title} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                          <Play className="h-5 w-5 text-gray-800" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-2 text-sm text-center">{v.title}</div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-3 text-center">
+              <Link href="/videos">
+                <Button size="sm" variant="outline">Дидани ҳама</Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Downloads preview */}
+          <div className="mb-10">
+            <h2 className="text-xl font-bold text-primary dark:text-accent mb-3 text-center">Боргирии матнҳо</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { title: 'Қуръони Карим - Тоҷикӣ (PDF)', meta: 'PDF • Тоҷикӣ' },
+                { title: 'Дуоҳои Қуръонӣ - Маҷмӯа', meta: 'PDF • Тоҷикӣ' },
+              ].map((d, i) => (
+                <Link key={i} href="/downloads" className="block">
+                  <Card className="p-3 hover:shadow-md transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <DownloadIcon className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{d.title}</p>
+                        <p className="text-xs text-muted-foreground">{d.meta}</p>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-3 text-center">
+              <Link href="/downloads">
+                <Button size="sm" variant="outline">Дидани ҳама</Button>
+              </Link>
             </div>
           </div>
 
