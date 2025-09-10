@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, useCallback, useRef, createContext, useContext, ReactNode, createElement } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 interface AudioPlayerState {
@@ -554,11 +554,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     availableReciters
   };
 
-  return (
-    <AudioContext.Provider value={value}>
-      {children}
-    </AudioContext.Provider>
-  );
+  return createElement(AudioContext.Provider, { value }, children);
 }
 
 export function useAudioPlayer(): AudioContextValue {
