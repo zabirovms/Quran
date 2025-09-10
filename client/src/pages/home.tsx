@@ -10,10 +10,9 @@ import { useSurahs } from '@/hooks/useQuran';
 import { getArabicFontClass } from '@/lib/fonts';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { LeftSidebar } from '@/components/layout/LeftSidebar';
 import { GlobalOverlayType } from '@/App';
 import { 
-  Search, BookOpen, ChevronRight, ArrowUp, ArrowDown, Book
+  Search, BookOpen, ChevronRight, ArrowUp, ArrowDown, Book, Image as ImageIcon, Play, Download as DownloadIcon
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Surah } from '@shared/schema';
@@ -189,9 +188,6 @@ export default function Home({ onOpenOverlay }: HomeProps) {
         }}
       />
       
-      {/* Left Sidebar for Navigation */}
-      <LeftSidebar />
-      
       <Header onOpenOverlay={onOpenOverlay} />
 
       {/* Scroll to top/bottom button */}
@@ -212,6 +208,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
             </h1>
           </div>
 
+
           {/* Popular Surahs Section - Moved to the top */}
           <div className="mb-8 bg-gradient-to-r from-primary/5 to-accent/5 p-5 rounded-lg border border-gray-100 dark:border-gray-700">
             <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
@@ -231,6 +228,8 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               ))}
             </div>
           </div>
+
+          {/* Interleaving moved to the main surah list below */}
 
           {/* Islamic Tools Section */}
           <div className="mb-8">
@@ -312,6 +311,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
           </div>
 
 
+
           {/* Quick Access - Stacked Layout for All Screens */}
           <div className="flex flex-col gap-4 mb-4">
             {/* Last Read Section - Full Width Card */}
@@ -381,50 +381,110 @@ export default function Home({ onOpenOverlay }: HomeProps) {
             <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent text-center">Рӯйхати сураҳо</h2>
 
             {isLoading ? (
-              // Show loading skeletons
-              Array.from({ length: 10 }).map((_, index) => renderSkeletonItem(index))
+              Array.from({ length: 12 }).map((_, index) => renderSkeletonItem(index))
             ) : filteredSurahs && filteredSurahs.length > 0 ? (
-              // Show filtered surahs in a 3-column grid on larger screens
-              <div className="hidden md:grid md:grid-cols-3 md:gap-3">
-                {filteredSurahs.map(surah => (
-                  <Link 
-                    key={surah.id} 
-                    href={`/surah/${surah.number}`}
-                    className="block"
-                  >
-                    <Card className="mb-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors h-full">
-                      <CardContent className="p-3">
-                        <div className="flex flex-col items-center text-center">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary dark:bg-accent text-white font-medium mb-2">
-                            {surah.number}
+              <>
+                {/* First block */}
+                <div className="md:grid md:grid-cols-2 md:gap-3">
+                  {filteredSurahs.slice(0, 12).map(surah => renderSurahItem(surah))}
+                </div>
+
+                {/* Pictures teaser */}
+                <div className="my-8">
+                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">Иқтибосҳо аз Қуръон</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                      '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png',
+                      '/QuraniQuotes/Қуръон 55^13 (Сураи Раҳмон).png',
+                      '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png',
+                      '/QuraniQuotes/Қуръон 2^286 (Сураи Бақара).png',
+                    ].map((src) => (
+                      <Link key={src} href="/pictures" className="block">
+                        <Card className="overflow-hidden hover:shadow-md transition-all">
+                          <img src={src} alt="Quranic quote" className="w-full h-full object-cover" />
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Second block */}
+                {filteredSurahs.length > 12 && (
+                  <div className="md:grid md:grid-cols-2 md:gap-3">
+                    {filteredSurahs.slice(12, 36).map(surah => renderSurahItem(surah))}
+                  </div>
+                )}
+
+                {/* Videos teaser */}
+                <div className="my-8">
+                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">Видеоҳои Қуръонӣ</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {[
+                      { id: 'oPrXRnF7rCo', title: 'Сураи Муъминун' },
+                      { id: '2DARwxIBTY0', title: 'Сураи Фотиҳа' },
+                      { id: 'rApE4VAfqg8', title: 'Сураи Набаъ' },
+                    ].map((v) => (
+                      <Link key={v.id} href="/videos" className="block">
+                        <Card className="overflow-hidden hover:shadow-md transition-all">
+                          <div className="relative aspect-video bg-muted">
+                            <img src={`https://img.youtube.com/vi/${v.id}/hqdefault.jpg`} alt={v.title} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                              <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                                <Play className="h-5 w-5 text-gray-800" />
+                              </div>
+                            </div>
                           </div>
-                          <span className={`${getArabicFontClass('sm')} mb-1`}>{surah.name_arabic}</span>
-                          <h3 className="font-medium text-sm">{surah.name_tajik}</h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {surah.verses_count} оят
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-              // On mobile, show the original list view
+                          <div className="p-2 text-sm text-center">{v.title}</div>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Third block */}
+                {filteredSurahs.length > 36 && (
+                  <div className="md:grid md:grid-cols-2 md:gap-3">
+                    {filteredSurahs.slice(36).map(surah => renderSurahItem(surah))}
+                  </div>
+                )}
+
+                {/* Downloads teaser */}
+                <div className="my-8">
+                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">Боргирии матнҳо</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      { title: 'Қуръони Карим - Тоҷикӣ (PDF)', meta: 'PDF • Тоҷикӣ' },
+                      { title: 'Дуоҳои Қуръонӣ - Маҷмӯа', meta: 'PDF • Тоҷикӣ' },
+                    ].map((d, i) => (
+                      <Link key={i} href="/downloads" className="block">
+                        <Card className="p-3 hover:shadow-md transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <DownloadIcon className="h-5 w-5 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{d.title}</p>
+                              <p className="text-xs text-muted-foreground">{d.meta}</p>
+                            </div>
+                          </div>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mobile list follows same order */}
+                <div className="md:hidden">
+                  {filteredSurahs.map(surah => renderSurahItem(surah))}
+                </div>
+              </>
             ) : (
-              // Show "no results" message
               <Card className="p-8 text-center">
                 <p className="text-gray-500 dark:text-gray-400 mb-2">Ягон сура ёфт нашуд</p>
                 <Button variant="outline" onClick={() => setSearchTerm('')}>
                   Тоза кардани ҷустуҷӯ
                 </Button>
               </Card>
-            )}
-
-            {/* Mobile surah list view */}
-            {!isLoading && filteredSurahs && filteredSurahs.length > 0 && (
-              <div className="md:hidden">
-                {filteredSurahs.map(surah => renderSurahItem(surah))}
-              </div>
             )}
           </div>
         </div>

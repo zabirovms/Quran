@@ -1,31 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-// Removed floating BackToHome in favor of inline control
-import { Home } from 'lucide-react';
-import { Link } from 'wouter';
 import { GlobalOverlayType } from '@/App';
-import { 
-  Search, 
-  Play, 
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  Clock,
-  Eye,
-  Heart,
-  Share2,
-  Filter,
-  Grid3X3,
-  List,
-  ExternalLink
-} from 'lucide-react';
+import { Search, Play } from 'lucide-react';
 import SeoHead from '@/components/shared/SeoHead';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface VideoItem {
   id: string;
@@ -34,8 +17,6 @@ interface VideoItem {
   category: string;
   reciter: string;
   duration: string;
-  views: number;
-  likes: number;
   thumbnailUrl: string;
   videoUrl: string;
   youtubeId: string;
@@ -52,8 +33,6 @@ const sampleVideos: VideoItem[] = [
     category: 'Сураҳо',
     reciter: 'Шайх Абдур-Раҳмон ас-Судайс',
     duration: '15:32',
-    views: 45678,
-    likes: 1234,
     thumbnailUrl: `https://img.youtube.com/vi/oPrXRnF7rCo/maxresdefault.jpg`,
     videoUrl: 'https://youtu.be/oPrXRnF7rCo',
     youtubeId: 'oPrXRnF7rCo',
@@ -68,8 +47,6 @@ const sampleVideos: VideoItem[] = [
     category: 'Сураҳо',
     reciter: 'Шайх Мишари Рашид ал-Афаси',
     duration: '8:45',
-    views: 23456,
-    likes: 890,
     thumbnailUrl: `https://img.youtube.com/vi/2DARwxIBTY0/maxresdefault.jpg`,
     videoUrl: 'https://youtu.be/2DARwxIBTY0',
     youtubeId: '2DARwxIBTY0',
@@ -84,8 +61,6 @@ const sampleVideos: VideoItem[] = [
     category: 'Сураҳо',
     reciter: 'Шайх Аҳмад ал-Аҷми',
     duration: '12:18',
-    views: 34567,
-    likes: 1123,
     thumbnailUrl: `https://img.youtube.com/vi/rApE4VAfqg8/maxresdefault.jpg`,
     videoUrl: 'https://youtu.be/rApE4VAfqg8',
     youtubeId: 'rApE4VAfqg8',
@@ -100,8 +75,6 @@ const sampleVideos: VideoItem[] = [
     category: 'Сураҳо',
     reciter: 'Шайх Абдур-Раҳмон ас-Судайс',
     duration: '18:25',
-    views: 56789,
-    likes: 2345,
     thumbnailUrl: `https://img.youtube.com/vi/nsipUP3Tk0Q/maxresdefault.jpg`,
     videoUrl: 'https://youtu.be/nsipUP3Tk0Q',
     youtubeId: 'nsipUP3Tk0Q',
@@ -115,7 +88,7 @@ const categories = [
   'Ҳама', 'Сураҳо', 'Дуоҳо', 'Фарзҳо', 'Таърих', 'Тафсир', 'Таълимӣ'
 ];
 
-const languages = ['Ҳама', 'Арабӣ', 'Тоҷикӣ', 'Русӣ', 'Инглисӣ'];
+// Simplified: focusing on categories and search only
 
 interface VideosProps {
   onOpenOverlay: (type: GlobalOverlayType) => void;
@@ -124,10 +97,9 @@ interface VideosProps {
 export default function Videos({ onOpenOverlay }: VideosProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Ҳама');
-  const [selectedLanguage, setSelectedLanguage] = useState('Ҳама');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filteredVideos, setFilteredVideos] = useState(sampleVideos);
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
 
   // Filter videos based on search, category and language
   const filterVideos = () => {
@@ -135,10 +107,6 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
 
     if (selectedCategory !== 'Ҳама') {
       filtered = filtered.filter(video => video.category === selectedCategory);
-    }
-
-    if (selectedLanguage !== 'Ҳама') {
-      filtered = filtered.filter(video => video.language === selectedLanguage);
     }
 
     if (searchTerm) {
@@ -154,52 +122,32 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
   };
 
   // Apply filtering when dependencies change
-  useState(() => {
+  useEffect(() => {
     filterVideos();
-  });
+  }, [searchTerm, selectedCategory]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    filterVideos();
   };
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    filterVideos();
   };
 
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguage(language);
-    filterVideos();
-  };
+  // language filter removed
 
   const handleVideoSelect = (video: VideoItem) => {
-    console.log('Selected video:', video.title, 'YouTube ID:', video.youtubeId);
     setSelectedVideo(video);
+    setIsPlayerOpen(true);
   };
 
-  const handleLike = (video: VideoItem) => {
-    // Implement like functionality
-    console.log('Liking video:', video.title);
-  };
-
-  const handleShare = (video: VideoItem) => {
-    // Implement share functionality
-    console.log('Sharing video:', video.title);
-  };
+  // removed likes/share for a minimal UI
 
   const handleWatchOnYouTube = (video: VideoItem) => {
     window.open(video.videoUrl, '_blank');
   };
 
-  const formatViews = (views: number) => {
-    if (views >= 1000000) {
-      return `${(views / 1000000).toFixed(1)}M`;
-    } else if (views >= 1000) {
-      return `${(views / 1000).toFixed(1)}K`;
-    }
-    return views.toString();
-  };
+  // views formatting removed
 
   // Generate YouTube embed URL with proper parameters
   const getYouTubeEmbedUrl = (youtubeId: string) => {
@@ -220,171 +168,38 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
         }}
       />
       <Header onOpenOverlay={onOpenOverlay} />
-      
-      {/* Inline Back to Home */}
-      <div className="container mx-auto px-4 mt-3">
-        <Link href="/">
-          <Button variant="ghost" size="sm" className="flex gap-2 items-center text-primary hover:text-primary/90">
-            <Home className="h-4 w-4" />
-            <span className="hidden sm:inline">Асосӣ</span>
-          </Button>
-        </Link>
+      {/* Hero with search */}
+      <section className="relative">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/15 via-accent/10 to-transparent" />
+        <div className="container mx-auto px-4 py-10">
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3">Видеоҳои Қуръонӣ</h1>
+            <p className="text-muted-foreground mb-6">Тиловатҳо ва дарсҳо бо тарҷумаи тоҷикӣ. Ҷустуҷӯ кунед ё категорияро интихоб намоед.</p>
+            <div className="relative">
+              <Input type="text" placeholder="Ҷустуҷӯи видеоҳо…" className="pl-10 h-12 text-base" value={searchTerm} onChange={handleSearch} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories scroller */}
+      <div className="container mx-auto px-4">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+          {categories.map((category) => (
+            <Button key={category} variant={selectedCategory === category ? 'default' : 'outline'} size="sm" className="rounded-full" onClick={() => handleCategoryChange(category)}>
+              {category}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">
-          {/* Page Header */}
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-              Видеоҳои Қуръонӣ
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Тиловати Қуръон, дуоҳо ва маълумотҳои исломӣ бо субтитрҳои тоҷикӣ
-            </p>
-          </div>
 
-          {/* Selected Video Player */}
-          {selectedVideo && (
-            <div className="mb-8">
-              <Card className="overflow-hidden">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">{selectedVideo.title}</CardTitle>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {selectedVideo.description}
-                      </p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedVideo(null)}
-                    >
-                      ✕
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="aspect-video w-full bg-gray-900">
-                    <iframe
-                      src={getYouTubeEmbedUrl(selectedVideo.youtubeId)}
-                      title={selectedVideo.title}
-                      className="w-full h-full"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      loading="lazy"
-                    ></iframe>
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                      <div className="flex items-center gap-4">
-                        <span>Тиловаткунанда: {selectedVideo.reciter}</span>
-                        <span>Забон: {selectedVideo.language}</span>
-                        <span>Давра: {selectedVideo.duration}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          onClick={() => handleLike(selectedVideo)}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <Heart className="h-4 w-4 mr-1" />
-                          {selectedVideo.likes}
-                        </Button>
-                        <Button
-                          onClick={() => handleShare(selectedVideo)}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <Share2 className="h-4 w-4 mr-1" />
-                          Бахшида
-                        </Button>
-                        <Button
-                          onClick={() => handleWatchOnYouTube(selectedVideo)}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          Дар YouTube
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {/* Search and Filters */}
-          <div className="mb-6 space-y-4">
-            {/* Search Bar */}
-            <div className="relative max-w-md mx-auto">
-              <Input
-                type="text"
-                placeholder="Ҷустуҷӯи видеоҳо..."
-                className="pl-10 pr-4 py-2"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            </div>
-
-            {/* Category and Language Filters */}
-            <div className="flex flex-wrap justify-center gap-4">
-              <div className="flex flex-wrap gap-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Категория:</span>
-                {categories.map((category) => (
-                  <Badge
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    className="cursor-pointer hover:bg-primary/10"
-                    onClick={() => handleCategoryChange(category)}
-                  >
-                    {category}
-                  </Badge>
-                ))}
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Забон:</span>
-                {languages.map((language) => (
-                  <Badge
-                    key={language}
-                    variant={selectedLanguage === language ? "default" : "outline"}
-                    className="cursor-pointer hover:bg-primary/10"
-                    onClick={() => handleLanguageChange(language)}
-                  >
-                    {language}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex justify-center">
-              <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid3X3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Videos Grid/List */}
+          {/* Videos Grid */}
           {filteredVideos.length > 0 ? (
-            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+            <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
               {filteredVideos.map((video) => (
                 <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleVideoSelect(video)}>
                   {/* Video Thumbnail */}
@@ -406,75 +221,15 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
                     <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
                       {video.duration}
                     </div>
-                    
-                    {/* Subtitles Badge */}
-                    <div className="absolute top-2 left-2 bg-primary/90 text-white px-2 py-1 rounded text-xs">
-                      {video.subtitles.length} забон
+                    {/* Category */}
+                    <div className="absolute top-2 left-2 bg-primary/80 text-primary-foreground px-2 py-1 rounded text-xs">
+                      {video.category}
                     </div>
                   </div>
                   
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <Badge variant="outline" className="text-xs">
-                        {video.category}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {formatViews(video.views)} назар
-                      </span>
-                    </div>
-                    
-                    <h3 className="font-semibold mb-2 line-clamp-2">{video.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                      {video.description}
-                    </p>
-                    
-                    <div className="space-y-2 mb-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Тиловаткунанда:</span>
-                        <span className="font-medium">{video.reciter}</span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Забон:</span>
-                        <span className="font-medium">{video.language}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleVideoSelect(video);
-                        }}
-                        className="flex-1"
-                        size="sm"
-                      >
-                        <Play className="h-4 w-4 mr-2" />
-                        Назар
-                      </Button>
-                      <Button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLike(video);
-                        }}
-                        variant="outline" 
-                        size="sm"
-                      >
-                        <Heart className="h-4 w-4 mr-1" />
-                        {video.likes}
-                      </Button>
-                      <Button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShare(video);
-                        }}
-                        variant="outline" 
-                        size="sm"
-                      >
-                        <Share2 className="h-4 w-4 mr-1" />
-                      </Button>
-                    </div>
+                    <h3 className="font-semibold mb-1 line-clamp-2">{video.title}</h3>
+                    <p className="text-sm text-muted-foreground">{video.reciter}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -491,7 +246,6 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
               <Button onClick={() => {
                 setSearchTerm('');
                 setSelectedCategory('Ҳама');
-                setSelectedLanguage('Ҳама');
               }}>
                 Тоза кардани филтрҳо
               </Button>
@@ -499,6 +253,34 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
           )}
         </div>
       </main>
+
+      {/* Modal Player */}
+      <Dialog open={isPlayerOpen} onOpenChange={setIsPlayerOpen}>
+        <DialogContent className="p-0 sm:max-w-3xl">
+          {selectedVideo && (
+            <div className="w-full">
+              <div className="aspect-video w-full bg-black">
+                <iframe
+                  src={getYouTubeEmbedUrl(selectedVideo.youtubeId)}
+                  title={selectedVideo.title}
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+              <div className="p-4">
+                <DialogHeader>
+                  <DialogTitle className="text-base md:text-lg">{selectedVideo.title}</DialogTitle>
+                </DialogHeader>
+                <div className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">{selectedVideo.reciter}</span> • {selectedVideo.language} • {selectedVideo.duration}
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>

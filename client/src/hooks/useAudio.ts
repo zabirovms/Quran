@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, createContext, useContext, ReactNode, createElement } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 interface AudioPlayerState {
@@ -16,6 +16,9 @@ interface AudioPlayerState {
     surahName: string;
   };
   reciterId: string;
+  volume: number;
+  playbackRate: number;
+  repeatMode: 'off' | 'one' | 'all';
 }
 
 // Available Qari (reciters) from AlQuran.Cloud API
@@ -33,7 +36,26 @@ export const availableReciters: Reciter[] = [
   { id: 'ar.muhammadayyoub', name: 'محمد أيوب', englishName: 'Muhammad Ayyoub' },
 ];
 
-export function useAudioPlayer() {
+type AudioContextValue = {
+  audioState: AudioPlayerState;
+  playAudio: (verseKey: string, verseInfo?: { surahName: string; verseNumber: number }) => void;
+  playSurah: (surahNumber: number, surahName: string) => void;
+  togglePlayPause: () => void;
+  seekTo: (time: number) => void;
+  stopAudio: () => void;
+  setReciter: (reciterId: string) => void;
+  setVolume: (vol: number) => void;
+  setPlaybackRate: (rate: number) => void;
+  toggleRepeat: () => void;
+  setPlaylist: (keys: string[], context: { surahNumber: number; surahName: string }) => void;
+  playNext: () => void;
+  playPrev: () => void;
+  availableReciters: Reciter[];
+};
+
+const AudioContext = createContext<AudioContextValue | undefined>(undefined);
+
+export function AudioProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const [audioState, setAudioState] = useState<AudioPlayerState>({
     isPlaying: false,
@@ -41,11 +63,16 @@ export function useAudioPlayer() {
     duration: 0,
     loading: false,
     currentVerse: undefined,
-    reciterId: 'ar.alafasy', // Default reciter
+    reciterId: 'ar.alafasy',
+    volume: 1,
+    playbackRate: 1,
+    repeatMode: 'off',
   });
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const playlistRef = useRef<string[]>([]);
+  const playlistContextRef = useRef<{ surahNumber: number; surahName: string } | null>(null);
   
   // Clean up interval on unmount
   useEffect(() => {
@@ -178,6 +205,11 @@ export function useAudioPlayer() {
           loading: false,
           currentVerse: verseInfo ? { ...verseInfo, key: verseKey } : undefined
         }));
+        // Sync playlist index if available
+        const idx = playlistRef.current.indexOf(verseKey);
+        if (idx >= 0) {
+          // no separate index state needed; we infer by currentVerse.key
+        }
         
         // Start interval for tracking current time
         intervalRef.current = setInterval(() => {
@@ -435,7 +467,77 @@ export function useAudioPlayer() {
     }));
   }, []);
   
-  return {
+  // Volume & Rate
+  const setVolume = useCallback((vol: number) => {
+    const clamped = Math.max(0, Math.min(1, vol));
+    if (audioRef.current) audioRef.current.volume = clamped;
+    setAudioState(prev => ({ ...prev, volume: clamped }));
+  }, []);
+
+  const setPlaybackRate = useCallback((rate: number) => {
+    const clamped = Math.max(0.5, Math.min(2, rate));
+    if (audioRef.current) audioRef.current.playbackRate = clamped;
+    setAudioState(prev => ({ ...prev, playbackRate: clamped }));
+  }, []);
+
+  const toggleRepeat = useCallback(() => {
+    setAudioState(prev => ({
+      ...prev,
+      repeatMode: prev.repeatMode === 'off' ? 'one' : prev.repeatMode === 'one' ? 'all' : 'off'
+    }));
+  }, []);
+
+  // Playlist management
+  const setPlaylist = useCallback((keys: string[], context: { surahNumber: number; surahName: string }) => {
+    playlistRef.current = keys;
+    playlistContextRef.current = context;
+  }, []);
+
+  const playByIndex = useCallback((index: number) => {
+    const keys = playlistRef.current;
+    if (!keys.length) return;
+    const safeIndex = ((index % keys.length) + keys.length) % keys.length;
+    const key = keys[safeIndex];
+    const ctx = playlistContextRef.current;
+    playAudio(key, ctx ? { surahName: ctx.surahName, verseNumber: Number(key.split(':')[1]) } : undefined);
+  }, [playAudio]);
+
+  const playNext = useCallback(() => {
+    if (!audioState.currentVerse) return;
+    const keys = playlistRef.current;
+    const idx = keys.indexOf(audioState.currentVerse.key);
+    if (idx >= 0) playByIndex(idx + 1);
+  }, [audioState.currentVerse, playByIndex]);
+
+  const playPrev = useCallback(() => {
+    if (!audioState.currentVerse) return;
+    const keys = playlistRef.current;
+    const idx = keys.indexOf(audioState.currentVerse.key);
+    if (idx >= 0) playByIndex(idx - 1);
+  }, [audioState.currentVerse, playByIndex]);
+
+  // On ended, auto-advance depending on repeat mode
+  useEffect(() => {
+    if (!audioRef.current) return;
+    const handler = () => {
+      setAudioState(prev => ({ ...prev, isPlaying: false }));
+      if (audioState.repeatMode === 'one' && audioState.currentVerse) {
+        playAudio(audioState.currentVerse.key, { surahName: audioState.currentVerse.surahName, verseNumber: audioState.currentVerse.verseNumber });
+      } else if (audioState.repeatMode === 'all' && playlistRef.current.length) {
+        if (audioState.currentVerse) {
+          const idx = playlistRef.current.indexOf(audioState.currentVerse.key);
+          const nextIdx = (idx + 1) % playlistRef.current.length;
+          playByIndex(nextIdx);
+        }
+      }
+    };
+    audioRef.current.addEventListener('ended', handler);
+    return () => {
+      audioRef.current?.removeEventListener('ended', handler);
+    };
+  }, [audioState.repeatMode, audioState.currentVerse, playAudio, playByIndex]);
+
+  const value: AudioContextValue = {
     audioState,
     playAudio,
     playSurah,
@@ -443,6 +545,23 @@ export function useAudioPlayer() {
     seekTo,
     stopAudio,
     setReciter,
+    setVolume,
+    setPlaybackRate,
+    toggleRepeat,
+    setPlaylist,
+    playNext,
+    playPrev,
     availableReciters
   };
+
+  return createElement(AudioContext.Provider, { value }, children);
 }
+
+export function useAudioPlayer(): AudioContextValue {
+  const ctx = useContext(AudioContext);
+  if (!ctx) {
+    throw new Error('useAudioPlayer must be used within an AudioProvider');
+  }
+  return ctx;
+}
+

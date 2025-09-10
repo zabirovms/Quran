@@ -7,7 +7,9 @@ import BookmarksOverlay from "./components/overlay/BookmarksOverlay";
 import { DisplayProvider } from "./hooks/useDisplaySettings";
 import { ThemeProvider } from "./hooks/useTheme";
 import { AuthProvider } from "./hooks/useAuth";
+import { AudioProvider } from "./hooks/useAudio";
 import CookieConsent from "@/components/layout/CookieConsent";
+import { LeftSidebar } from "@/components/layout/LeftSidebar";
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("@/pages/home"));
@@ -84,12 +86,15 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <DisplayProvider>
-          <TooltipProvider>
-            <CookieConsent />
-            <Router />
-          </TooltipProvider>
-        </DisplayProvider>
+        <AudioProvider>
+          <DisplayProvider>
+            <TooltipProvider>
+              <CookieConsent />
+              <LeftSidebar />
+              <Router />
+            </TooltipProvider>
+          </DisplayProvider>
+        </AudioProvider>
       </ThemeProvider>
     </AuthProvider>
   );
