@@ -10,7 +10,6 @@ import { useSurahs } from '@/hooks/useQuran';
 import { getArabicFontClass } from '@/lib/fonts';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { LeftSidebar } from '@/components/layout/LeftSidebar';
 import { GlobalOverlayType } from '@/App';
 import { 
   Search, BookOpen, ChevronRight, ArrowUp, ArrowDown, Book
@@ -188,9 +187,6 @@ export default function Home({ onOpenOverlay }: HomeProps) {
           "keywords": "Куръон, Қуръони Карим, тарҷумаи тоҷикӣ, тафсир, тиловат, талаффуз, тоҷикӣ, забони точики"
         }}
       />
-      
-      {/* Left Sidebar for Navigation */}
-      <LeftSidebar />
       
       <Header onOpenOverlay={onOpenOverlay} />
 
