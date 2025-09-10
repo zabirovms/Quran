@@ -152,7 +152,7 @@ export default function MosquesPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="mx-auto px-2 md:px-4 py-2 md:py-6">
       <SeoHead 
         title="Суроғаи масҷидҳо"
         description="Ёфтани масҷидҳои наздиктарин дар харитаи Yandex"
@@ -164,51 +164,108 @@ export default function MosquesPage() {
         }}
       />
 
-      <div className="mb-4">
-        <Link href="/">
-          <Button variant="ghost" size="sm">Ба саҳифаи асосӣ</Button>
-        </Link>
+      {/* Mobile sticky top bar */}
+      <div className="md:hidden sticky top-0 z-20 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+        <div className="flex items-center justify-between px-2 py-2">
+          <Link href="/">
+            <Button variant="ghost" size="sm">Асосӣ</Button>
+          </Link>
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <MapPin className="h-4 w-4" /> Масҷидҳо
+          </div>
+        </div>
+        <form onSubmit={handleSearch} className="flex gap-2 p-2 pb-3">
+          <Input
+            placeholder="Ҷустуҷӯ: масҷид, мечеть, mosque ..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Button type="submit" className="shrink-0">Ҷустуҷӯ</Button>
+        </form>
+        {error && (
+          <div className="px-3 pb-3 text-sm text-red-600">{error}</div>
+        )}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Суроғаи масҷидҳо
-          </CardTitle>
-          <CardDescription>Ҷустуҷӯ ва тамошои масҷидҳо дар наздикии шумо</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-            <Input
-              placeholder="Ҷустуҷӯ: масҷид, masjid, mosque ..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Button type="submit">Ҷустуҷӯ</Button>
-            <Button type="button" variant="outline" onClick={locateMe} title="Ҷойгиршавии ман">
-              <Target className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="secondary" onClick={searchCurrentArea}>
-              Ҷустуҷӯ дар ин минтақа
-            </Button>
-          </form>
-
-          {error && (
-            <div className="text-sm text-red-600 mb-2">{error}</div>
-          )}
-
+      {/* Desktop split layout */}
+      <div className="hidden md:grid md:grid-cols-12 gap-4 md:h-[calc(100vh-7rem)]">
+        <div className="md:col-span-4">
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Суроғаи масҷидҳо
+              </CardTitle>
+              <CardDescription>Ҷустуҷӯ ва тамошои масҷидҳо дар наздикии шумо</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <form onSubmit={handleSearch} className="flex gap-2">
+                <Input
+                  placeholder="Ҷустуҷӯ: масҷид, мечеть, mosque ..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Button type="submit" className="shrink-0">Ҷустуҷӯ</Button>
+              </form>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={locateMe} title="Ҷойгиршавии ман">
+                  <Target className="h-4 w-4 mr-2" /> Ҷойгиршавии ман
+                </Button>
+                <Button type="button" variant="secondary" onClick={searchCurrentArea}>
+                  Ҷустуҷӯ дар ин минтақа
+                </Button>
+              </div>
+              {error && (
+                <div className="text-sm text-red-600">{error}</div>
+              )}
+              <div className="text-xs text-muted-foreground">
+                Маслиҳат: Барои натиҷаи бештар калимаҳои дигарро низ санҷед — "мечеть", "mosque", "masjid".
+              </div>
+              <div>
+                <Link href="/">
+                  <Button variant="ghost" size="sm">Ба саҳифаи асосӣ</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="md:col-span-8 relative">
           <div
             ref={mapContainerRef}
-            className="w-full h-[70vh] rounded-md border"
+            className="w-full h-full min-h-[60vh] rounded-md border"
             role="region"
             aria-label="Yandex Map"
           />
           {loadingMap && (
-            <div className="mt-3 text-sm text-muted-foreground">Боркунии харита...</div>
+            <div className="absolute inset-0 grid place-items-center text-sm text-muted-foreground">
+              Боркунии харита...
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Mobile map fill */}
+      <div className="md:hidden">
+        <div
+          ref={mapContainerRef}
+          className="w-full h-[calc(100vh-11rem)] rounded-md border"
+          role="region"
+          aria-label="Yandex Map"
+        />
+        {loadingMap && (
+          <div className="mt-3 text-sm text-muted-foreground">Боркунии харита...</div>
+        )}
+      </div>
+
+      {/* Floating mobile controls */}
+      <div className="md:hidden fixed right-3 bottom-24 z-20 flex flex-col gap-2">
+        <Button type="button" size="icon" onClick={locateMe} title="Ҷойгиршавии ман" className="shadow-lg">
+          <Target className="h-5 w-5" />
+        </Button>
+        <Button type="button" variant="secondary" onClick={searchCurrentArea} className="shadow-lg">
+          Ҷустуҷӯ дар ин минтақа
+        </Button>
+      </div>
     </div>
   );
 }
