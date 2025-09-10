@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { GlobalOverlayType } from '@/App';
-import { Download, Share2, X } from 'lucide-react';
+import { Download, Share2, X, BookOpen } from 'lucide-react';
 import SeoHead from '@/components/shared/SeoHead';
 import { useEffect } from 'react';
 
@@ -14,24 +14,46 @@ interface PictureItem {
   imagePath: string;
 }
 
-const newImages: PictureItem[] = [
-  { id: 'n1', title: 'Қуръон 2:286 (Сураи Бақара)', imagePath: '/QuraniQuotes/Қуръон 2^286 (Сураи Бақара).png' },
-  { id: 'n2', title: 'Қуръон 24:35 (Сураи Нур)', imagePath: '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png' },
-  { id: 'n3', title: 'Қуръон 29:69 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^69 (Сураи Анкабут).png' },
-  { id: 'n4', title: 'Қуръон 53:32 (Сураи Наҷм)', imagePath: '/QuraniQuotes/Қуръон 53^32 (Сураи Наҷм).png' },
-  { id: 'n5', title: 'Қуръон 55:13 (Сураи Раҳмон)', imagePath: '/QuraniQuotes/Қуръон 55^13 (Сураи Раҳмон).png' },
-  { id: 'n6', title: 'Қуръон 9:51 (Сураи Тавба)', imagePath: '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png' },
-];
-
+// All QuraniQuotes images organized by categories
 const quranicQuotes: PictureItem[] = [
-  ...newImages,
-  { id: '1', title: 'Қуръон 73:2 (Сураи Муззаммил)', imagePath: '/QuraniQuotes/Қуръон 73^2 (Сураи Муззаммил).jpg' },
-  { id: '2', title: 'Қуръон 20:55 (Сураи Тоҳо)', imagePath: '/QuraniQuotes/Қуръон 20^55 (Сураи Тоҳо).jpg' },
-  { id: '3', title: 'Фазилати Шаби Қадр', imagePath: '/QuraniQuotes/Фазилати Шаби Қадр.jpg' },
-  { id: '4', title: 'Қуръон 17:24 (Сураи Исро)', imagePath: '/QuraniQuotes/Қуръон 17^24 (Сураи Исро).jpg' },
-  { id: '5', title: 'Дуоҳои Шаби Қадр', imagePath: '/QuraniQuotes/Дуоҳои Шаби Қадр.jpg' },
-  { id: '6', title: 'Қуръон 26:32 (Сураи Шуаро)', imagePath: '/QuraniQuotes/Қуръон 26^32 (Сураи Шуаро).jpg' },
-  { id: '7', title: 'Такбири Иди Қурбон (Такбироти Ташриқ)', imagePath: '/QuraniQuotes/Такбири Иди Қурбон (Такбироти Ташриқ).jpg' }
+  // Quranic Verses
+  { id: '1', title: 'Қуръон 2:286 (Сураи Бақара)', imagePath: '/QuraniQuotes/Қуръон 2^286 (Сураи Бақара).png' },
+  { id: '2', title: 'Қуръон 3:190 (Сураи Оли Имрон)', imagePath: '/QuraniQuotes/Қуръон 3^190 (Сураи Оли Имрон).jpg' },
+  { id: '3', title: 'Қуръон 3:191 (Сураи Оли Имрон)', imagePath: '/QuraniQuotes/Қуръон 3^191 (Сураи Оли Имрон).jpg' },
+  { id: '4', title: 'Қуръон 6:116 (Сураи Анъом)', imagePath: '/QuraniQuotes/Қуръон 6^116 (Сураи Анъом).jpg' },
+  { id: '5', title: 'Қуръон 8:22 (Сураи Анфол)', imagePath: '/QuraniQuotes/Қуръон 8^22 (Сураи Анфол).jpg' },
+  { id: '6', title: 'Қуръон 9:51 (Сураи Тавба)', imagePath: '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png' },
+  { id: '7', title: 'Қуръон 16:66 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^66 (Сураи Наҳл).jpg' },
+  { id: '8', title: 'Қуръон 16:68-69 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^68-69 (Сураи Наҳл).jpg' },
+  { id: '9', title: 'Қуръон 16:79 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^79 (Сураи Наҳл).jpg' },
+  { id: '10', title: 'Қуръон 17:24 (Сураи Исро)', imagePath: '/QuraniQuotes/Қуръон 17^24 (Сураи Исро).jpg' },
+  { id: '11', title: 'Қуръон 20:55 (Сураи Тоҳо)', imagePath: '/QuraniQuotes/Қуръон 20^55 (Сураи Тоҳо).jpg' },
+  { id: '12', title: 'Қуръон 24:35 (Сураи Нур)', imagePath: '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png' },
+  { id: '13', title: 'Қуръон 26:32 (Сураи Шуаро)', imagePath: '/QuraniQuotes/Қуръон 26^32 (Сураи Шуаро).jpg' },
+  { id: '14', title: 'Қуръон 29:20 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^20 (Сураи Анкабут).jpg' },
+  { id: '15', title: 'Қуръон 29:69 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^69 (Сураи Анкабут).png' },
+  { id: '16', title: 'Қуръон 30:8 (Сураи Рум)', imagePath: '/QuraniQuotes/Қуръон 30^8 (Сураи Рум).jpg' },
+  { id: '17', title: 'Қуръон 34:46 (Сураи Сабаъ)', imagePath: '/QuraniQuotes/Қуръон 34^46 (Сураи Сабаъ).jpg' },
+  { id: '18', title: 'Қуръон 41:53 (Сураи Фуссилат)', imagePath: '/QuraniQuotes/Қуръон 41^53 (Сураи Фуссилат).jpg' },
+  { id: '19', title: 'Қуръон 43:67 (Сураи Зухруф)', imagePath: '/QuraniQuotes/Қуръон 43^67 (Сураи Зухруф).jpg' },
+  { id: '20', title: 'Қуръон 53:32 (Сураи Наҷм)', imagePath: '/QuraniQuotes/Қуръон 53^32 (Сураи Наҷм).png' },
+  { id: '21', title: 'Қуръон 55:13 (Сураи Раҳмон)', imagePath: '/QuraniQuotes/Қуръон 55^13 (Сураи Раҳмон).png' },
+  { id: '22', title: 'Қуръон 65:2-3 (Сураи Талоқ)', imagePath: '/QuraniQuotes/Қуръон 65^2-3 (Сураи Талоқ).jpg' },
+  { id: '23', title: 'Қуръон 73:2 (Сураи Муззаммил)', imagePath: '/QuraniQuotes/Қуръон 73^2 (Сураи Муззаммил).jpg' },
+  
+  // Duas and Prayers
+  { id: '24', title: 'Дуоҳои Шаби Қадр', imagePath: '/QuraniQuotes/Дуоҳои Шаби Қадр.jpg' },
+  { id: '25', title: 'Дуоҳои Паёмбарон', imagePath: '/QuraniQuotes/Дуоҳои Паёмбарон.jpg' },
+  
+  // Islamic Topics and Education
+  { id: '26', title: 'Фазилати Шаби Қадр', imagePath: '/QuraniQuotes/Фазилати Шаби Қадр.jpg' },
+  { id: '27', title: 'Беҳтарин вақтҳо барои дуо кардан', imagePath: '/QuraniQuotes/Беҳтарин вақтҳо барои дуо кардан.jpg' },
+  { id: '28', title: 'Дарсҳо аз сураи Юсуф', imagePath: '/QuraniQuotes/Дарсҳо аз сураи Юсуф.jpg' },
+  { id: '29', title: 'Навъҳои Садақа', imagePath: '/QuraniQuotes/Навъҳои Садақа.jpg' },
+  { id: '30', title: 'Реҷаи Моҳи Рамазон', imagePath: '/QuraniQuotes/Реҷаи Моҳи Рамазон.jpg' },
+  { id: '31', title: 'Роҳҳои поксозии қалб', imagePath: '/QuraniQuotes/Роҳҳои поксозии қалб.jpg' },
+  { id: '32', title: 'Суннатҳои Рӯзи Ҷумъа', imagePath: '/QuraniQuotes/Суннатҳои Рӯзи Ҷумъа.jpg' },
+  { id: '33', title: 'Такбири Иди Қурбон (Такбироти Ташриқ)', imagePath: '/QuraniQuotes/Такбири Иди Қурбон (Такбироти Ташриқ).jpg' }
 ];
 
 
@@ -159,9 +181,7 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
                 Лутфан дар ҷустуҷӯ ё филтрҳо тағйир диҳед
               </p>
               <Button onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('Ҳама');
-                setSelectedSource('Ҳама');
+                setFilteredPictures(quranicQuotes);
               }}>
                 Тоза кардани филтрҳо
               </Button>
