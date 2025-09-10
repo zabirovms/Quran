@@ -79,7 +79,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
   const { data: surahs, isLoading: isSurahsLoading } = useSurahs();
   const { data: surah, isLoading: isSurahLoading } = useSurah(surahNumber);
   const { data: allVerses, isLoading: isAllVersesLoading } = useVerses(surahNumber);
-  const { playAudio, playSurah, audioState } = useAudioPlayer();
+  const { playAudio, playSurah, audioState, setPlaylist } = useAudioPlayer();
   const { toast } = useToast();
   const { contentViewMode } = useDisplaySettings();
 
@@ -119,13 +119,19 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
       setCurrentPage(1);
       setVisibleVerses([]);
 
+      // Prime playlist for the audio player when surah changes
+      if (allVerses && allVerses.length > 0) {
+        const keys = allVerses.map(v => v.unique_key);
+        setPlaylist(keys, { surahNumber, surahName: surah?.name_tajik || `Сураи ${surahNumber}` });
+      }
+
       // Scroll to top when surah changes
       window.scrollTo({
         top: 0,
         behavior: 'instant'
       });
     }
-  }, [surahNumber]);
+  }, [surahNumber, allVerses, setPlaylist, surah?.name_tajik]);
 
   // Save the last read position
   useEffect(() => {
@@ -281,11 +287,8 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
   };
 
   const handlePlaySurah = () => {
-    if (surah) {
-      const firstVerse = surah.verses[0];
-      if (firstVerse) {
-        handleVerseNavigation(firstVerse.verse_number);
-      }
+    if (allVerses && allVerses.length > 0) {
+      handleVerseNavigation(allVerses[0].verse_number);
     }
   };
 
