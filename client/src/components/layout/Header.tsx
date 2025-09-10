@@ -80,7 +80,6 @@ export default function Header({
             aria-label="Навигатсия"
             onClick={() => window.dispatchEvent(new CustomEvent('toggle-left-sidebar'))}
             onMouseEnter={() => window.dispatchEvent(new CustomEvent('open-left-sidebar'))}
-            onMouseLeave={() => window.dispatchEvent(new CustomEvent('close-left-sidebar'))}
           >
             <Menu className="h-5 w-5" />
           </Button>

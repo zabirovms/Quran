@@ -21,6 +21,7 @@ import { Link, useLocation } from 'wouter';
 export function LeftSidebar() {
   const [collapsed, setCollapsed] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
   const [location] = useLocation();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -70,11 +71,13 @@ export function LeftSidebar() {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
+    setIsHovering(true);
   };
 
   const handleSidebarMouseLeave = () => {
     if (!isMobile) {
       hoverTimeoutRef.current = setTimeout(() => {
+        setIsHovering(false);
         setCollapsed(true);
       }, 300);
     }
@@ -85,8 +88,16 @@ export function LeftSidebar() {
 
   useEffect(() => {
     const toggleHandler = () => setCollapsed(c => !c);
-    const openHandler = () => !isMobile && setCollapsed(false);
-    const closeHandler = () => !isMobile && setCollapsed(true);
+    const openHandler = () => {
+      if (isMobile) return;
+      setCollapsed(false);
+      setIsHovering(true);
+    };
+    const closeHandler = () => {
+      if (isMobile) return;
+      // Only close if not actively hovering sidebar to avoid flicker
+      if (!isHovering) setCollapsed(true);
+    };
     window.addEventListener('toggle-left-sidebar' as any, toggleHandler as any);
     window.addEventListener('open-left-sidebar' as any, openHandler as any);
     window.addEventListener('close-left-sidebar' as any, closeHandler as any);
@@ -95,7 +106,7 @@ export function LeftSidebar() {
       window.removeEventListener('open-left-sidebar' as any, openHandler as any);
       window.removeEventListener('close-left-sidebar' as any, closeHandler as any);
     };
-  }, []);
+  }, [isMobile, isHovering]);
 
   const navigationItems = [
     {
