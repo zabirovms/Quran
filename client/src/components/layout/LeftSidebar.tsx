@@ -12,6 +12,7 @@ import {
   FileText,
   Book,
   FolderKanban,
+  MapPin,
   Settings,
   User,
   Menu
@@ -114,6 +115,12 @@ export function LeftSidebar() {
       icon: Home,
       label: "Асосӣ",
       description: "Саҳифаи асосӣ"
+    },
+    {
+      href: "/mosques",
+      icon: MapPin,
+      label: "Масҷидҳо",
+      description: "Суроғаи масҷидҳо"
     },
     {
       href: "/farzi-ayn",
