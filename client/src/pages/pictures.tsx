@@ -14,47 +14,8 @@ interface PictureItem {
   imagePath: string;
 }
 
-// All QuraniQuotes images organized by categories
-const quranicQuotes: PictureItem[] = [
-  // Quranic Verses
-  { id: '1', title: 'Қуръон 2:286 (Сураи Бақара)', imagePath: '/QuraniQuotes/Қуръон 2^286 (Сураи Бақара).png' },
-  { id: '2', title: 'Қуръон 3:190 (Сураи Оли Имрон)', imagePath: '/QuraniQuotes/Қуръон 3^190 (Сураи Оли Имрон).jpg' },
-  { id: '3', title: 'Қуръон 3:191 (Сураи Оли Имрон)', imagePath: '/QuraniQuotes/Қуръон 3^191 (Сураи Оли Имрон).jpg' },
-  { id: '4', title: 'Қуръон 6:116 (Сураи Анъом)', imagePath: '/QuraniQuotes/Қуръон 6^116 (Сураи Анъом).jpg' },
-  { id: '5', title: 'Қуръон 8:22 (Сураи Анфол)', imagePath: '/QuraniQuotes/Қуръон 8^22 (Сураи Анфол).jpg' },
-  { id: '6', title: 'Қуръон 9:51 (Сураи Тавба)', imagePath: '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png' },
-  { id: '7', title: 'Қуръон 16:66 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^66 (Сураи Наҳл).jpg' },
-  { id: '8', title: 'Қуръон 16:68-69 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^68-69 (Сураи Наҳл).jpg' },
-  { id: '9', title: 'Қуръон 16:79 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^79 (Сураи Наҳл).jpg' },
-  { id: '10', title: 'Қуръон 17:24 (Сураи Исро)', imagePath: '/QuraniQuotes/Қуръон 17^24 (Сураи Исро).jpg' },
-  { id: '11', title: 'Қуръон 20:55 (Сураи Тоҳо)', imagePath: '/QuraniQuotes/Қуръон 20^55 (Сураи Тоҳо).jpg' },
-  { id: '12', title: 'Қуръон 24:35 (Сураи Нур)', imagePath: '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png' },
-  { id: '13', title: 'Қуръон 26:32 (Сураи Шуаро)', imagePath: '/QuraniQuotes/Қуръон 26^32 (Сураи Шуаро).jpg' },
-  { id: '14', title: 'Қуръон 29:20 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^20 (Сураи Анкабут).jpg' },
-  { id: '15', title: 'Қуръон 29:69 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^69 (Сураи Анкабут).png' },
-  { id: '16', title: 'Қуръон 30:8 (Сураи Рум)', imagePath: '/QuraniQuotes/Қуръон 30^8 (Сураи Рум).jpg' },
-  { id: '17', title: 'Қуръон 34:46 (Сураи Сабаъ)', imagePath: '/QuraniQuotes/Қуръон 34^46 (Сураи Сабаъ).jpg' },
-  { id: '18', title: 'Қуръон 41:53 (Сураи Фуссилат)', imagePath: '/QuraniQuotes/Қуръон 41^53 (Сураи Фуссилат).jpg' },
-  { id: '19', title: 'Қуръон 43:67 (Сураи Зухруф)', imagePath: '/QuraniQuotes/Қуръон 43^67 (Сураи Зухруф).jpg' },
-  { id: '20', title: 'Қуръон 53:32 (Сураи Наҷм)', imagePath: '/QuraniQuotes/Қуръон 53^32 (Сураи Наҷм).png' },
-  { id: '21', title: 'Қуръон 55:13 (Сураи Раҳмон)', imagePath: '/QuraniQuotes/Қуръон 55^13 (Сураи Раҳмон).png' },
-  { id: '22', title: 'Қуръон 65:2-3 (Сураи Талоқ)', imagePath: '/QuraniQuotes/Қуръон 65^2-3 (Сураи Талоқ).jpg' },
-  { id: '23', title: 'Қуръон 73:2 (Сураи Муззаммил)', imagePath: '/QuraniQuotes/Қуръон 73^2 (Сураи Муззаммил).jpg' },
-  
-  // Duas and Prayers
-  { id: '24', title: 'Дуоҳои Шаби Қадр', imagePath: '/QuraniQuotes/Дуоҳои Шаби Қадр.jpg' },
-  { id: '25', title: 'Дуоҳои Паёмбарон', imagePath: '/QuraniQuotes/Дуоҳои Паёмбарон.jpg' },
-  
-  // Islamic Topics and Education
-  { id: '26', title: 'Фазилати Шаби Қадр', imagePath: '/QuraniQuotes/Фазилати Шаби Қадр.jpg' },
-  { id: '27', title: 'Беҳтарин вақтҳо барои дуо кардан', imagePath: '/QuraniQuotes/Беҳтарин вақтҳо барои дуо кардан.jpg' },
-  { id: '28', title: 'Дарсҳо аз сураи Юсуф', imagePath: '/QuraniQuotes/Дарсҳо аз сураи Юсуф.jpg' },
-  { id: '29', title: 'Навъҳои Садақа', imagePath: '/QuraniQuotes/Навъҳои Садақа.jpg' },
-  { id: '30', title: 'Реҷаи Моҳи Рамазон', imagePath: '/QuraniQuotes/Реҷаи Моҳи Рамазон.jpg' },
-  { id: '31', title: 'Роҳҳои поксозии қалб', imagePath: '/QuraniQuotes/Роҳҳои поксозии қалб.jpg' },
-  { id: '32', title: 'Суннатҳои Рӯзи Ҷумъа', imagePath: '/QuraniQuotes/Суннатҳои Рӯзи Ҷумъа.jpg' },
-  { id: '33', title: 'Такбири Иди Қурбон (Такбироти Ташриқ)', imagePath: '/QuraniQuotes/Такбири Иди Қурбон (Такбироти Ташриқ).jpg' }
-];
+// Will load dynamically from Google Cloud Storage (bucket: quran-tajik, prefix: pictures/)
+const INITIAL_PICTURES: PictureItem[] = [];
 
 
 interface PicturesProps {
@@ -62,15 +23,73 @@ interface PicturesProps {
 }
 
 export default function Pictures({ onOpenOverlay }: PicturesProps) {
-  const [filteredPictures, setFilteredPictures] = useState(quranicQuotes);
+  const [filteredPictures, setFilteredPictures] = useState(INITIAL_PICTURES);
   const [selectedPicture, setSelectedPicture] = useState<PictureItem | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Filter pictures based on search, category and source
-  const filterPictures = () => setFilteredPictures(quranicQuotes);
+  // Build a public URL for a given object name in the bucket.
+  const buildPublicUrl = (objectName: string) => {
+    const base = 'https://storage.googleapis.com/quran-tajik/';
+    // encodeURI preserves slashes but encodes spaces/unicode correctly
+    return encodeURI(base + objectName);
+  };
 
-  // Initialize list
+  // Fetch all pages of objects from GCS with the given prefix
   useEffect(() => {
-    filterPictures();
+    let isCancelled = false;
+
+    const fetchAll = async () => {
+      try {
+        setLoading(true);
+        const accumulated: any[] = [];
+        let pageToken: string | undefined = undefined;
+        const endpointBase = 'https://storage.googleapis.com/storage/v1/b/quran-tajik/o';
+
+        do {
+          const url = new URL(endpointBase);
+          url.searchParams.set('prefix', 'pictures/');
+          url.searchParams.set('fields', 'items(name,metadata),nextPageToken');
+          if (pageToken) url.searchParams.set('pageToken', pageToken);
+
+          const resp = await fetch(url.toString());
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const data = await resp.json();
+          const items = Array.isArray(data.items) ? data.items : [];
+          accumulated.push(...items);
+          pageToken = data.nextPageToken;
+        } while (pageToken);
+
+        // Filter out directory placeholders, map to PictureItem
+        const pictures: PictureItem[] = accumulated
+          .filter((obj) => typeof obj.name === 'string' && /\.(png|jpe?g|webp|gif)$/i.test(obj.name))
+          .map((obj) => {
+            const name: string = obj.name;
+            const fileName = name.split('/').pop() || name;
+            const title = fileName.replace(/\.[^.]+$/, '');
+            return {
+              id: name,
+              title,
+              imagePath: buildPublicUrl(name),
+            } as PictureItem;
+          });
+
+        if (!isCancelled) {
+          // Optional: sort newest-first by name if names contain dates; otherwise alphabetical
+          pictures.sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' }));
+          setFilteredPictures(pictures);
+        }
+      } catch (err: any) {
+        if (!isCancelled) setError(err?.message || 'Failed to load images');
+      } finally {
+        if (!isCancelled) setLoading(false);
+      }
+    };
+
+    fetchAll();
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   const handlePictureSelect = (picture: PictureItem) => {
@@ -158,7 +177,17 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
           {/* Minimalist: no search/filters; pure grid with names only */}
 
           {/* Pictures Grid/List */}
-          {filteredPictures.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Боргирии суратҳо...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <BookOpen className="h-16 w-16 text-red-400 mx-auto mb-4" />
+              <p className="text-red-500 dark:text-red-400">Хатогӣ: {error}</p>
+            </div>
+          ) : filteredPictures.length > 0 ? (
             <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
               {filteredPictures.map((picture) => (
                 <Card key={picture.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePictureSelect(picture)}>
@@ -203,7 +232,9 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
                 Лутфан дар ҷустуҷӯ ё филтрҳо тағйир диҳед
               </p>
               <Button onClick={() => {
-                setFilteredPictures(quranicQuotes);
+                // Re-trigger fetch by clearing and letting useEffect run again is not straightforward.
+                // Instead, simply attempt to reload the page data.
+                window.location.reload();
               }}>
                 Тоза кардани филтрҳо
               </Button>
