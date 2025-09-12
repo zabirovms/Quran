@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
@@ -6,7 +6,6 @@ import Footer from '@/components/layout/Footer';
 import { GlobalOverlayType } from '@/App';
 import { Download, Share2, X, BookOpen } from 'lucide-react';
 import SeoHead from '@/components/shared/SeoHead';
-import { useEffect } from 'react';
 
 interface PictureItem {
   id: string;
@@ -14,63 +13,81 @@ interface PictureItem {
   imagePath: string;
 }
 
-// All QuraniQuotes images organized by categories
-const quranicQuotes: PictureItem[] = [
-  // Quranic Verses
-  { id: '1', title: 'Қуръон 2:286 (Сураи Бақара)', imagePath: '/QuraniQuotes/Қуръон 2^286 (Сураи Бақара).png' },
-  { id: '2', title: 'Қуръон 3:190 (Сураи Оли Имрон)', imagePath: '/QuraniQuotes/Қуръон 3^190 (Сураи Оли Имрон).jpg' },
-  { id: '3', title: 'Қуръон 3:191 (Сураи Оли Имрон)', imagePath: '/QuraniQuotes/Қуръон 3^191 (Сураи Оли Имрон).jpg' },
-  { id: '4', title: 'Қуръон 6:116 (Сураи Анъом)', imagePath: '/QuraniQuotes/Қуръон 6^116 (Сураи Анъом).jpg' },
-  { id: '5', title: 'Қуръон 8:22 (Сураи Анфол)', imagePath: '/QuraniQuotes/Қуръон 8^22 (Сураи Анфол).jpg' },
-  { id: '6', title: 'Қуръон 9:51 (Сураи Тавба)', imagePath: '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png' },
-  { id: '7', title: 'Қуръон 16:66 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^66 (Сураи Наҳл).jpg' },
-  { id: '8', title: 'Қуръон 16:68-69 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^68-69 (Сураи Наҳл).jpg' },
-  { id: '9', title: 'Қуръон 16:79 (Сураи Наҳл)', imagePath: '/QuraniQuotes/Қуръон 16^79 (Сураи Наҳл).jpg' },
-  { id: '10', title: 'Қуръон 17:24 (Сураи Исро)', imagePath: '/QuraniQuotes/Қуръон 17^24 (Сураи Исро).jpg' },
-  { id: '11', title: 'Қуръон 20:55 (Сураи Тоҳо)', imagePath: '/QuraniQuotes/Қуръон 20^55 (Сураи Тоҳо).jpg' },
-  { id: '12', title: 'Қуръон 24:35 (Сураи Нур)', imagePath: '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png' },
-  { id: '13', title: 'Қуръон 26:32 (Сураи Шуаро)', imagePath: '/QuraniQuotes/Қуръон 26^32 (Сураи Шуаро).jpg' },
-  { id: '14', title: 'Қуръон 29:20 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^20 (Сураи Анкабут).jpg' },
-  { id: '15', title: 'Қуръон 29:69 (Сураи Анкабут)', imagePath: '/QuraniQuotes/Қуръон 29^69 (Сураи Анкабут).png' },
-  { id: '16', title: 'Қуръон 30:8 (Сураи Рум)', imagePath: '/QuraniQuotes/Қуръон 30^8 (Сураи Рум).jpg' },
-  { id: '17', title: 'Қуръон 34:46 (Сураи Сабаъ)', imagePath: '/QuraniQuotes/Қуръон 34^46 (Сураи Сабаъ).jpg' },
-  { id: '18', title: 'Қуръон 41:53 (Сураи Фуссилат)', imagePath: '/QuraniQuotes/Қуръон 41^53 (Сураи Фуссилат).jpg' },
-  { id: '19', title: 'Қуръон 43:67 (Сураи Зухруф)', imagePath: '/QuraniQuotes/Қуръон 43^67 (Сураи Зухруф).jpg' },
-  { id: '20', title: 'Қуръон 53:32 (Сураи Наҷм)', imagePath: '/QuraniQuotes/Қуръон 53^32 (Сураи Наҷм).png' },
-  { id: '21', title: 'Қуръон 55:13 (Сураи Раҳмон)', imagePath: '/QuraniQuotes/Қуръон 55^13 (Сураи Раҳмон).png' },
-  { id: '22', title: 'Қуръон 65:2-3 (Сураи Талоқ)', imagePath: '/QuraniQuotes/Қуръон 65^2-3 (Сураи Талоқ).jpg' },
-  { id: '23', title: 'Қуръон 73:2 (Сураи Муззаммил)', imagePath: '/QuraniQuotes/Қуръон 73^2 (Сураи Муззаммил).jpg' },
-  
-  // Duas and Prayers
-  { id: '24', title: 'Дуоҳои Шаби Қадр', imagePath: '/QuraniQuotes/Дуоҳои Шаби Қадр.jpg' },
-  { id: '25', title: 'Дуоҳои Паёмбарон', imagePath: '/QuraniQuotes/Дуоҳои Паёмбарон.jpg' },
-  
-  // Islamic Topics and Education
-  { id: '26', title: 'Фазилати Шаби Қадр', imagePath: '/QuraniQuotes/Фазилати Шаби Қадр.jpg' },
-  { id: '27', title: 'Беҳтарин вақтҳо барои дуо кардан', imagePath: '/QuraniQuotes/Беҳтарин вақтҳо барои дуо кардан.jpg' },
-  { id: '28', title: 'Дарсҳо аз сураи Юсуф', imagePath: '/QuraniQuotes/Дарсҳо аз сураи Юсуф.jpg' },
-  { id: '29', title: 'Навъҳои Садақа', imagePath: '/QuraniQuotes/Навъҳои Садақа.jpg' },
-  { id: '30', title: 'Реҷаи Моҳи Рамазон', imagePath: '/QuraniQuotes/Реҷаи Моҳи Рамазон.jpg' },
-  { id: '31', title: 'Роҳҳои поксозии қалб', imagePath: '/QuraniQuotes/Роҳҳои поксозии қалб.jpg' },
-  { id: '32', title: 'Суннатҳои Рӯзи Ҷумъа', imagePath: '/QuraniQuotes/Суннатҳои Рӯзи Ҷумъа.jpg' },
-  { id: '33', title: 'Такбири Иди Қурбон (Такбироти Ташриқ)', imagePath: '/QuraniQuotes/Такбири Иди Қурбон (Такбироти Ташриқ).jpg' }
-];
-
+// Will load dynamically from Google Cloud Storage (bucket: quran-tajik, prefix: pictures/)
+const INITIAL_PICTURES: PictureItem[] = [];
 
 interface PicturesProps {
   onOpenOverlay: (type: GlobalOverlayType) => void;
 }
 
 export default function Pictures({ onOpenOverlay }: PicturesProps) {
-  const [filteredPictures, setFilteredPictures] = useState(quranicQuotes);
+  const [filteredPictures, setFilteredPictures] = useState(INITIAL_PICTURES);
   const [selectedPicture, setSelectedPicture] = useState<PictureItem | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Filter pictures based on search, category and source
-  const filterPictures = () => setFilteredPictures(quranicQuotes);
+  // Build a public URL for a given object name in the bucket.
+  const buildPublicUrl = (objectName: string) => {
+    const base = 'https://storage.googleapis.com/quran-tajik/';
+    // encodeURI preserves slashes but encodes spaces/unicode correctly
+    return encodeURI(base + objectName);
+  };
 
-  // Initialize list
+  // Fetch all pages of objects from GCS with the given prefix
   useEffect(() => {
-    filterPictures();
+    let isCancelled = false;
+
+    const fetchAll = async () => {
+      try {
+        setLoading(true);
+        const accumulated: any[] = [];
+        let pageToken: string | undefined = undefined;
+        const endpointBase = 'https://storage.googleapis.com/storage/v1/b/quran-tajik/o';
+
+        do {
+          const url = new URL(endpointBase);
+          url.searchParams.set('prefix', 'pictures/');
+          url.searchParams.set('fields', 'items(name,metadata),nextPageToken');
+          if (pageToken) url.searchParams.set('pageToken', pageToken);
+
+          const resp = await fetch(url.toString());
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const data = await resp.json();
+          const items = Array.isArray(data.items) ? data.items : [];
+          accumulated.push(...items);
+          pageToken = data.nextPageToken;
+        } while (pageToken);
+
+        // Filter out directory placeholders, map to PictureItem
+        const pictures: PictureItem[] = accumulated
+          .filter((obj) => typeof obj.name === 'string' && /\.(png|jpe?g|webp|gif)$/i.test(obj.name))
+          .map((obj) => {
+            const name: string = obj.name;
+            const fileName = name.split('/').pop() || name;
+            const title = fileName.replace(/\.[^.]+$/, '');
+            return {
+              id: name,
+              title,
+              imagePath: buildPublicUrl(name),
+            } as PictureItem;
+          });
+
+        if (!isCancelled) {
+          // Optional: sort newest-first by name if names contain dates; otherwise alphabetical
+          pictures.sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' }));
+          setFilteredPictures(pictures);
+        }
+      } catch (err: any) {
+        if (!isCancelled) setError(err?.message || 'Failed to load images');
+      } finally {
+        if (!isCancelled) setLoading(false);
+      }
+    };
+
+    fetchAll();
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   const handlePictureSelect = (picture: PictureItem) => {
@@ -89,130 +106,183 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
 
   const handleDownload = (picture: PictureItem) => {
     // Implement download functionality
+    console.log('Downloading picture:', picture.title);
+    // Create a temporary link to download the image
     const link = document.createElement('a');
     link.href = picture.imagePath;
-    link.download = picture.title;
+    link.download = `${picture.title}.jpg`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
-  // no counters in minimalist view
+  const handleCloseModal = () => {
+    setSelectedPicture(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SeoHead
+          title="Суратҳо - Қуръони Карим"
+          description="Суратҳо ва иқтибосҳо аз Қуръони Карим"
+        />
+        <Header onOpenOverlay={onOpenOverlay} />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Суратҳо бор карда мешаванд...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SeoHead
+          title="Суратҳо - Қуръони Карим"
+          description="Суратҳо ва иқтибосҳо аз Қуръони Карим"
+        />
+        <Header onOpenOverlay={onOpenOverlay} />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="text-red-500 mb-4">
+              <BookOpen className="h-12 w-12 mx-auto" />
+            </div>
+            <h2 className="text-xl font-semibold mb-2">Хато дар бор кардани суратҳо</h2>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>
+              Аз нав кӯшиш кардан
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-background">
       <SeoHead
-        title="Иқтибосҳо аз Қуръон - суратҳо исломӣ"
-        description="Иқтибосҳои зебо аз Қуръони Карим бо хаттотии исломӣ ва суратҳои зебо."
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "Иқтибосҳо аз Қуръон",
-          "description": "Суратҳои исломӣ аз Қуръони Карим",
-          "url": `${window.location.origin}/pictures`
-        }}
+        title="Суратҳо - Қуръони Карим"
+        description="Суратҳо ва иқтибосҳо аз Қуръони Карим"
       />
       <Header onOpenOverlay={onOpenOverlay} />
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-center mb-4">Суратҳо ва иқтибосҳо</h1>
+          <p className="text-center text-muted-foreground">
+            Суратҳо ва иқтибосҳои зебо аз Қуръони Карим
+          </p>
+        </div>
 
-      <main className="flex-1 container mx-auto px-4 py-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Page Header */}
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-              Иқтибосҳо аз Қуръон
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              суратҳо исломӣ
+        {/* Pictures Grid/List */}
+        {filteredPictures.length > 0 ? (
+          <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
+            {filteredPictures.map((picture) => (
+              <Card key={picture.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePictureSelect(picture)}>
+                <div className="bg-gray-200 dark:bg-gray-800 relative overflow-hidden aspect-square">
+                  <img 
+                    src={picture.imagePath} 
+                    alt={picture.title} 
+                    className="w-full h-full object-cover" 
+                    onError={(e) => {
+                      console.error('Image failed to load:', picture.imagePath);
+                      e.currentTarget.style.display = 'none';
+                      // Show placeholder
+                      const placeholder = e.currentTarget.parentElement?.querySelector('.placeholder');
+                      if (placeholder) {
+                        (placeholder as HTMLElement).style.display = 'flex';
+                      }
+                    }}
+                    onLoad={() => {
+                      console.log('Image loaded successfully:', picture.imagePath);
+                    }}
+                  />
+                  <div className="placeholder absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400" style={{display: 'none'}}>
+                    <div className="text-center">
+                      <BookOpen className="h-8 w-8 mx-auto mb-2" />
+                      <p className="text-sm">Сурат боргирӣ нашудааст</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-3 text-center text-sm font-medium">
+                  {picture.title}
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <BookOpen className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Суратҳо ёфт нашуд</h3>
+            <p className="text-muted-foreground">
+              Дар айни замон суратҳо мавҷуд нестанд. Лутфан баъдтар кӯшиш кунед.
             </p>
           </div>
+        )}
 
-          {/* Fullscreen Lightbox */}
-          {selectedPicture && (
-            <div className="fixed inset-0 z-50 bg-black/90">
-              {/* Top controls */}
-              <div className="absolute top-4 left-0 right-0 mx-auto max-w-7xl px-4 flex items-center justify-between">
-                <div className="text-white text-sm opacity-80 truncate max-w-[60%]">
-                  {selectedPicture.title}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-                    onClick={() => handleShare(selectedPicture)}>
-                    <Share2 className="h-4 w-4 mr-2" />Мубодила
+        {/* Picture Modal */}
+        {selectedPicture && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] overflow-hidden">
+              <div className="flex justify-between items-center p-4 border-b">
+                <h3 className="text-lg font-semibold">{selectedPicture.title}</h3>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleLike(selectedPicture)}
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Дӯст доштан
                   </Button>
-                  <Button variant="default" size="sm" className="bg-white text-black hover:bg-white/90"
-                    onClick={() => handleDownload(selectedPicture)}>
-                    <Download className="h-4 w-4 mr-2" />Боргирӣ
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleShare(selectedPicture)}
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Ҳамроҳ кардан
                   </Button>
-                  <Button variant="outline" size="sm" className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-                    onClick={() => setSelectedPicture(null)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleDownload(selectedPicture)}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Боргирӣ
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCloseModal}
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-
-              {/* Centered image */}
-              <div className="h-full w-full flex items-center justify-center p-6">
-                <img src={selectedPicture.imagePath} alt={selectedPicture.title} className="max-h-full max-w-full object-contain rounded-md shadow-2xl" />
+              <div className="p-4">
+                <img
+                  src={selectedPicture.imagePath}
+                  alt={selectedPicture.title}
+                  className="w-full h-auto max-h-[70vh] object-contain"
+                  onError={(e) => {
+                    console.error('Image failed to load in modal:', selectedPicture.imagePath);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
               </div>
             </div>
-          )}
-
-          {/* Minimalist: no search/filters; pure grid with names only */}
-
-          {/* Pictures Grid/List */}
-          {filteredPictures.length > 0 ? (
-            <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
-              {filteredPictures.map((picture) => (
-                <Card key={picture.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePictureSelect(picture)}>
-                  <div className="bg-gray-200 dark:bg-gray-800 relative overflow-hidden aspect-square">
-                    <img 
-                      src={picture.imagePath} 
-                      alt={picture.title} 
-                      className="w-full h-full object-cover" 
-                      onError={(e) => {
-                        console.error('Image failed to load:', picture.imagePath);
-                        e.currentTarget.style.display = 'none';
-                        // Show placeholder
-                        const placeholder = e.currentTarget.parentElement?.querySelector('.placeholder');
-                        if (placeholder) {
-                          (placeholder as HTMLElement).style.display = 'flex';
-                        }
-                      }}
-                      onLoad={() => {
-                        console.log('Image loaded successfully:', picture.imagePath);
-                      }}
-                    />
-                    <div className="placeholder absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400" style={{display: 'none'}}>
-                      <div className="text-center">
-                        <BookOpen className="h-8 w-8 mx-auto mb-2" />
-                        <p className="text-sm">Сурат боргирӣ нашудааст</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-3 text-center text-sm font-medium">
-                    {picture.title}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Ягон иқтибос ёфт нашуд
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
-                Лутфан дар ҷустуҷӯ ё филтрҳо тағйир диҳед
-              </p>
-              <Button onClick={() => {
-                setFilteredPictures(quranicQuotes);
-              }}>
-                Тоза кардани филтрҳо
-              </Button>
-            </div>
-          )}
-        </div>
-      </main>
+          </div>
+        )}
+      </div>
 
       <Footer />
     </div>
   );
-} 
+}

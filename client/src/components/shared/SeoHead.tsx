@@ -43,7 +43,7 @@ export default function SeoHead({
   }
 
   const fullTitle = `${title} | ${siteName}`;
-  const image = imageUrl || '/logo.png';
+  const image = imageUrl || '/favicon.ico';
   const defaultKeywords = ['қуръон', 'қуръони карим', 'тоҷикӣ', 'тарҷума', 'тафсир', 'тиловат', 'транслитератсия', 'забони тоҷикӣ', 'исломӣ'];
   const allKeywords = [...defaultKeywords, ...keywords].join(', ');
 

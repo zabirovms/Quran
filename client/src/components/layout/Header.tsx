@@ -7,17 +7,8 @@ import { Surah } from '@shared/schema';
 import { Link, useLocation } from 'wouter';
 import { 
   Search, BookmarkIcon, ChevronLeft, ChevronRight, 
-  Settings, Home, Menu
+  Home, Menu, Moon, Sun
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
 
 interface HeaderProps {
   surahs?: Surah[];
@@ -117,23 +108,19 @@ export default function Header({
           >
             <BookmarkIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Theme Toggle">
-                <Settings className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Theme</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <div className="flex items-center justify-between w-full">
-                  <span>Dark Mode</span>
-                  <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            ) : (
+              <Moon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            )}
+          </Button>
           {/* Sidebar is opened via the top-left hover/tap hamburger */}
         </div>
       </div>

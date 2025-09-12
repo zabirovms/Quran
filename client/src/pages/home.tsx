@@ -17,6 +17,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Surah } from '@shared/schema';
 import SeoHead from '@/components/shared/SeoHead';
+import { getFeaturedImages, CloudImage } from '@/lib/cloudStorage';
 
 interface LastReadSection {
   surahNumber: number;
@@ -50,6 +51,8 @@ export default function Home({ onOpenOverlay }: HomeProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [lastRead, setLastRead] = useState<LastReadSection | null>(null);
   const [scrollDirection, setScrollDirection] = useState<'top' | 'bottom'>('top');
+  const [featuredImages, setFeaturedImages] = useState<CloudImage[]>([]);
+  const [imagesLoading, setImagesLoading] = useState(true);
 
   // Function to scroll to top or bottom
   const scrollToPosition = (direction: 'top' | 'bottom') => {
@@ -93,6 +96,24 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       const position = JSON.parse(storedPosition) as LastReadSection;
       setLastRead(position);
     }
+  }, []);
+
+  // Fetch featured images from Google Cloud Storage
+  useEffect(() => {
+    const loadFeaturedImages = async () => {
+      try {
+        setImagesLoading(true);
+        const images = await getFeaturedImages();
+        setFeaturedImages(images);
+      } catch (error) {
+        console.error('Error loading featured images:', error);
+        setFeaturedImages([]);
+      } finally {
+        setImagesLoading(false);
+      }
+    };
+
+    loadFeaturedImages();
   }, []);
 
   // Render surah list item
@@ -393,18 +414,37 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 <div className="my-8">
                   <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">Иқтибосҳо аз Қуръон</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {[
-                      '/QuraniQuotes/Қуръон 24^35 (Сураи Нур).png',
-                      '/QuraniQuotes/Қуръон 55^13 (Сураи Раҳмон).png',
-                      '/QuraniQuotes/Қуръон 9^51 (Сураи Тавба).png',
-                      '/QuraniQuotes/Қуръон 2^286 (Сураи Бақара).png',
-                    ].map((src) => (
-                      <Link key={src} href="/pictures" className="block">
-                        <Card className="overflow-hidden hover:shadow-md transition-all">
-                          <img src={src} alt="Quranic quote" className="w-full h-full object-cover" />
+                    {imagesLoading ? (
+                      // Loading skeletons
+                      Array.from({ length: 4 }).map((_, index) => (
+                        <Card key={index} className="overflow-hidden">
+                          <Skeleton className="w-full h-24" />
                         </Card>
-                      </Link>
-                    ))}
+                      ))
+                    ) : featuredImages.length > 0 ? (
+                      // Cloud images
+                      featuredImages.map((image) => (
+                        <Link key={image.id} href="/pictures" className="block">
+                          <Card className="overflow-hidden hover:shadow-md transition-all">
+                            <img 
+                              src={image.imagePath} 
+                              alt={image.title} 
+                              className="w-full h-24 object-cover"
+                              onError={(e) => {
+                                console.error('Image failed to load:', image.imagePath);
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </Card>
+                        </Link>
+                      ))
+                    ) : (
+                      // Fallback when no images are available
+                      <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
+                        <ImageIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p>Суратҳо бор карда нашуд</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
