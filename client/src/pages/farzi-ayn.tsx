@@ -11,6 +11,29 @@ interface FarziAynProps {
   onOpenOverlay: (type: GlobalOverlayType) => void;
 }
 
+// A helper function to clean the HTML by removing inline styles and specific classes.
+function cleanHtml(htmlString) {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = htmlString;
+
+  // Remove all inline 'style' attributes
+  const allElements = tempDiv.querySelectorAll('*');
+  allElements.forEach(el => {
+    el.removeAttribute('style');
+  });
+
+  // Remove specific, problematic classes that interfere with styling
+  const classesToRemove = ['MsoNormal', 'WordSection1'];
+  classesToRemove.forEach(className => {
+    const elements = tempDiv.getElementsByClassName(className);
+    Array.from(elements).forEach(el => {
+      el.classList.remove(className);
+    });
+  });
+
+  return tempDiv.innerHTML;
+}
+
 export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
   const [loading, setLoading] = useState(true);
   const [bookContent, setBookContent] = useState("");
@@ -23,7 +46,8 @@ export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
         const response = await fetch("/original_book.html");
         if (!response.ok) throw new Error("Failed to load book content");
         const html = await response.text();
-        setBookContent(html);
+        const cleanedHtml = cleanHtml(html);
+        setBookContent(cleanedHtml);
       } catch (error) {
         console.error("Error loading book:", error);
       } finally {
@@ -62,7 +86,7 @@ export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
       <Header onOpenOverlay={onOpenOverlay} />
 
       <main
-        className="container mx-auto px-4 py-6 flex-grow overflow-y-auto scrollbar-hide dark:text-gray-100"
+        className="container mx-auto px-4 py-6 flex-grow overflow-y-auto scrollbar-hide"
         style={{ fontFamily: "'Palatino Linotype', 'Book Antiqua', serif", lineHeight: 1.6 }}
       >
         <h1 className="text-3xl font-bold text-primary dark:text-primary-foreground mb-8 text-center">
@@ -73,7 +97,7 @@ export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
           <p className="text-center text-gray-500">Loading content...</p>
         ) : (
           <div
-            className="prose max-w-none"
+            className="prose max-w-none text-gray-800 dark:text-gray-100"
             dangerouslySetInnerHTML={{ __html: bookContent }}
           />
         )}
@@ -115,6 +139,9 @@ export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
           margin-top: 1.5em;
         }
         @media (prefers-color-scheme: dark) {
+          body {
+            background-color: #1a202c; /* A dark gray background for the body */
+          }
           .prose {
             color: #f5f5f5;
           }
@@ -126,3 +153,9 @@ export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
     </div>
   );
 }
+
+
+
+
+
+
