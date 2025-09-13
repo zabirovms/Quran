@@ -107,17 +107,15 @@ export default function MosquesPage() {
     };
   }, []);
 
-  // Use another useEffect to force map redraw on instance change
-  useEffect(() => {
-    // We add a short delay to ensure the container has rendered and is visible
-    const timer = setTimeout(() => {
-      if (mapInstance && mapContainerRef.current) {
-        mapInstance.container.fitToViewport();
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [mapInstance]);
+  // This useEffect is no longer needed as the map container is always in the DOM
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (mapInstance && mapContainerRef.current) {
+  //       mapInstance.container.fitToViewport();
+  //     }
+  //   }, 100);
+  //   return () => clearTimeout(timer);
+  // }, [mapInstance]);
 
   const locateMe = () => {
     if (!mapInstance) return;
@@ -140,7 +138,6 @@ export default function MosquesPage() {
     const ymaps = window.ymaps;
     const query = (searchQuery || '').trim();
 
-    // If coordinates entered, center map and search around
     const coordMatch = query.match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
     if (coordMatch) {
       const lat = parseFloat(coordMatch[1]);
@@ -187,9 +184,9 @@ export default function MosquesPage() {
         )}
       </div>
 
-      {/* Desktop split layout */}
-      <div className="hidden md:grid md:grid-cols-12 gap-4 md:h-[calc(100vh-7rem)]">
-        <div className="md:col-span-4">
+      <div className="md:grid md:grid-cols-12 gap-4 md:h-[calc(100vh-7rem)]">
+        {/* Left side: Search bar and info for desktop */}
+        <div className="hidden md:block md:col-span-4">
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -229,10 +226,12 @@ export default function MosquesPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Right side: Map container. This is a single element now. */}
         <div className="md:col-span-8 relative">
           <div
             ref={mapContainerRef}
-            className="w-full h-full min-h-[60vh] rounded-md border"
+            className="w-full rounded-md border h-[calc(100vh-11rem)] md:h-full md:min-h-[60vh]"
             role="region"
             aria-label="Yandex Map"
           />
@@ -242,19 +241,6 @@ export default function MosquesPage() {
             </div>
           )}
         </div>
-      </div>
-
-      {/* Mobile map fill */}
-      <div className="md:hidden">
-        <div
-          ref={mapContainerRef}
-          className="w-full h-[calc(100vh-11rem)] rounded-md border"
-          role="region"
-          aria-label="Yandex Map"
-        />
-        {loadingMap && (
-          <div className="mt-3 text-sm text-muted-foreground">Боркунии харита...</div>
-        )}
       </div>
 
       {/* Floating mobile controls */}
@@ -280,13 +266,11 @@ async function runSearch(
   const bounds = map.getBounds();
   if (!bounds) return;
 
-  // Prepare target collection
   const targetCollection = collection || new ymaps.GeoObjectCollection({}, { preset: 'islands#blueIcon' });
   if (collection) {
     targetCollection.removeAll();
   }
 
-  // Configure search to use current map bounds
   searchControl.options.set('boundedBy', bounds);
   searchControl.options.set('strictBounds', true);
   searchControl.options.set('useMapBounds', true);
@@ -297,8 +281,6 @@ async function runSearch(
     const query = (q || '').trim();
     if (!query) continue;
     try {
-      // Perform search and wait for results to load
-      // search returns a promise-like object in v2.1
       await searchControl.search(query);
       const results = searchControl.getResultsArray();
       for (const obj of results) {
@@ -320,12 +302,10 @@ async function runSearch(
         targetCollection.add(placemark);
       }
     } catch (err) {
-      // Swallow individual query errors to continue fallbacks
     }
   }
 
   if (!collection) {
-    // If we had no collection, add it once
     map.geoObjects.add(targetCollection);
   }
 }
