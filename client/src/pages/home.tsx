@@ -478,9 +478,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                   </div>
                 </div>
 
-                {/* Third block of surahs (Surahs 57-85) */}
+                {/* Third block of surahs (Surahs 57-86) */}
                 <div className="md:grid md:grid-cols-2 md:gap-3">
-                  {filteredSurahs.slice(56, 85).map(surah => renderSurahItem(surah))}
+                  {filteredSurahs.slice(56, 86).map(surah => renderSurahItem(surah))}
                 </div>
 
                 {/* Downloads teaser */}
@@ -508,9 +508,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                   </div>
                 </div>
 
-                {/* Fourth block of surahs (Surahs 86-114) */}
+                {/* Fourth block of surahs (Surahs 87-114) */}
                 <div className="md:grid md:grid-cols-2 md:gap-3">
-                  {filteredSurahs.slice(85).map(surah => renderSurahItem(surah))}
+                  {filteredSurahs.slice(86).map(surah => renderSurahItem(surah))}
                 </div>
               </>
             ) : (
