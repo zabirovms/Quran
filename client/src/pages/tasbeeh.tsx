@@ -241,7 +241,7 @@ export default function TasbeehCounter() {
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col px-4 py-6 overflow-hidden w-full">
+        <main className="flex-1 flex flex-col px-4 py-6 overflow-hidden max-w-md mx-auto w-full">
           {isLoading ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
