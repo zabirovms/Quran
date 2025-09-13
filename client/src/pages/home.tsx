@@ -513,10 +513,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                   </div>
                 </div>
 
-                {/* Mobile list follows same order */}
-                <div className="md:hidden">
-                  {filteredSurahs.map(surah => renderSurahItem(surah))}
-                </div>
+                
               </>
             ) : (
               <Card className="p-8 text-center">
