@@ -49,7 +49,6 @@ export default function TasbeehCounter() {
   const [api, setApi] = useState<CarouselApi>();
   const [activeTab, setActiveTab] = useState("counter");
 
-  // Load tasbeehs data and saved settings from localStorage
   useEffect(() => {
     const fetchTasbeehs = async () => {
       try {
@@ -84,7 +83,6 @@ export default function TasbeehCounter() {
     else setSaveHistory(true);
   }, []);
 
-  // --- Carousel Synchronization Logic ---
   useEffect(() => {
     if (!api) return;
 
@@ -106,9 +104,7 @@ export default function TasbeehCounter() {
       api.off('select', onSelect);
     };
   }, [api, currentTasbeehIndex]);
-  // --- End Carousel Synchronization Logic ---
 
-  // Save settings to localStorage
   useEffect(() => {
     if (saveHistory && !isLoading) {
       localStorage.setItem('tasbeehCount', count.toString());
@@ -120,7 +116,6 @@ export default function TasbeehCounter() {
     }
   }, [count, currentTasbeehIndex, targetCount, vibrationEnabled, completedTasbeehs, saveHistory, isLoading]);
 
-  // Handle count increment with haptic feedback
   const incrementCount = () => {
     if (vibrationEnabled && 'vibrate' in navigator) {
       const now = Date.now();
@@ -175,13 +170,11 @@ export default function TasbeehCounter() {
                 </Button>
               </Link>
             </div>
-
             <div className="text-center flex-1 flex justify-center">
               <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 Тасбеҳгӯяк
               </h1>
             </div>
-
             <div className="flex gap-2">
               <Button
                 variant="ghost"
@@ -195,7 +188,6 @@ export default function TasbeehCounter() {
                   <Moon className="h-4 w-4" />
                 )}
               </Button>
-
               <SettingsDialog
                 vibrationEnabled={vibrationEnabled}
                 setVibrationEnabled={setVibrationEnabled}
@@ -254,91 +246,114 @@ export default function TasbeehCounter() {
                   </Button>
                 </div>
 
-                <Carousel
-                  className="flex-1 flex flex-col"
-                  setApi={setApi}
-                  opts={{
-                    align: "start",
-                  }}
-                >
-                  <CarouselContent className="h-full flex-1">
-                    {tasbeehs.map((tasbeeh, index) => (
-                      <CarouselItem key={index} className="basis-full h-full flex-1">
-                        <Card
-                          className={cn(
-                            "border shadow-sm transition-all h-full flex flex-col",
-                            index === currentTasbeehIndex ?
-                              "border-primary/50 bg-primary/5 dark:bg-primary/10" :
-                              "hover:border-muted-foreground/20"
-                          )}
-                        >
-                          <CardContent
-                            className="p-6 flex-1 flex flex-col items-center justify-center h-full
-                            cursor-pointer active:from-primary/10 active:to-primary/20 active:scale-[0.98]
-                            transition-all duration-150 border-primary/20 shadow-sm select-none touch-none"
-                            onClick={incrementCount}
-                          >
-                            <div className="text-center flex-1 flex flex-col items-center justify-center">
-                              <p className="font-arabic text-3xl md:text-4xl lg:text-5xl mb-4 leading-relaxed">
-                                {tasbeeh.arabic}
-                              </p>
-                              <p className="text-sm font-medium text-primary dark:text-primary/90 mt-1">
-                                {tasbeeh.tajik_transliteration}
-                              </p>
-                              <p className="text-xs md:text-sm text-muted-foreground mt-2">
-                                {tasbeeh.tajik_translation}
-                              </p>
-                            </div>
+                <div className="flex-1 flex flex-col">
+                  {/* The dhikr is now correctly displayed here, outside the carousel */}
+                  {currentTasbeeh.arabic && (
+                    <div className="text-center my-4">
+                      <p className="font-arabic text-xl mb-2 leading-relaxed">
+                        {currentTasbeeh.arabic}
+                      </p>
+                      <p className="text-sm font-medium text-primary dark:text-primary/90">
+                        {currentTasbeeh.tajik_transliteration}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {currentTasbeeh.tajik_translation}
+                      </p>
+                    </div>
+                  )}
 
-                            <div className="relative w-[130px] h-[130px] mt-6" ref={counterRef}>
-                              <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
-                                <circle
-                                  cx="50"
-                                  cy="50"
-                                  r="42"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="8"
-                                  className="text-muted/10"
-                                />
-                                <circle
-                                  cx="50"
-                                  cy="50"
-                                  r="42"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="10"
-                                  strokeLinecap="round"
-                                  strokeDasharray={`${(count / targetCount) * 263.8} 263.8`}
-                                  className="text-primary transition-all duration-300 ease-out"
-                                />
-                              </svg>
-                              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                                <AnimatePresence mode="wait">
-                                  <motion.div
-                                    key={count}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 1.2 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="text-3xl font-bold text-foreground"
-                                  >
-                                    {count}
-                                  </motion.div>
-                                </AnimatePresence>
-                                <p className="text-xs text-muted-foreground">
-                                  аз {targetCount}
-                                </p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="left-2" />
-                  <CarouselNext className="right-2" />
-                </Carousel>
+                  {/* The carousel is now a small navigation bar again */}
+                  <div className="flex-shrink-0 mb-6">
+                    <Carousel className="h-[120px]" setApi={setApi}>
+                      <CarouselContent>
+                        {tasbeehs.map((tasbeeh, index) => (
+                          <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
+                            <Card
+                              className={cn(
+                                "border shadow-sm cursor-pointer transition-all h-full",
+                                index === currentTasbeehIndex ?
+                                  "border-primary/50 bg-primary/5 dark:bg-primary/10" :
+                                  "hover:border-muted-foreground/20"
+                              )}
+                              onClick={() => changeTasbeeh(index)}
+                            >
+                              <CardContent className="p-3 flex flex-col items-center justify-center h-full">
+                                <div className="text-center">
+                                  <p className="font-arabic text-lg text-foreground leading-tight line-clamp-1">
+                                    {tasbeeh.arabic}
+                                  </p>
+                                  <p className="text-xs font-medium text-primary dark:text-primary/90 mt-1 line-clamp-1">
+                                    {tasbeeh.tajik_transliteration}
+                                  </p>
+                                  <p className="text-xs text-center text-muted-foreground mt-2 line-clamp-2">
+                                    {tasbeeh.tajik_translation}
+                                  </p>
+                                </div>
+                                {index === currentTasbeehIndex && (
+                                  <div className="absolute top-1 right-1">
+                                    <Check className="h-3 w-3 text-primary" />
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                  </div>
+
+                  <div
+                    className="flex-1 flex items-center justify-center
+                          rounded-xl bg-gradient-to-b from-primary/5 to-primary/10
+                          cursor-pointer active:from-primary/10 active:to-primary/20 active:scale-[0.98]
+                          transition-all duration-150 border border-primary/20 shadow-sm select-none touch-none"
+                    onClick={incrementCount}
+                  >
+                    <div className="relative w-[130px] h-[130px]" ref={counterRef}>
+                      <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          className="text-muted/10"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="10"
+                          strokeLinecap="round"
+                          strokeDasharray={`${(count / targetCount) * 263.8} 263.8`}
+                          className="text-primary transition-all duration-300 ease-out"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={count}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.2 }}
+                            transition={{ duration: 0.2 }}
+                            className="text-3xl font-bold text-foreground"
+                          >
+                            {count}
+                          </motion.div>
+                        </AnimatePresence>
+                        <p className="text-xs text-muted-foreground">
+                          аз {targetCount}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="collection" className="mt-0">
@@ -391,7 +406,6 @@ export default function TasbeehCounter() {
             </Tabs>
           )}
         </main>
-
         <Dialog open={showCompletionDialog} onOpenChange={setShowCompletionDialog}>
           <DialogContent className="max-w-xs sm:max-w-sm">
             <DialogHeader>
@@ -402,13 +416,11 @@ export default function TasbeehCounter() {
                 </span>
               </DialogTitle>
             </DialogHeader>
-
             <div className="my-4 text-center">
               <p className="font-arabic text-2xl mb-2">{currentTasbeeh.arabic}</p>
               <p className="text-sm">{currentTasbeeh.tajik_transliteration}</p>
               <p className="text-xs text-muted-foreground mt-1">{currentTasbeeh.tajik_translation}</p>
             </div>
-
             <div className="grid grid-cols-2 gap-3">
               <Button onClick={() => setShowCompletionDialog(false)}>
                 Идома додан
@@ -469,7 +481,6 @@ function SettingsDialog({
         <DialogHeader>
           <DialogTitle>Танзимот</DialogTitle>
         </DialogHeader>
-
         <div className="space-y-4 py-2">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
@@ -487,9 +498,8 @@ function SettingsDialog({
               onCheckedChange={setVibrationEnabled}
             />
           </div>
-
           <div className="space-y-2">
-            <Label htmlFor="target-count">Шумораи мақсад</Label>
+            <Label htmlFor="target-count">Шумораи мақсад</s>
             <div className="flex gap-2" role="radiogroup" aria-labelledby="target-count">
               {availableTargetCounts.map(count => (
                 <Button
@@ -505,7 +515,6 @@ function SettingsDialog({
               ))}
             </div>
           </div>
-
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="save-history">Нигоҳдории таърих</Label>
@@ -519,7 +528,6 @@ function SettingsDialog({
               onCheckedChange={setSaveHistory}
             />
           </div>
-
           <div className="pt-2">
             <Button
               variant="destructive"
