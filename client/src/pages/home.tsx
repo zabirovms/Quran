@@ -407,9 +407,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               Array.from({ length: 12 }).map((_, index) => renderSkeletonItem(index))
             ) : filteredSurahs && filteredSurahs.length > 0 ? (
               <>
-                {/* First block */}
+                {/* First block of surahs (Surahs 1-28) */}
                 <div className="md:grid md:grid-cols-2 md:gap-3">
-                  {filteredSurahs.slice(0, 12).map(surah => renderSurahItem(surah))}
+                  {filteredSurahs.slice(0, 28).map(surah => renderSurahItem(surah))}
                 </div>
 
                 {/* Pictures teaser */}
@@ -417,20 +417,18 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                   <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">Иқтибосҳо аз Қуръон</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {imagesLoading ? (
-                      // Loading skeletons
                       Array.from({ length: 4 }).map((_, index) => (
                         <Card key={index} className="overflow-hidden">
                           <Skeleton className="w-full h-24" />
                         </Card>
                       ))
                     ) : featuredImages.length > 0 ? (
-                      // Cloud images
                       featuredImages.map((image) => (
                         <Link key={image.id} href="/pictures" className="block">
                           <Card className="overflow-hidden hover:shadow-md transition-all">
-                            <img 
-                              src={image.imagePath} 
-                              alt={image.title} 
+                            <img
+                              src={image.imagePath}
+                              alt={image.title}
                               className="w-full h-24 object-cover"
                               onError={(e) => {
                                 console.error('Image failed to load:', image.imagePath);
@@ -441,7 +439,6 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                         </Link>
                       ))
                     ) : (
-                      // Fallback when no images are available
                       <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
                         <ImageIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
                         <p>Суратҳо бор карда нашуд</p>
@@ -450,12 +447,10 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                   </div>
                 </div>
 
-                {/* Second block */}
-                {filteredSurahs.length > 12 && (
-                  <div className="md:grid md:grid-cols-2 md:gap-3">
-                    {filteredSurahs.slice(12, 36).map(surah => renderSurahItem(surah))}
-                  </div>
-                )}
+                {/* Second block of surahs (Surahs 29-56) */}
+                <div className="md:grid md:grid-cols-2 md:gap-3">
+                  {filteredSurahs.slice(28, 56).map(surah => renderSurahItem(surah))}
+                </div>
 
                 {/* Videos teaser */}
                 <div className="my-8">
@@ -483,12 +478,10 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                   </div>
                 </div>
 
-                {/* Third block */}
-                {filteredSurahs.length > 36 && (
-                  <div className="md:grid md:grid-cols-2 md:gap-3">
-                    {filteredSurahs.slice(36).map(surah => renderSurahItem(surah))}
-                  </div>
-                )}
+                {/* Third block of surahs (Surahs 57-85) */}
+                <div className="md:grid md:grid-cols-2 md:gap-3">
+                  {filteredSurahs.slice(56, 85).map(surah => renderSurahItem(surah))}
+                </div>
 
                 {/* Downloads teaser */}
                 <div className="my-8">
@@ -515,7 +508,10 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                   </div>
                 </div>
 
-                
+                {/* Fourth block of surahs (Surahs 86-114) */}
+                <div className="md:grid md:grid-cols-2 md:gap-3">
+                  {filteredSurahs.slice(85).map(surah => renderSurahItem(surah))}
+                </div>
               </>
             ) : (
               <Card className="p-8 text-center">
