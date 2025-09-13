@@ -50,7 +50,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
   const [filteredSurahs, setFilteredSurahs] = useState<Surah[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [lastRead, setLastRead] = useState<LastReadSection | null>(null);
-  const [scrollDirection, setScrollDirection] = useState<'top' | 'bottom'>('top');
+  const [scrollDirection, setScrollDirection] = useState<'top' | 'bottom'>('bottom');
   const [featuredImages, setFeaturedImages] = useState<CloudImage[]>([]);
   const [imagesLoading, setImagesLoading] = useState(true);
 
@@ -217,6 +217,8 @@ export default function Home({ onOpenOverlay }: HomeProps) {
         size="icon" 
         className="fixed bottom-5 right-5 z-30 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg w-10 h-10 flex items-center justify-center border border-gray-200 dark:border-gray-700"
         onClick={() => scrollToPosition(scrollDirection)}
+        // Added dynamic aria-label for accessibility
+        aria-label={scrollDirection === 'top' ? "Scroll to top" : "Scroll to bottom"}
       >
         {scrollDirection === 'top' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
       </Button>
