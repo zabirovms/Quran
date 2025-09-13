@@ -62,7 +62,7 @@ export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
       <Header onOpenOverlay={onOpenOverlay} />
 
       <main
-        className="container mx-auto px-4 py-6 flex-grow overflow-y-auto scrollbar-hide"
+        className="container mx-auto px-4 py-6 flex-grow overflow-y-auto scrollbar-hide dark:text-gray-100"
         style={{ fontFamily: "'Palatino Linotype', 'Book Antiqua', serif", lineHeight: 1.6 }}
       >
         <h1 className="text-3xl font-bold text-primary dark:text-primary-foreground mb-8 text-center">
