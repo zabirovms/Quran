@@ -328,13 +328,28 @@ export default function TasbeehCounter() {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* === ADDED CODE BLOCK TO DISPLAY THE CURRENT DHIKR === */}
+                  {currentTasbeeh.arabic && (
+                    <div className="text-center my-4">
+                      <p className="font-arabic text-xl mb-2 leading-relaxed">
+                        {currentTasbeeh.arabic}
+                      </p>
+                      <p className="text-sm font-medium text-primary dark:text-primary/90">
+                        {currentTasbeeh.tajik_transliteration}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {currentTasbeeh.tajik_translation}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Make the entire remaining space clickable for counting */}
                   <div
                     className="flex-1 flex items-center justify-center
-                                rounded-xl bg-gradient-to-b from-primary/5 to-primary/10
-                                cursor-pointer active:from-primary/10 active:to-primary/20 active:scale-[0.98]
-                                transition-all duration-150 border border-primary/20 shadow-sm select-none touch-none"
+                          rounded-xl bg-gradient-to-b from-primary/5 to-primary/10
+                          cursor-pointer active:from-primary/10 active:to-primary/20 active:scale-[0.98]
+                          transition-all duration-150 border border-primary/20 shadow-sm select-none touch-none"
                     onClick={incrementCount} // The main click handler for the large area
                   >
                     <div className="relative w-[130px] h-[130px]" ref={counterRef}>
