@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import SeoHead from '@/components/shared/SeoHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -108,6 +107,18 @@ export default function MosquesPage() {
     };
   }, []);
 
+  // Use another useEffect to force map redraw on instance change
+  useEffect(() => {
+    // We add a short delay to ensure the container has rendered and is visible
+    const timer = setTimeout(() => {
+      if (mapInstance && mapContainerRef.current) {
+        mapInstance.container.fitToViewport();
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [mapInstance]);
+
   const locateMe = () => {
     if (!mapInstance) return;
     if (!navigator.geolocation) return;
@@ -153,17 +164,6 @@ export default function MosquesPage() {
 
   return (
     <div className="mx-auto px-2 md:px-4 py-2 md:py-6">
-      <SeoHead 
-        title="Суроғаи масҷидҳо"
-        description="Ёфтани масҷидҳои наздиктарин дар харитаи Yandex"
-        structuredData={{
-          '@context': 'https://schema.org',
-          '@type': 'WebPage',
-          'name': 'Суроғаи масҷидҳо',
-          'description': 'Ёфтани масҷидҳои наздиктарин дар харитаи Yandex',
-        }}
-      />
-
       {/* Mobile sticky top bar */}
       <div className="md:hidden sticky top-0 z-20 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="flex items-center justify-between px-2 py-2">
@@ -188,7 +188,7 @@ export default function MosquesPage() {
       </div>
 
       {/* Desktop split layout */}
-      <div className="md:grid md:grid-cols-12 gap-4 md:h-[calc(100vh-7rem)]">
+      <div className="hidden md:grid md:grid-cols-12 gap-4 md:h-[calc(100vh-7rem)]">
         <div className="md:col-span-4">
           <Card className="h-full">
             <CardHeader>
@@ -329,4 +329,3 @@ async function runSearch(
     map.geoObjects.add(targetCollection);
   }
 }
-
