@@ -241,7 +241,7 @@ export default function TasbeehCounter() {
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col px-4 py-6 overflow-hidden max-w-md mx-auto w-full">
+        <main className="flex-1 flex flex-col px-4 py-6 overflow-hidden w-full">
           {isLoading ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
@@ -269,7 +269,7 @@ export default function TasbeehCounter() {
                   <div className="flex flex-col md:flex-row gap-3 mb-3">
                     {/* Tasbeeh selector - more compact */}
                     <div className="flex-1">
-                      <Carousel className="h-[120px]" setApi={setApi}> {/* Pass setApi prop here, increased height for translation */}
+                      <Carousel className="h-[120px] md:h-[150px] lg:h-[180px]" setApi={setApi}> {/* Pass setApi prop here, increased height for translation */}
                         <CarouselContent>
                           {tasbeehs.map((tasbeeh, index) => (
                             <CarouselItem key={index} className="basis-full">
@@ -284,21 +284,21 @@ export default function TasbeehCounter() {
                               >
                                 <CardContent className="p-3 flex flex-col items-center justify-center h-full">
                                   <div className="text-center">
-                                    <p className="font-arabic text-lg text-foreground leading-tight">
+                                    <p className="font-arabic text-lg md:text-xl lg:text-2xl text-foreground leading-tight">
                                       {tasbeeh.arabic}
                                     </p>
-                                    <p className="text-xs font-medium text-primary dark:text-primary/90 mt-1 line-clamp-1">
+                                    <p className="text-xs md:text-sm lg:text-base font-medium text-primary dark:text-primary/90 mt-1 line-clamp-1">
                                       {tasbeeh.tajik_transliteration}
                                     </p>
                                     {/* Moved translation here for the carousel items */}
-                                    <p className="text-xs text-center text-muted-foreground mt-2 line-clamp-2">
+                                    <p className="text-xs md:text-sm lg:text-base text-center text-muted-foreground mt-2 line-clamp-2">
                                       {tasbeeh.tajik_translation}
                                     </p>
                                   </div>
 
                                   {index === currentTasbeehIndex && (
                                     <div className="absolute top-1 right-1">
-                                      <Check className="h-3 w-3 text-primary" />
+                                      <Check className="h-3 w-3" />
                                     </div>
                                   )}
                                 </CardContent>
@@ -394,7 +394,7 @@ export default function TasbeehCounter() {
                     Зикрҳои исломӣ
                   </h2>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {tasbeehs.map((tasbeeh, index) => (
                       <motion.div
                         key={index}
@@ -407,14 +407,14 @@ export default function TasbeehCounter() {
                           <CardContent className="p-4">
                             <div className="flex flex-col space-y-3">
                               <div className="text-center">
-                                <p className="font-arabic text-xl mb-2 leading-relaxed">
+                                <p className="font-arabic text-xl md:text-2xl lg:text-3xl mb-2 leading-relaxed">
                                   {tasbeeh.arabic}
                                 </p>
-                                <p className="text-sm font-medium text-primary dark:text-primary/90">
+                                <p className="text-sm md:text-base lg:text-lg font-medium text-primary dark:text-primary/90">
                                   {tasbeeh.tajik_transliteration}
                                 </p>
                                 {/* Moved translation here for the collection items */}
-                                <p className="text-xs text-muted-foreground mt-2">
+                                <p className="text-xs md:text-sm lg:text-base text-muted-foreground mt-2">
                                   {tasbeeh.tajik_translation}
                                 </p>
                               </div>
