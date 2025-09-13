@@ -188,7 +188,7 @@ export default function MosquesPage() {
       </div>
 
       {/* Desktop split layout */}
-      <div className="hidden md:grid md:grid-cols-12 gap-4 md:h-[calc(100vh-7rem)]">
+      <div className="md:grid md:grid-cols-12 gap-4 md:h-[calc(100vh-7rem)]">
         <div className="md:col-span-4">
           <Card className="h-full">
             <CardHeader>
