@@ -6,6 +6,58 @@ import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
 import { fileURLToPath } from 'url';
+import { storage } from './storage';
+
+async function injectSurahMetaTags(template: string, surahNumber: number): Promise<string> {
+  try {
+    const surah = await storage.getSurahByNumber(surahNumber);
+    if (!surah) return template;
+
+    const title = `Сураи ${surah.name_tajik} | Қуръони Карим`;
+    const description = `Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}. Тарҷумаи тоҷикӣ ва тафсири осонбаён.`;
+    const canonicalUrl = `https://www.quran.tj/surah/${surahNumber}`;
+
+    // Replace title
+    template = template.replace(
+      /<title>.*?<\/title>/,
+      `<title>${title}</title>`
+    );
+
+    // Replace meta description
+    template = template.replace(
+      /<meta name="description" content=".*?" \/>/,
+      `<meta name="description" content="${description}" />`
+    );
+
+    // Add canonical URL
+    template = template.replace(
+      /<meta name="theme-color" content="#0c4532" \/>/,
+      `<meta name="theme-color" content="#0c4532" />
+      <link rel="canonical" href="${canonicalUrl}" />`
+    );
+
+    // Add Open Graph tags
+    template = template.replace(
+      /<meta property="og:title" content=".*?" \/>/,
+      `<meta property="og:title" content="${title}" />`
+    );
+
+    template = template.replace(
+      /<meta property="og:description" content=".*?" \/>/,
+      `<meta property="og:description" content="${description}" />`
+    );
+
+    template = template.replace(
+      /<meta property="og:url" content=".*?" \/>/,
+      `<meta property="og:url" content="${canonicalUrl}" />`
+    );
+
+    return template;
+  } catch (error) {
+    console.error('Error fetching surah data for meta tags:', error);
+    return template;
+  }
+}
 
 const viteLogger = createLogger();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -59,6 +111,15 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
+
+      // Inject SEO meta tags for Surah pages
+      if (url.startsWith('/surah/')) {
+        const surahNumber = url.match(/\/surah\/(\d+)/)?.[1];
+        if (surahNumber) {
+          template = await injectSurahMetaTags(template, parseInt(surahNumber));
+        }
+      }
+
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
@@ -93,8 +154,27 @@ export function serveStatic(app: Express) {
     }
   }));
 
-  // Serve index.html for all other routes
-  app.get('*', (_req, res) => {
-    res.sendFile(path.resolve(distPath, 'index.html'));
+  // Serve index.html for all other routes with meta tag injection
+  app.get('*', async (req, res) => {
+    const url = req.originalUrl;
+    const indexPath = path.resolve(distPath, 'index.html');
+    
+    try {
+      // Read the index.html file
+      const data = await fs.promises.readFile(indexPath, 'utf8');
+      let template = data;
+
+      // Inject SEO meta tags for Surah pages
+      if (url.startsWith('/surah/')) {
+        const surahNumber = url.match(/\/surah\/(\d+)/)?.[1];
+        if (surahNumber) {
+          template = await injectSurahMetaTags(template, parseInt(surahNumber));
+        }
+      }
+
+      res.send(template);
+    } catch (err) {
+      res.status(500).send('Error reading index.html');
+    }
   });
 }

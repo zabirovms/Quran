@@ -20,7 +20,7 @@ export default function SeoHead({
   type = 'website',
   structuredData,
   keywords = [],
-  author = 'Қуръон Тоҷикӣ'
+  author = 'Қуръони Карим'
 }: SeoHeadProps) {
   const siteName = 'Қуръони Карим';
   const baseUrl = 'https://www.quran.tj';
@@ -30,11 +30,7 @@ export default function SeoHead({
   if (!fullUrl && typeof window !== 'undefined') {
     const url = new URL(window.location.href);
     // Remove search parameters for canonical URL
-    if (url.search) {
-      fullUrl = url.pathname;
-    } else {
-      fullUrl = url.pathname + url.search;
-    }
+    fullUrl = url.pathname;
   }
   
   // Ensure full URL is absolute
@@ -44,7 +40,7 @@ export default function SeoHead({
 
   const fullTitle = `${title} | ${siteName}`;
   const image = imageUrl || '/favicon.ico';
-  const defaultKeywords = ['қуръон', 'қуръони карим', 'тоҷикӣ', 'тарҷума', 'тафсир', 'тиловат', 'транслитератсия', 'забони тоҷикӣ', 'исломӣ'];
+  const defaultKeywords = ['қуръон', 'қуръони карим', 'куръони карим', 'трачумаи куръони карим', 'тафсир', 'куръони карим точики', 'quran in tajik', 'забони тоҷикӣ', 'коран', 'точики'];
   const allKeywords = [...defaultKeywords, ...keywords].join(', ');
 
   useEffect(() => {
