@@ -30,7 +30,6 @@ import {
 import { Link } from 'wouter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import SeoHead from '@/components/shared/SeoHead';
 // Removed floating BackToHome in favor of single inline header control
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -343,50 +342,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
 
   return (
     <div className="min-h-screen bg-background">
-      {surah && (
-        <SeoHead
-          title={`Сураи ${surah.name_tajik}`}
-          description={`Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}. Тарҷумаи тоҷикӣ ва тафсири осонбаён.`}
-          canonicalUrl={`https://www.quran.tj/surah/${surah.number}`}
-          structuredData={{
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "headline": `Сураи ${surah.name_tajik} - Қуръони Карим бо тарҷумаи тоҷикӣ`,
-            "name": surah.name_tajik,
-            "alternativeHeadline": surah.name_arabic,
-            "author": {
-              "@type": "Organization",
-              "name": "Қуръони Тоҷикӣ"
-            },
-            "inLanguage": "tg",
-            "isPartOf": {
-              "@type": "WebSite",
-              "name": "Қуръони Тоҷикӣ",
-              "url": "https://www.quran.tj"
-            },
-            "mainEntityOfPage": {
-              "@type": "WebPage",
-              "@id": `https://www.quran.tj/surah/${surah.number}`
-            },
-            "keywords": [
-              `Сураи ${surah.name_tajik}`,
-              `Сураи ${surah.name_arabic}`,
-              "Қуръони Карим",
-              "тарҷумаи тоҷикӣ",
-              "тафсири осонбаён",
-              surah.revelation_type === 'Meccan' ? "Маккӣ" : "Маданӣ"
-            ].join(", ")
-          }}
-          keywords={[
-            `Сураи ${surah.name_tajik}`,
-            `Сураи ${surah.name_arabic}`,
-            surah.name_english,
-            "Қуръони Карим",
-            "тарҷумаи тоҷикӣ",
-            "тафсири осонбаён"
-          ]}
-        />
-      )}
+      {/* SEO meta tags are now handled server-side for better crawler support */}
 
       <SmartSticky className="bg-background/80 backdrop-blur-sm border-b">
         <header className="container mx-auto px-4 py-1">
