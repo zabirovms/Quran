@@ -1,175 +1,658 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GetStaticPaths, GetStaticProps } from 'next';
-import SeoHead from '@/components/shared/SeoHead';
-import { Surah } from '@/types';
-import { getAllSurahs, getSurahByNumber } from '@/lib/surahData';
+import { useSurahs, useSurah, useVerses } from '@/hooks/useQuran';
 import { useAudioPlayer } from '@/hooks/useAudio';
+import { GlobalOverlayType } from '@/App';
+import AudioPlayer from '@/components/layout/AudioPlayer';
 import CompactVerseItem from '@/components/quran/CompactVerseItem';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import SmartSticky from '@/components/layout/SmartSticky';
 import VerseNavigation from '@/components/quran/VerseNavigation';
 import { Button } from '@/components/ui/button';
-import { Home, Search, Bookmark, Book, Info, Volume2, Settings, List } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  PlayCircle, 
+  Search, 
+  Bookmark, 
+  Book, 
+  Info,
+  Home,
+  Menu,
+  X,
+  ArrowUp,
+  List,
+  Volume2,
+  ChevronDown,
+  Settings,
+  MoreHorizontal,
+  ArrowLeft
+} from 'lucide-react';
 import { Link } from 'wouter';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import SeoHead from '@/components/shared/SeoHead';
+// Removed floating BackToHome in favor of single inline header control
 import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import { useDisplaySettings } from '@/hooks/useDisplaySettings';
-import { SettingsContent } from '@/components/layout/SettingsDrawer';
-import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetDescription,
+  SheetFooter,
+} from "@/components/ui/sheet";
 
-interface SurahPageProps {
-  surah: Surah;
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { SettingsDrawer, SettingsContent } from "@/components/layout/SettingsDrawer";
+import { preloadSurahData, preloadAdjacentSurahs } from '@/lib/uthmaniQuran';
+
+interface SurahProps {
+  surahNumber: number;
+  initialVerseNumber?: number;
+  onOpenOverlay: (type: GlobalOverlayType) => void;
 }
 
+// Number of verses to load initially and per page
 const VERSES_PER_PAGE = 10;
 
-export default function SurahPage({ surah }: SurahPageProps) {
-  const { playAudio, setPlaylist } = useAudioPlayer();
+export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }: SurahProps) {
+  const { data: surahs, isLoading: isSurahsLoading } = useSurahs();
+  const { data: surah, isLoading: isSurahLoading } = useSurah(surahNumber);
+  const { data: allVerses, isLoading: isAllVersesLoading } = useVerses(surahNumber);
+  const { playAudio, playSurah, audioState, setPlaylist } = useAudioPlayer();
+  const { toast } = useToast();
   const { contentViewMode } = useDisplaySettings();
 
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [visibleVerses, setVisibleVerses] = useState(surah.verses.slice(0, VERSES_PER_PAGE));
-  const [currentVerse, setCurrentVerse] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(surah.verses.length > VERSES_PER_PAGE);
+  const [visibleVerses, setVisibleVerses] = useState<any[]>([]);
+  const [isVersesLoading, setIsVersesLoading] = useState(true);
+  const [hasNextPage, setHasNextPage] = useState(false);
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
-  const verseRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Load next page of verses
+  // Refs for scroll handling and infinite loading
+  const scrollTopRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const verseRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
+  const initialScrollComplete = useRef<boolean>(false);
+
+  // Mobile drawer state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSurahInfoOpen, setIsSurahInfoOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+  // New state for current verse
+  const [currentVerse, setCurrentVerse] = useState(initialVerseNumber || 1);
+
+  // Preload surah data when component mounts or surah changes
+  useEffect(() => {
+    if (surahNumber > 0) {
+      // Preload current surah data
+      preloadSurahData(surahNumber);
+
+      // Preload adjacent surahs for faster navigation
+      preloadAdjacentSurahs(surahNumber);
+
+      // Reset pagination state when surah changes
+      setCurrentPage(1);
+      setVisibleVerses([]);
+
+      // Prime playlist for the audio player when surah changes
+      if (allVerses && allVerses.length > 0) {
+        const keys = allVerses.map(v => v.unique_key);
+        setPlaylist(keys, { surahNumber, surahName: surah?.name_tajik || `Сураи ${surahNumber}` });
+      }
+
+      // Scroll to top when surah changes
+      window.scrollTo({
+        top: 0,
+        behavior: 'instant'
+      });
+    }
+  }, [surahNumber, allVerses, setPlaylist, surah?.name_tajik]);
+
+  // Save the last read position
+  useEffect(() => {
+    if (surah && surahNumber > 0) {
+      const lastReadPosition = {
+        surahNumber: surah.number,
+        surahName: surah.name_tajik,
+        verseNumber: 1, // Default to first verse
+        verseKey: `${surah.number}:1`
+      };
+
+      localStorage.setItem('lastReadPosition', JSON.stringify(lastReadPosition));
+    }
+  }, [surah, surahNumber]);
+
+  // Update hasNextPage when data or page changes
+  useEffect(() => {
+    if (allVerses && allVerses.length > 0) {
+      // Determine if there are more verses to load
+      const endIndex = currentPage * VERSES_PER_PAGE;
+      setHasNextPage(endIndex < allVerses.length);
+    }
+  }, [allVerses, currentPage]);
+
+  // Function to load the next page of verses - optimized for speed
   const loadNextPage = useCallback(() => {
     if (!hasNextPage || isFetchingNextPage) return;
 
+    console.log("Loading more verses, new page:", currentPage + 1);
     setIsFetchingNextPage(true);
-    setTimeout(() => {
-      const nextPage = currentPage + 1;
-      const newVerses = surah.verses.slice(0, nextPage * VERSES_PER_PAGE);
-      setVisibleVerses(newVerses);
-      setCurrentPage(nextPage);
-      setHasNextPage(newVerses.length < surah.verses.length);
-      setIsFetchingNextPage(false);
-    }, 200);
-  }, [currentPage, hasNextPage, isFetchingNextPage, surah.verses]);
 
-  // Infinite scroll
+    // Increment the current page which will trigger the useEffect to load more verses
+    setCurrentPage(prevPage => prevPage + 1);
+
+    // Use a shorter delay to improve perceived performance
+    setTimeout(() => {
+      setIsFetchingNextPage(false);
+    }, 300);
+  }, [hasNextPage, isFetchingNextPage, currentPage]);
+
+  // Create a scrollable element reference for infinite scrolling
+  const loadingElementRef = useRef<HTMLDivElement>(null);
+
+  // Handle scrolling to specific verse when provided with initialVerseNumber
+  useEffect(() => {
+    // Only run when we have verses loaded and initialVerseNumber is provided
+    if (allVerses && allVerses.length > 0 && initialVerseNumber && !initialScrollComplete.current) {
+      // Check if we need more pages of verses first
+      const neededPage = Math.ceil(initialVerseNumber / VERSES_PER_PAGE);
+      if (neededPage > currentPage) {
+        // Load more pages to include the target verse
+        console.log(`Loading more pages to reach verse ${initialVerseNumber}`);
+        setCurrentPage(neededPage);
+      } else {
+        // We already have the verse loaded, so we can scroll to it
+        const verseKey = `${surahNumber}:${initialVerseNumber}`;
+
+        // Small delay to ensure DOM is updated
+        setTimeout(() => {
+          const verseElement = verseRefs.current[verseKey];
+          if (verseElement) {
+            console.log(`Scrolling to verse ${verseKey}`);
+            verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Highlight the verse temporarily
+            verseElement.classList.add('highlight-verse');
+            setTimeout(() => {
+              verseElement.classList.remove('highlight-verse');
+            }, 3000);
+
+            // Mark as complete so we don't keep trying to scroll
+            initialScrollComplete.current = true;
+          }
+        }, 1000);
+      }
+    }
+  }, [allVerses, initialVerseNumber, currentPage, surahNumber]);
+
+  // Simple and reliable scroll loading
+  useEffect(() => {
+    // Skip if there's no more verses to load
+    if (!hasNextPage || isAllVersesLoading) return;
+
+    // Track if we're already loading to prevent multiple simultaneous loads
+    let isLoadingMore = false;
+
+    function checkScrollPosition() {
+      // If we're already loading, don't try to load more
+      if (isLoadingMore || isFetchingNextPage) return;
+
+      // Get scroll position and document height
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+
+      // Calculate distance from bottom
+      const distanceFromBottom = documentHeight - (scrollY + windowHeight);
+
+      // If we're close to the bottom (800px), load more
+      if (distanceFromBottom < 800) {
+        console.log(`Loading more verses - ${distanceFromBottom}px from bottom`);
+        isLoadingMore = true;
+        loadNextPage();
+
+        // Reset loading flag after a delay
+        setTimeout(() => {
+          isLoadingMore = false;
+        }, 500);
+      }
+    }
+
+    // Add scroll event listener with passive flag for better performance
+    window.addEventListener('scroll', checkScrollPosition, { passive: true });
+
+    // Initial check in case the page doesn't have enough content to scroll
+    setTimeout(checkScrollPosition, 500);
+
+    return () => {
+      window.removeEventListener('scroll', checkScrollPosition);
+    };
+  }, [hasNextPage, loadNextPage, isFetchingNextPage, isAllVersesLoading]);
+
+
+
+  // Scroll to top button visibility
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
-        loadNextPage();
+      if (window.scrollY > 500) {
+        setShowScrollToTop(true);
+      } else {
+        setShowScrollToTop(false);
       }
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loadNextPage]);
 
-  // Set playlist for audio player
-  useEffect(() => {
-    const keys = surah.verses.map(v => `${surah.number}:${v.verse_number}`);
-    setPlaylist(keys, { surahNumber: surah.number, surahName: surah.name_tajik });
-  }, [surah, setPlaylist]);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleVerseNavigation = (verseNumber: number) => {
     setCurrentVerse(verseNumber);
-    const verseElement = verseRefs.current[`${surah.number}:${verseNumber}`];
+    const verseElement = document.getElementById(`verse-${verseNumber}`);
     if (verseElement) {
-      const headerHeight = 120;
-      const offsetPosition = verseElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      // Calculate the offset to account for the sticky header and navigation
+      const headerHeight = 120; // Approximate height of both sticky elements
+      const elementPosition = verseElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
+  const handlePlaySurah = () => {
+    if (allVerses && allVerses.length > 0) {
+      handleVerseNavigation(allVerses[0].verse_number);
+    }
+  };
+
+  // Handle scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  // Handle pagination
+  const getPreviousSurahNumber = () => {
+    return surahNumber > 1 ? surahNumber - 1 : null;
+  };
+
+  const getNextSurahNumber = () => {
+    return surahNumber < 114 ? surahNumber + 1 : null;
+  };
+
+  const previousSurah = getPreviousSurahNumber();
+  const nextSurah = getNextSurahNumber();
+
+  const isLoading = isSurahsLoading || isSurahLoading || isVersesLoading;
+
+  // Update current verse when scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      const verses = document.querySelectorAll('[id^="verse-"]');
+      let closestVerse = 1;
+      let closestDistance = Infinity;
+
+      verses.forEach((verse) => {
+        const rect = verse.getBoundingClientRect();
+        const distance = Math.abs(rect.top);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          const verseId = verse.id;
+          const verseNumber = parseInt(verseId.split('-')[2]);
+          if (!isNaN(verseNumber)) {
+            closestVerse = verseNumber;
+          }
+        }
+      });
+
+      setCurrentVerse(closestVerse);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <>
-      <SeoHead
-        title={`Сураи ${surah.name_tajik} (${surah.number}) - Қуръон`}
-        description={`Тарҷума ва тафсири Сураи ${surah.name_tajik}. Маълумоти пурра дар бораи сураи ${surah.number}-уми Қуръони Карим.`}
-        canonicalUrl={`https://www.quran.tj/surah/${surah.number}`}
-      />
+    <div className="min-h-screen bg-background">
+      {surah && (
+        <SeoHead
+          title={`Сураи ${surah.name_tajik}`}
+          description={`Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}. Тарҷумаи тоҷикӣ ва тафсири осонбаён.`}
+          canonicalUrl={`https://www.quran.tj/surah/${surah.number}`}
+          structuredData={{
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": `Сураи ${surah.name_tajik} - Қуръони Карим бо тарҷумаи тоҷикӣ`,
+            "name": surah.name_tajik,
+            "alternativeHeadline": surah.name_arabic,
+            "author": {
+              "@type": "Organization",
+              "name": "Қуръони Тоҷикӣ"
+            },
+            "inLanguage": "tg",
+            "isPartOf": {
+              "@type": "WebSite",
+              "name": "Қуръони Тоҷикӣ",
+              "url": "https://www.quran.tj"
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://www.quran.tj/surah/${surah.number}`
+            },
+            "keywords": [
+              `Сураи ${surah.name_tajik}`,
+              `Сураи ${surah.name_arabic}`,
+              "Қуръони Карим",
+              "тарҷумаи тоҷикӣ",
+              "тафсири осонбаён",
+              surah.revelation_type === 'Meccan' ? "Маккӣ" : "Маданӣ"
+            ].join(", ")
+          }}
+          keywords={[
+            `Сураи ${surah.name_tajik}`,
+            `Сураи ${surah.name_arabic}`,
+            surah.name_english,
+            "Қуръони Карим",
+            "тарҷумаи тоҷикӣ",
+            "тафсири осонбаён"
+          ]}
+        />
+      )}
 
       <SmartSticky className="bg-background/80 backdrop-blur-sm border-b">
-        <header className="container mx-auto px-4 py-1 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-primary">
-                <Home className="h-4 w-4" />
-                <span className="hidden sm:inline">Асосӣ</span>
-              </Button>
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon">
-              <Search className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Bookmark className="h-5 w-5" />
-            </Button>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Settings className="h-5 w-5" />
+        <header className="container mx-auto px-4 py-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 text-primary hover:text-primary/90"
+                >
+                  <Home className="h-4 w-4" />
+                  <span className="hidden sm:inline">Асосӣ</span>
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px]">
-                <SheetHeader>
-                  <SheetTitle>Танзимот</SheetTitle>
-                </SheetHeader>
-                <SettingsContent />
-              </SheetContent>
-            </Sheet>
+              </Link>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => onOpenOverlay('search')}>
+                <Search className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => onOpenOverlay('bookmarks')}>
+                <Bookmark className="h-5 w-5" />
+              </Button>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Settings"
+                  >
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px]">
+                  <SheetHeader>
+                    <SheetTitle>Танзимот</SheetTitle>
+                  </SheetHeader>
+                  <div className="py-4">
+                    <SettingsContent />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </header>
-        <VerseNavigation
-          currentVerse={currentVerse}
-          totalVerses={surah.verses_count}
-          onNavigate={handleVerseNavigation}
-          currentSurahNumber={surah.number}
-        />
+        <div className="border-t">
+          <VerseNavigation 
+            currentVerse={currentVerse} 
+            totalVerses={surah?.verses_count || 0} 
+            onNavigate={handleVerseNavigation}
+            currentSurahNumber={surahNumber}
+          />
+        </div>
       </SmartSticky>
+      
+      {/* Removed floating BackToHome - using inline header button instead */}
 
       <main className="container mx-auto px-4 py-8">
-        <Card className="mb-6 p-6 shadow-lg">
-          <h1 className="text-3xl font-bold">{surah.name_tajik}</h1>
-          <h2 className="text-2xl font-arabic">{surah.name_arabic}</h2>
-          <div className="flex flex-wrap gap-3 text-sm text-muted-foreground mt-2">
-            <span className="flex items-center gap-1">
-              <Book className="h-4 w-4" /> Сураи {surah.number}
-            </span>
-            <span className="flex items-center gap-1">
-              <List className="h-4 w-4" /> {surah.verses_count} оят
-            </span>
-            <span className="flex items-center gap-1">
-              <Info className="h-4 w-4" /> {surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}
-            </span>
-          </div>
-          <audio controls className="w-full mt-4">
-            <source
-              src={`https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surah.number}.mp3`}
-              type="audio/mpeg"
-            />
-            Your browser does not support the audio element.
-          </audio>
-          <p className="mt-4">{surah.description}</p>
-        </Card>
+        <div ref={scrollTopRef}></div>
 
-        {visibleVerses.map((verse) => (
-          <CompactVerseItem
-            key={verse.verse_number}
-            verse={verse}
-            surahNumber={surah.number}
-            ref={(el) => (verseRefs.current[`${surah.number}:${verse.verse_number}`] = el)}
-          />
-        ))}
+        {/* Surah Information Card with Native Audio Player */}
+        {surah && !isSurahLoading && (
+          <Card className="mb-6 overflow-hidden bg-gradient-to-br from-white via-white/95 to-primary/5 dark:from-gray-800 dark:via-gray-800/95 dark:to-primary/10 shadow-lg border-0">
+            <div className="p-6">
+              <div className="flex flex-col lg:flex-row items-center gap-6">
+                {/* Surah Header Info */}
+                <div className="flex-1 text-center lg:text-left">
+                  <div className="mb-4">
+                    <h1 className="text-3xl md:text-4xl font-bold text-primary dark:text-accent mb-2">
+                      {surah.name_tajik}
+                    </h1>
+                    <h2 className="text-2xl md:text-3xl text-gray-700 dark:text-gray-200 font-arabic mb-3">
+                      {surah.name_arabic}
+                    </h2>
+                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Book className="h-4 w-4" />
+                        Сураи {surah.number}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <List className="h-4 w-4" />
+                        {surah.verses_count} оят
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Info className="h-4 w-4" />
+                        {surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Native HTML Audio Player */}
+                <div className="w-full lg:w-96">
+                  <h3 className="text-lg font-semibold text-primary flex items-center gap-2 mb-2">
+                    <Volume2 className="h-5 w-5" />
+                    Тиловати Сура
+                  </h3>
+                  {/* The simple audio tag with dynamic URL construction */}
+                  <audio controls className="w-full">
+                    <source 
+                      src={`https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surah.number}.mp3`} 
+                      type="audio/mpeg" 
+                    />
+                    <source 
+                      src={`https://cdn.islamic.network/quran/audio/128/ar.alafasy/surah/${surah.number}.mp3`} 
+                      type="audio/mpeg" 
+                    />
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+              </div>
+
+              {/* Surah Information Accordion */}
+              <div className="mt-6 pt-6 border-t border-primary/20">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="description" className="border-0">
+                    <AccordionTrigger className="text-sm font-medium text-primary hover:text-primary/80 py-2 px-4 bg-primary/5 hover:bg-primary/10 rounded-lg transition-colors">
+                      <span className="flex items-center gap-2">
+                        <Info className="h-4 w-4" />
+                        Маълумот дар бораи сура
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="mt-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-primary/10">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {surah.description || 'Маълумот дар бораи ин сура мавҷуд нест.'}
+                        </p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Surah Header Skeleton */}
+        {isSurahLoading && (
+          <Card className="mb-6 overflow-hidden">
+            <div className="p-6">
+              <Skeleton className="h-8 w-48 mb-2" />
+              <Skeleton className="h-6 w-32 mb-4" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+          </Card>
+        )}
+
+        {/* Bismillah for the verses */}
+        {surah && surah.number !== 1 && surah.number !== 9 && (
+          <div className="py-6 px-4 mb-6 text-center">
+            <p className="font-arabic text-2xl md:text-3xl leading-normal tracking-normal mx-auto w-fit text-center text-gray-800 dark:text-gray-100">
+              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+            </p>
+          </div>
+        )}
+
+
+        {/* Verses */}
+        <div className={cn("space-y-6 mb-8", `content-${contentViewMode}`)}>
+          {isAllVersesLoading ? (
+            // Show loading skeletons for verses when initially loading
+            Array.from({ length: 10 }).map((_, index) => (
+              <CompactVerseItem 
+                key={index}
+                verse={{
+                  id: 0,
+                  surah_id: 0,
+                  verse_number: 0,
+                  arabic_text: "",
+                  transliteration: null,
+                  tajik_text: "",
+                  tj_2: null,
+                  tj_3: null,
+                  farsi: null,
+                  russian: null,
+                  tafsir: null,
+                  page: null,
+                  juz: null,
+                  unique_key: ""
+                }}
+                surahName=""
+                isLoading={true}
+              />
+            ))
+          ) : (
+            // Display loaded verses
+            allVerses && allVerses.slice(0, currentPage * VERSES_PER_PAGE).map(verse => (
+              <div 
+                key={verse.id} 
+                ref={el => verseRefs.current[verse.unique_key] = el}
+                id={`verse-${verse.unique_key}`}
+              >
+                <CompactVerseItem 
+                  verse={verse}
+                  surahName={surah?.name_tajik || ""}
+                />
+              </div>
+            ))
+          )}
+
+          {/* Intersection Observer for Infinite Scroll */}
+          {!isAllVersesLoading && allVerses && allVerses.length > 0 && (
+            <div 
+              ref={loadingElementRef} 
+              className="h-20 flex items-center justify-center"
+              style={{ display: currentPage * VERSES_PER_PAGE >= allVerses.length ? 'none' : 'flex' }}
+            >
+              {isFetchingNextPage ? (
+                <div className="flex flex-col items-center">
+                  <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+                  <p className="text-xs text-muted-foreground mt-2">Боркунии оятҳо...</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <p className="text-xs text-muted-foreground">Скрол кунед барои дидани оятҳои дигар</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Pagination Controls */}
+        {surah && (
+          <div className="grid grid-cols-2 gap-4 mb-10">
+            {previousSurah ? (
+              <Link href={`/surah/${previousSurah}`} className="w-full">
+                <Card className="h-full overflow-hidden transition-all hover:shadow-md">
+                  <div className="p-4 flex items-center">
+                    <ChevronLeft className="h-5 w-5 mr-2 text-primary dark:text-accent" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Сураи қаблӣ</p>
+                      <p className="font-medium">
+                        {surahs && surahs.find((s: any) => s.number === previousSurah)?.name_tajik || `Сураи ${previousSurah}`}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            ) : (
+              <div></div>
+            )}
+
+            {nextSurah ? (
+              <Link href={`/surah/${nextSurah}`} className="w-full">
+                <Card className="h-full overflow-hidden transition-all hover:shadow-md">
+                  <div className="p-4 flex items-center justify-between">
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">Сураи баъдӣ</p>
+                      <p className="font-medium">
+                        {surahs && surahs.find((s: any) => s.number === nextSurah)?.name_tajik || `Сураи ${nextSurah}`}
+                      </p>
+                    </div>
+                    <ChevronRight className="h-5 w-5 ml-2 text-primary dark:text-accent" />
+                  </div>
+                </Card>
+              </Link>
+            ) : (
+              <div></div>
+            )}
+          </div>
+        )}
       </main>
-    </>
+
+      {/* Audio player */}
+      <AudioPlayer />
+    </div>
   );
 }
-
-// Pre-render all Surah pages at build time
-export const getStaticPaths: GetStaticPaths = async () => {
-  const surahs = getAllSurahs();
-  const paths = surahs.map((s) => ({ params: { surahNumber: s.number.toString() } }));
-  return { paths, fallback: false };
-};
-
-// Fetch Surah data for each page
-export const getStaticProps: GetStaticProps = async (context) => {
-  const surahNumber = Number(context.params?.surahNumber);
-  const surah = getSurahByNumber(surahNumber);
-  return { props: { surah } };
-};
