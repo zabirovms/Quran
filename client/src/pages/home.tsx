@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -15,7 +16,7 @@ import {
   Search, BookOpen, ChevronRight, ArrowUp, ArrowDown, Book, Image as ImageIcon, Play, Download as DownloadIcon
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Surah } from '@shared/schema';
+import { SurahWithTranslation } from '@shared/schema';
 import SeoHead from '@/components/shared/SeoHead';
 import { getFeaturedImages, CloudImage } from '@/lib/cloudStorage';
 
@@ -46,8 +47,9 @@ const popularSurahs: PopularSurah[] = [
 ];
 
 export default function Home({ onOpenOverlay }: HomeProps) {
+  const { t } = useTranslation();
   const { data: surahs = [], isLoading } = useSurahs();
-  const [filteredSurahs, setFilteredSurahs] = useState<Surah[]>([]);
+  const [filteredSurahs, setFilteredSurahs] = useState<SurahWithTranslation[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [lastRead, setLastRead] = useState<LastReadSection | null>(null);
   const [scrollDirection, setScrollDirection] = useState<'top' | 'bottom'>('bottom');
@@ -78,6 +80,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
       surah => 
         surah.name_tajik.toLowerCase().includes(term) ||
         surah.name_english.toLowerCase().includes(term) ||
+        (surah.name_translation && surah.name_translation.toLowerCase().includes(term)) ||
         surah.number.toString().includes(term)
     );
 
@@ -117,7 +120,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
   }, []);
 
   // Render surah list item
-  const renderSurahItem = (surah: Surah) => (
+  const renderSurahItem = (surah: SurahWithTranslation) => (
     <Link 
       key={surah.id} 
       href={`/surah/${surah.number}`}
@@ -131,9 +134,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 {surah.number}
               </div>
               <div>
-                <h3 className="font-medium">{surah.name_tajik}</h3>
+                <h3 className="font-medium">{surah.name_translation || surah.name_tajik}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {surah.name_english} • {surah.verses_count} оят
+                  {surah.transliteration_en || surah.name_english} • {t('verses', { count: surah.verses_count })}
                 </p>
               </div>
             </div>
@@ -192,8 +195,8 @@ export default function Home({ onOpenOverlay }: HomeProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <SeoHead
-        title="Қуръони Карим - Тафсири Осонбаён бо забони тоҷикӣ"
-        description="Қуръони Карим бо тарҷумаи тоҷикӣ, тафсир, талаффуз ва тиловат. Хондани Қуръон онлайн барои тоҷикзабонон."
+        title={t('home_seo_title')}
+        description={t('home_seo_description')}
         structuredData={{
           "@context": "https://schema.org",
           "@type": "WebSite",
@@ -227,7 +230,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
         <div className="max-w-3xl mx-auto">
           <div className="mb-4 text-center">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-              Қуръон бо Тафсири Осонбаён 
+              {t('quran_with_tafsir')}
             </h1>
           </div>
 
@@ -235,7 +238,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
           {/* Popular Surahs Section - Moved to the top */}
           <div className="mb-8 bg-gradient-to-r from-primary/5 to-accent/5 p-5 rounded-lg border border-gray-100 dark:border-gray-700">
             <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
-              Сураҳои маъмул
+              {t('popular_surahs')}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {popularSurahs.map(surah => (
@@ -257,7 +260,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
           {/* Islamic Tools Section */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-primary dark:text-accent mb-4 text-center">
-              Абзорҳои исломӣ
+              {t('islamic_tools')}
             </h2>
             <div className="max-w-[600px] mx-auto">
               <Swiper
@@ -287,9 +290,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                         <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-2">
                           <BookOpen className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                         </div>
-                        <h3 className="text-base font-semibold mb-1">Тасбеҳгӯяк</h3>
+                        <h3 className="text-base font-semibold mb-1">{t('tasbeeh_counter')}</h3>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Шумориши зикрҳо ва дуоҳо
+                          {t('tasbeeh_description')}
                         </p>
                       </CardContent>
                     </Card>
@@ -304,9 +307,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                         <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-2">
                           <Book className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <h3 className="text-base font-semibold mb-1">Омӯзиши калимаҳо</h3>
+                        <h3 className="text-base font-semibold mb-1">{t('learn_words')}</h3>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Омӯзиши калимаҳои Қуръон
+                          {t('learn_words_description')}
                         </p>
                       </CardContent>
                     </Card>
@@ -321,9 +324,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                         <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-2">
                           <BookOpen className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                         </div>
-                        <h3 className="text-base font-semibold mb-1">Дуоҳо</h3>
+                        <h3 className="text-base font-semibold mb-1">{t('duas')}</h3>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Дуоҳои Қуръонӣ
+                          {t('duas_description')}
                         </p>
                       </CardContent>
                     </Card>
@@ -343,13 +346,11 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 <CardTitle className="text-base flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-primary dark:text-accent" />
                   <span className="text-primary dark:text-accent">
-                    {lastRead ? "Охирин хондашуда" : "Оғоз кунед"}
+                    {t(lastRead ? 'last_read' : 'start_reading')}
                   </span>
                 </CardTitle>
                 <CardDescription className="text-sm">
-                  {lastRead
-                    ? "Аз ҳамон ҷо идома диҳед."
-                    : "Ҳоло ҳеҷ сура хонда нашудааст."}
+                  {t(lastRead ? 'continue_from_where_you_left_off' : 'no_surah_read_yet')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="py-3">
@@ -367,7 +368,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                       href={`/surah/${lastRead.surahNumber}#verse-${lastRead.verseKey.replace(':', '-')}`}
                     >
                       <Button size="sm">
-                        Идома
+                        {t('continue')}
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </Link>
@@ -375,7 +376,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 ) : (
                   <Link href="/surah/1">
                     <Button className="w-full sm:w-auto" size="sm">
-                      Сураи Фотиҳа
+                      {t('surah_al_fatihah')}
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>
                   </Link>
@@ -389,7 +390,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                 <div className="relative">
                   <Input
                     type="text"
-                    placeholder="Ҷустуҷӯи сура..."
+                    placeholder={t('search_for_surah')}
                     className="pl-9 py-2 text-sm"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -401,7 +402,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent text-center">Рӯйхати сураҳо</h2>
+            <h2 className="text-xl font-bold mb-4 text-primary dark:text-accent text-center">{t('list_of_surahs')}</h2>
 
             {isLoading ? (
               Array.from({ length: 12 }).map((_, index) => renderSkeletonItem(index))
@@ -414,7 +415,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
 
                 {/* Pictures teaser */}
                 <div className="my-8">
-                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">Иқтибосҳо аз Қуръон</h3>
+                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">{t('quotes_from_quran')}</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {imagesLoading ? (
                       Array.from({ length: 4 }).map((_, index) => (
@@ -441,7 +442,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
                     ) : (
                       <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
                         <ImageIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                        <p>Суратҳо бор карда нашуд</p>
+                        <p>{t('images_not_loaded')}</p>
                       </div>
                     )}
                   </div>
@@ -454,7 +455,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
 
                 {/* Videos teaser */}
                 <div className="my-8">
-                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">Видеоҳои Қуръонӣ</h3>
+                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">{t('quranic_videos')}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {[
                       { id: 'oPrXRnF7rCo', title: 'Сураи Муъминун' },
@@ -485,7 +486,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
 
                 {/* Downloads teaser */}
                 <div className="my-8">
-                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">Боргирии матнҳо</h3>
+                  <h3 className="text-lg font-semibold text-primary dark:text-accent mb-3 text-center">{t('download_texts')}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[
                       { title: 'Қуръони Карим - Тоҷикӣ (PDF)', meta: 'PDF • Тоҷикӣ' },
@@ -515,9 +516,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
               </>
             ) : (
               <Card className="p-8 text-center">
-                <p className="text-gray-500 dark:text-gray-400 mb-2">Ягон сура ёфт нашуд</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-2">{t('no_surah_found')}</p>
                 <Button variant="outline" onClick={() => setSearchTerm('')}>
-                  Тоза кардани ҷустуҷӯ
+                  {t('clear_search')}
                 </Button>
               </Card>
             )}

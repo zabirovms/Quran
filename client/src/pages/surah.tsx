@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSurahs, useSurah, useVerses } from '@/hooks/useQuran';
 import { useAudioPlayer } from '@/hooks/useAudio';
 import { GlobalOverlayType } from '@/App';
 import AudioPlayer from '@/components/layout/AudioPlayer';
 import CompactVerseItem from '@/components/quran/CompactVerseItem';
+import { VerseWithTranslation } from '@shared/schema';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import SmartSticky from '@/components/layout/SmartSticky';
 import VerseNavigation from '@/components/quran/VerseNavigation';
@@ -75,6 +77,7 @@ interface SurahProps {
 const VERSES_PER_PAGE = 10;
 
 export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }: SurahProps) {
+  const { t } = useTranslation();
   const { data: surahs, isLoading: isSurahsLoading } = useSurahs();
   const { data: surah, isLoading: isSurahLoading } = useSurah(surahNumber);
   const { data: allVerses, isLoading: isAllVersesLoading } = useVerses(surahNumber);
@@ -84,7 +87,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [visibleVerses, setVisibleVerses] = useState<any[]>([]);
+  const [visibleVerses, setVisibleVerses] = useState<VerseWithTranslation[]>([]);
   const [isVersesLoading, setIsVersesLoading] = useState(true);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
@@ -355,7 +358,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
                   className="flex items-center gap-2 text-primary hover:text-primary/90"
                 >
                   <Home className="h-4 w-4" />
-                  <span className="hidden sm:inline">Асосӣ</span>
+                  <span className="hidden sm:inline">{t('home')}</span>
                 </Button>
               </Link>
             </div>
@@ -371,14 +374,14 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
                   <Button
                     variant="ghost"
                     size="icon"
-                    aria-label="Settings"
+                    aria-label={t('settings')}
                   >
                     <Settings className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px]">
                   <SheetHeader>
-                    <SheetTitle>Танзимот</SheetTitle>
+                    <SheetTitle>{t('settings')}</SheetTitle>
                   </SheetHeader>
                   <div className="py-4">
                     <SettingsContent />
@@ -420,15 +423,15 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
                     <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Book className="h-4 w-4" />
-                        Сураи {surah.number}
+                        {t('surah_label')} {surah.number}
                       </span>
                       <span className="flex items-center gap-1">
                         <List className="h-4 w-4" />
-                        {surah.verses_count} оят
+                        {t('verses', { count: surah.verses_count })}
                       </span>
                       <span className="flex items-center gap-1">
                         <Info className="h-4 w-4" />
-                        {surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}
+                        {t(surah.revelation_type === 'Meccan' ? 'meccan' : 'medinan')}
                       </span>
                     </div>
                   </div>
@@ -438,7 +441,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
                 <div className="w-full lg:w-96">
                   <h3 className="text-lg font-semibold text-primary flex items-center gap-2 mb-2">
                     <Volume2 className="h-5 w-5" />
-                    Тиловати Сура
+                    {t('surah_recitation')}
                   </h3>
                   {/* The simple audio tag with dynamic URL construction */}
                   <audio controls className="w-full">
@@ -462,13 +465,13 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
                     <AccordionTrigger className="text-sm font-medium text-primary hover:text-primary/80 py-2 px-4 bg-primary/5 hover:bg-primary/10 rounded-lg transition-colors">
                       <span className="flex items-center gap-2">
                         <Info className="h-4 w-4" />
-                        Маълумот дар бораи сура
+                        {t('surah_info')}
                       </span>
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="mt-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-primary/10">
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          {surah.description || 'Маълумот дар бораи ин сура мавҷуд нест.'}
+                          {surah.description || t('surah_info_not_available')}
                         </p>
                       </div>
                     </AccordionContent>
@@ -554,11 +557,11 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
               {isFetchingNextPage ? (
                 <div className="flex flex-col items-center">
                   <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
-                  <p className="text-xs text-muted-foreground mt-2">Боркунии оятҳо...</p>
+                  <p className="text-xs text-muted-foreground mt-2">{t('loading_verses')}</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <p className="text-xs text-muted-foreground">Скрол кунед барои дидани оятҳои дигар</p>
+                  <p className="text-xs text-muted-foreground">{t('scroll_for_more_verses')}</p>
                 </div>
               )}
             </div>
@@ -574,9 +577,9 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
                   <div className="p-4 flex items-center">
                     <ChevronLeft className="h-5 w-5 mr-2 text-primary dark:text-accent" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Сураи қаблӣ</p>
+                      <p className="text-sm text-muted-foreground">{t('previous_surah')}</p>
                       <p className="font-medium">
-                        {surahs && surahs.find((s: any) => s.number === previousSurah)?.name_tajik || `Сураи ${previousSurah}`}
+                        {surahs && (surahs.find((s: any) => s.number === previousSurah)?.name_translation || surahs.find((s: any) => s.number === previousSurah)?.name_tajik) || t('surah_with_number', { number: previousSurah })}
                       </p>
                     </div>
                   </div>
@@ -591,9 +594,9 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
                 <Card className="h-full overflow-hidden transition-all hover:shadow-md">
                   <div className="p-4 flex items-center justify-between">
                     <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Сураи баъдӣ</p>
+                      <p className="text-sm text-muted-foreground">{t('next_surah')}</p>
                       <p className="font-medium">
-                        {surahs && surahs.find((s: any) => s.number === nextSurah)?.name_tajik || `Сураи ${nextSurah}`}
+                        {surahs && (surahs.find((s: any) => s.number === nextSurah)?.name_translation || surahs.find((s: any) => s.number === nextSurah)?.name_tajik) || t('surah_with_number', { number: nextSurah })}
                       </p>
                     </div>
                     <ChevronRight className="h-5 w-5 ml-2 text-primary dark:text-accent" />

@@ -1,13 +1,15 @@
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
 import { useDisplaySettings } from '@/hooks/useDisplaySettings';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GlobalOverlayType } from '@/App';
 import { Surah } from '@shared/schema';
 import { Link, useLocation } from 'wouter';
 import { 
   Search, BookmarkIcon, ChevronLeft, ChevronRight, 
-  Home, Menu, Moon, Sun
+  Home, Menu, Moon, Sun, Globe
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -25,6 +27,7 @@ export default function Header({
   onOpenOverlay,
   isLoading = false 
 }: HeaderProps) {
+  const { i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
   const { wordByWordMode, toggleWordByWordMode } = useDisplaySettings();
   const [location, navigate] = useLocation();
@@ -92,6 +95,18 @@ export default function Header({
         </div>
 
         <div className="flex items-center space-x-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Change Language">
+                <Globe className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onSelect={() => i18n.changeLanguage('en')}>English</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => i18n.changeLanguage('ru')}>Русский</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => i18n.changeLanguage('tj')}>Тоҷикӣ</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             variant="ghost"
             size="icon"

@@ -116,3 +116,6 @@ export const insertWordAnalysisSchema = createInsertSchema(wordAnalysis).omit({
 
 export type InsertWordAnalysis = z.infer<typeof insertWordAnalysisSchema>;
 export type WordAnalysis = typeof wordAnalysis.$inferSelect;
+
+export type SurahWithTranslation = Surah & { name_translation?: string; transliteration_en?: string };
+export type VerseWithTranslation = Verse & { text_translation?: string };

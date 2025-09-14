@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Verse } from '@shared/schema';
+import { VerseWithTranslation } from '@shared/schema';
 import { 
   Play, Copy, Share, BookmarkIcon, Image as ImageIcon,
   ChevronDown, ChevronUp, Book, MoreHorizontal
@@ -21,7 +22,7 @@ import {
 import { getVerseText } from '@/lib/uthmaniQuran';
 
 interface CompactVerseItemProps {
-  verse: Verse;
+  verse: VerseWithTranslation;
   surahName: string;
   isLoading?: boolean;
 }
@@ -31,6 +32,7 @@ const uthmaniTextCache: Record<string, string> = {};
 
 export default function CompactVerseItem({ verse, surahName, isLoading = false }: CompactVerseItemProps) {
   const { playAudio } = useAudioPlayer();
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const { 
     wordByWordMode,
@@ -356,11 +358,17 @@ export default function CompactVerseItem({ verse, surahName, isLoading = false }
                  'Тарҷумаи русӣ:'}
               </p>
               <p className="text-xs">
-                {translationType === 'tajik' ? verse.tajik_text : 
-                 translationType === 'tj_2' ? verse.tj_2 || verse.tajik_text : 
-                 translationType === 'tj_3' ? verse.tj_3 || verse.tajik_text : 
-                 translationType === 'farsi' ? verse.farsi || verse.tajik_text : 
-                 verse.russian || verse.tajik_text}
+                {
+                  (i18n.language === 'en' || i18n.language === 'ru') && verse.text_translation
+                  ? verse.text_translation
+                  : (
+                      translationType === 'tajik' ? verse.tajik_text :
+                      translationType === 'tj_2' ? verse.tj_2 || verse.tajik_text :
+                      translationType === 'tj_3' ? verse.tj_3 || verse.tajik_text :
+                      translationType === 'farsi' ? verse.farsi || verse.tajik_text :
+                      verse.russian || verse.tajik_text
+                    )
+                }
               </p>
             </div>
             

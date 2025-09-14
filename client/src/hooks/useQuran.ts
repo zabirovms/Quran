@@ -1,23 +1,44 @@
 import { useQuery } from '@tanstack/react-query';
-import { Surah, Verse } from '@shared/schema';
+import { useTranslation } from 'react-i18next';
+import { Surah, Verse, SurahWithTranslation, VerseWithTranslation } from '@shared/schema';
+
+async function fetcher<T>(key: string): Promise<T> {
+  const response = await fetch(key);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+}
 
 export function useSurahs() {
-  return useQuery<Surah[]>({
-    queryKey: ['/api/surahs'],
-    staleTime: Infinity, // This data doesn't change often
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
+
+  return useQuery<SurahWithTranslation[]>({
+    queryKey: [`/api/surahs?lang=${lang}`],
+    queryFn: ({ queryKey }) => fetcher(queryKey[0]),
+    staleTime: Infinity,
   });
 }
 
 export function useSurah(surahNumber: number) {
-  return useQuery<Surah>({
-    queryKey: [`/api/surahs/${surahNumber}`],
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
+
+  return useQuery<SurahWithTranslation>({
+    queryKey: [`/api/surahs/${surahNumber}?lang=${lang}`],
+    queryFn: ({ queryKey }) => fetcher(queryKey[0]),
     enabled: !!surahNumber && surahNumber > 0,
   });
 }
 
 export function useVerses(surahNumber: number) {
-  return useQuery<Verse[]>({
-    queryKey: [`/api/surahs/${surahNumber}/verses`],
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
+
+  return useQuery<VerseWithTranslation[]>({
+    queryKey: [`/api/surahs/${surahNumber}/verses?lang=${lang}`],
+    queryFn: ({ queryKey }) => fetcher(queryKey[0]),
     enabled: !!surahNumber && surahNumber > 0,
   });
 }
