@@ -26,13 +26,20 @@
   html { scroll-behavior: smooth; }
   body { font-family: 'Noto Sans', system-ui, -apple-system, Segoe UI, Arial, sans-serif; line-height: 1.75; background: var(--bg); color: var(--fg); margin: 0; }
   header { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--border); }
-  .nav { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; }
+  .nav { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; gap: 12px; }
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
-  .brand-logo { width: 28px; height: 28px; border-radius: 6px; background: var(--primary); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
   .brand a { color: var(--primary-600); text-decoration: none; }
   .nav a { color: var(--fg); text-decoration: none; font-weight: 600; }
   .nav a:hover { color: var(--primary); }
   .nav-items { display: flex; gap: 12px; }
+  .nav-search { position: relative; flex: 1; max-width: 420px; }
+  .nav-search input { width: 100%; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); outline: none; font-size: 14px; }
+  .nav-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(7,110,102,0.12); }
+  .typeahead { position: absolute; top: 40px; left: 0; right: 0; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 6px 30px rgba(0,0,0,0.08); overflow: hidden; display: none; max-height: 320px; overflow-y: auto; }
+  .typeahead ul { list-style: none; margin: 0; padding: 6px; }
+  .typeahead li { border-radius: 8px; }
+  .typeahead a { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; text-decoration: none; color: var(--fg); }
+  .typeahead a:hover { background: #f7faf9; }
   .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
   h1, h2 { color: var(--primary-600); }
   a { color: var(--primary); text-decoration: none; }
@@ -65,22 +72,27 @@
 <header>
   <div class="nav" role="navigation" aria-label="Навигатсия">
     <div class="brand">
-      <span class="brand-logo" aria-hidden="true">ق</span>
-      <a href="/">Quran.tj</a>
+      <a href="/">Асосӣ</a>
     </div>
-    <div class="nav-items"><a href="/">Асосӣ</a><a href="/surah">Қуръон</a><a href="/duas">Дуоҳо</a><a href="/downloads">Боргирӣ</a></div>
+    <div class="nav-search" role="search">
+      <label class="skip" for="global-surah-search">Ҷустуҷӯи сура</label>
+      <input id="global-surah-search" type="search" placeholder="Ҷустуҷӯи сура…" autocomplete="off" oninput="typeaheadFilter(this.value)" onfocus="typeaheadOpen()" onblur="typeaheadCloseDelayed()">
+      <div id="typeahead" class="typeahead" role="listbox" aria-label="Пайдо шуд">
+        <ul id="typeahead-list"></ul>
+      </div>
+    </div>
+    <div class="nav-items"><a href="/surah">Қуръон</a><a href="/duas">Дуоҳо</a><a href="/downloads">Боргирӣ</a></div>
   </div>
-  
 </header>
-<div class="container" style="padding-top:12px;">
+<div class="container" style="padding-top:12px;text-align:center;">
   <h1 class="hero-title" style="font-size:26px;margin:4px 0 8px;">Ҳамаи сураҳои Қуръон бо маълумот</h1>
   <p class="hero-desc" style="margin:0 0 8px;color:#40514f">Ном, тавсифи кӯтоҳ, шумораи оятҳо ва тартиби ваҳй. Мундариҷа барои гузариши зуд.</p>
-  <nav class="breadcrumbs" aria-label="Breadcrumb">
+  <nav class="breadcrumbs" aria-label="Breadcrumb" style="display:inline-block;">
     <a href="/">Асосӣ</a> / <span>Сураҳо</span>
   </nav>
 </div>
 <div id="content" class="container">
-<div class="srch" role="search">
+<div class="srch" role="search" style="display:none">
   <label for="surah-search" class="skip">Ҷустуҷӯи сура</label>
   <input id="surah-search" class="search" type="search" placeholder="Ҷустуҷӯи сура (масалан: Ёсин, Бақара, Нос)…" oninput="filterTOC(this.value)">
 </div>
@@ -215,12 +227,93 @@
       li.style.display = !q || t.indexOf(nq) > -1 ? '' : 'none';
     });
   }
+  // Build an index for typeahead from the TOC
+  var __surahs = [];
+  (function initSurahIndex(){
+    var list = document.getElementById('toc-list');
+    if(!list) return;
+    var anchors = list.querySelectorAll('a[href^="#surah-"]');
+    anchors.forEach(function(a){
+      var href = a.getAttribute('href');
+      var idMatch = href && href.match(/#surah-(\d+)/);
+      if(!idMatch) return;
+      var num = parseInt(idMatch[1], 10);
+      var text = (a.textContent||'').trim();
+      // Text like "1. Фотиҳа" => split number and name
+      var name = text.replace(/^\d+\.\s*/, '');
+      __surahs.push({ number: num, name: name, anchor: href, app: '/surah/' + num });
+    });
+  })();
+
+  var __typeaheadTimer;
+  function typeaheadOpen(){
+    var ta = document.getElementById('typeahead');
+    if(ta) ta.style.display = 'block';
+  }
+  function typeaheadClose(){
+    var ta = document.getElementById('typeahead');
+    if(ta) ta.style.display = 'none';
+  }
+  function typeaheadCloseDelayed(){
+    clearTimeout(__typeaheadTimer);
+    __typeaheadTimer = setTimeout(typeaheadClose, 150);
+  }
+  function typeaheadFilter(q){
+    var list = document.getElementById('typeahead-list');
+    if(!list) return;
+    var term = normalize(q);
+    list.innerHTML = '';
+    if(!q){ typeaheadClose(); return; }
+    var results = __surahs.filter(function(s){
+      return (s.name && normalize(s.name).indexOf(term) > -1) || (''+s.number).indexOf(term) > -1;
+    }).slice(0, 12);
+    if(results.length === 0){ typeaheadClose(); return; }
+    typeaheadOpen();
+    results.forEach(function(s){
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = s.anchor; // scroll in-page
+      a.setAttribute('role','option');
+      a.innerHTML = '<span>'+s.number+'. '+s.name+'</span><span style="color:#286d67;font-weight:600;">кушодан</span>';
+      a.addEventListener('mousedown', function(e){
+        // allow click before blur closes
+        setTimeout(typeaheadClose, 0);
+      });
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+  }
+  // Append per-surah reader link under each section
+  (function appendReaderLinks(){
+    var sections = document.querySelectorAll('section.surah');
+    sections.forEach(function(sec){
+      // avoid duplicates
+      if (sec.querySelector('.reader-link')) return;
+      var h2 = sec.querySelector('h2');
+      if(!h2) return;
+      var a = h2.querySelector('a');
+      if(!a) return;
+      var text = (a.textContent||'').trim(); // e.g., "2. Бақара"
+      var numMatch = text.match(/^(\d+)/);
+      var num = numMatch ? parseInt(numMatch[1],10) : null;
+      var name = text.replace(/^\d+\.\s*/, '');
+      if(!num || !name) return;
+      var p = document.createElement('p');
+      p.className = 'reader-link';
+      p.style.marginTop = '10px';
+      p.innerHTML = 'Барои хондани Сураи ' + name + ' ба ин <a href="/surah/'+num+'"><strong>саҳифа</strong></a> гузаред.';
+      // insert after the first meta paragraph if available, else after h2
+      var after = h2.nextElementSibling && h2.nextElementSibling.tagName.toLowerCase()==='p' ? h2.nextElementSibling : h2;
+      after.parentNode.insertBefore(p, after.nextSibling);
+    });
+  })();
 </script>
 <section class="surah">
   <h2 id="surah-1">
     <a href="/surah/1">1. Фотиҳа</a>
   </h2>
   <p><strong>Оятҳо:</strong> 7 | <strong>Тартиби ваҳй:</strong> 5</p>
+  <p style="margin-top:10px"><span>Барои хондани Сураи Фотиҳа ба ин <a href="/surah/1"><strong>саҳифа</strong></a> гузаред.</span></p>
   <p><strong>Маълумот:</strong> Сураи Фотиҳа сураи 1-уми Қуръон буда, дар Маккаи мукаррама нозил шуда, аз 7 оят иборат аст.
 Ин сура бо чанд ном зикр мешавад. Яке аз онҳо «Фотиҳа» аст. Маънои «Фотиҳа» - кушоиш аст. «Фотиҳа» барои он гӯянд, ки Қуръони маҷид бо он оғоз гардидааст. Номи дигари ин сура «Сабъатулмасонӣ» аст. Ба ин хотир, ки он аз ҳафт оят иборат буда, ҳеҷ намозе нест, ки ҳадди ақал он ду бор хонда нашавад. Бо ривояте он ҳафт оят буда, ду бор ба Расули Худо (ﷺ) нозил шудааст. Ҳамчунин онро «Уммул китоб» (модари китоб) ҳам мегӯянд, зеро ки Расулуллоҳ (ﷺ) гуфтаанд: "Ал-ҳамду лиллоҳи Рабби-л-ъоламон" - афзали оятҳои Қуръон аст.
 Чуноне ки дар ҳадис аз Имом Аҳмад ибни Ҳанбал омадааст, Убай ибни Каъб дар ҳузури Пайғамбарамон сураи «Фотиҳа»-ро хонданд. Он ҳазрат (с) гуфтанд: "Қасам ба Зоте, ки ҷони ман дар яду қудрати ӯст, Аллоҳтаъоло на дар «Таврот», на дар «Инҷил», на дар «Забур» ва на дар «Фурқон» (Қуръон) мисли ин сураеро фуруд наовардааст". Ин сухани Расулуллоҳ (ﷺ) бар афзалияти сураи «Фотиҳа» далолат мекунад.
@@ -237,6 +330,7 @@
     <a href="/surah/2">2. Бақара</a>
   </h2>
   <p><strong>Оятҳо:</strong> 286 | <strong>Тартиби ваҳй:</strong> 87</p>
+  <p style="margin-top:10px"><span>Барои хондани Сураи Бақара ба ин <a href="/surah/2"><strong>саҳифа</strong></a> гузаред.</span></p>
   <p><strong>Маълумот:</strong> Ин сура бо ҷамии оятҳои худ, бидуни шакку шубҳа дар Мадина нозил шудааст, ки он сураи 2-юми Қуръон буда, аз 286 оят иборат аст.
 Номи сура ба таври мутлақ аз оятҳои 67-73-уми ҳамин сура гирифта шудааст. Сураи мазкур аз дарозтарин сураҳои Қуръон буда, аз рӯи мазмуни худ бо сураҳои дар Мадина нозилшуда монанд буда, он низому қонунҳоеро ки инсонҳо дар пиёда кардани ҳаёти иҷтимоии хеш ба онҳо ниёз доранд, баён месозад. Сураи «Бақара» бузургтарин ҳукмҳои шариъатро мисли ақида, ибодат, муъомилот, ахлоқ, муносибати зану шавҳар, талоқ, идда, ило, қарз ва монанди инҳоро дар бар мегирад. Дар ибтидо ҳарфе чанд, яъне 4 ояти он сифати мӯъминонро ва 2 ояти он одати кофиронро ва 13 ояти он ахлоқи мунофиқонро баён карда, ҳақиқати имон ва куфру нифоқро равшан месозад. (Т.Ҷалолайн.). Яъне сураи мазкур бо услуби хос байни аҳли саодат (некбахтон) ва аҳли шақоват (бадбахтон) фарқ гузошта, онҳоро аз ҳамдигар ошкоро ҷудо сохтааст.
 Баъдан суханро аз пайдоиши Абу-л-башар, яъне Одам (а) оғоз намуда, ҳодисаҳои аҷоиби дар он айём гузаштаро зикр карда, бо санаду далелҳо собит месозад, ки Аллоҳтаъоло навъи башарро гиромӣ доштааст. Дар ҳақиқат агар ба ин сура назар намоем, мебинем, ки аз се як ҳиссаи онро аҳволи аҳли китоб дар бар гирифтааст. Ба хоса аҳволи гузаштагони бани Исроилро дар маърази хонанда қарор медиҳад. Сабаб он аст, ки авлоди онҳо дар Мадинаи мунаввара, дар ҳамсоягии мӯъминон иқомат дошта, онҳо баҳри заъиф сохтани шариати Муҳаммад (с) алайҳи мусалмонон найрангҳоро ба кор мебурданд. Яъне пинҳонкорӣ ва даст доштан ба фисқу фасоди онҳо барои мӯъминон хатари бузургро ба миён овард, ки ин далели шикастани аҳднома, миёни бани Исроил ва мӯъминон гардид. Сураи муборака иттилоъ медиҳад, ки мӯъминон сари вақт аз макри онҳо огоҳ гашта, хатари ба миёномадаро дафъ сохтанд.
