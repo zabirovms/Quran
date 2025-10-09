@@ -254,9 +254,9 @@ export default function Home({ onOpenOverlay }: HomeProps) {
 
           {/* Link to Surahs Info page */}
           <div className="mb-6 text-center">
-            <Link href="/surahs-info/index.html" className="inline-block text-primary dark:text-accent font-medium underline-offset-4 hover:underline">
+            <a href="/surahs-info/index.html" className="inline-block text-primary dark:text-accent font-medium underline-offset-4 hover:underline">
               Маълумот оиди сураҳо
-            </Link>
+            </a>
           </div>
 
           {/* Interleaving moved to the main surah list below */}
