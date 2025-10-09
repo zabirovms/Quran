@@ -276,9 +276,15 @@
       a.setAttribute('role','option');
       a.innerHTML = '<span>'+s.number+'. '+s.name+'</span><span style="color:#286d67;font-weight:600;">кушодан</span>';
       a.addEventListener('mousedown', function(e){
-        // allow click before blur closes
-        setTimeout(typeaheadClose, 0);
+            e.preventDefault(); // prevent default anchor jump
+            var targetId = s.anchor.substring(1); // remove '#'
+            var target = document.getElementById(targetId);
+            if(target){
+                  target.scrollIntoView({ behavior: 'smooth' }); // smooth scroll to surah
+            }
+            typeaheadClose(); // close dropdown
       });
+
       li.appendChild(a);
       list.appendChild(li);
     });
