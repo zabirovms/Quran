@@ -298,20 +298,29 @@
     var sections = document.querySelectorAll('section.surah');
     sections.forEach(function(sec){
       if (sec.querySelector('.reader-link')) return;
+
       var h2 = sec.querySelector('h2');
       if(!h2) return;
       var a = h2.querySelector('a');
       if(!a) return;
+
       var text = (a.textContent||'').trim(); 
       var numMatch = text.match(/^(\d+)/);
       var num = numMatch ? parseInt(numMatch[1],10) : null;
       var name = text.replace(/^\d+\.\s*/, '');
       if(!num || !name) return;
+
+      // Find the paragraph containing "Маълумот:" text
+      var infoParagraph = Array.from(sec.querySelectorAll('p'))
+        .find(p => p.textContent.includes('Маълумот'));
+      
       var p = document.createElement('p');
       p.className = 'reader-link';
       p.style.marginTop = '10px';
-      p.innerHTML = 'Барои хондани Сураи ' + name + ' ба ин <a href="/surah/'+num+'"><strong>саҳифа</strong></a> гузаред.';
-      var after = h2.nextElementSibling && h2.nextElementSibling.tagName.toLowerCase()==='p' ? h2.nextElementSibling : h2;
+      p.innerHTML = 'Барои пурра хондани Сураи ' + name + ' бо тарҷума ва тафсир ба ин <a href="/surah/'+num+'" style="color:blue;"><strong>саҳифа</strong></a> гузаред.';
+
+      // Insert after Маълумот paragraph if found, else after h2
+      var after = infoParagraph || h2;
       after.parentNode.insertBefore(p, after.nextSibling);
     });
   }
