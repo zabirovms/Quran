@@ -64,6 +64,18 @@
   .skip { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
   .skip:focus { position: static; width: auto; height: auto; padding: 6px 10px; background: var(--primary); color: #fff; border-radius: 6px; }
   @media print { header, .srch, .nav-links { display: none; } section.surah { break-inside: avoid; border: 0; padding: 0; background: transparent; } a { color: #000; text-decoration: none; } }
+  @media screen and (max-width: 768px) {
+  /* Hide the right-side nav links on mobile */
+  .nav-items {
+    display: none;
+  }
+
+  /* Make the search bar span more width */
+  .nav-search {
+    flex: 1;       /* take all available space */
+    max-width: none;
+  }
+}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Сураҳои Қуръони Карим","url":"https://www.quran.tj/surahs-info","inLanguage":"tg","description":"114 сураи Қуръон бо номи тоҷикӣ, тавсиф, оятҳо ва тартиби нузул.","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Асосӣ","item":"https://www.quran.tj/"},{"@type":"ListItem","position":2,"name":"Сураҳо"}]}}</script>
 </head>
@@ -239,56 +251,90 @@
       if(!idMatch) return;
       var num = parseInt(idMatch[1], 10);
       var text = (a.textContent||'').trim();
-      // Text like "1. Сураи Фотиҳа" => split number and name
       var name = text.replace(/^\d+\.\s*/, '');
       __surahs.push({ number: num, name: name, anchor: href, app: '/surah/' + num });
     });
   })();
 
   var __typeaheadTimer;
-  function typeaheadOpen(){
-    var ta = document.getElementById('typeahead');
-    if(ta) ta.style.display = 'block';
-  }
-  function typeaheadClose(){
-    var ta = document.getElementById('typeahead');
-    if(ta) ta.style.display = 'none';
-  }
-  function typeaheadCloseDelayed(){
-    clearTimeout(__typeaheadTimer);
-    __typeaheadTimer = setTimeout(typeaheadClose, 150);
-  }
-  function typeaheadFilter(q){
-    var list = document.getElementById('typeahead-list');
-    if(!list) return;
-    var term = normalize(q);
-    list.innerHTML = '';
-    if(!q){ typeaheadClose(); return; }
-    var results = __surahs.filter(function(s){
-      return (s.name && normalize(s.name).indexOf(term) > -1) || (''+s.number).indexOf(term) > -1;
-    }).slice(0, 12);
-    if(results.length === 0){ typeaheadClose(); return; }
-    typeaheadOpen();
-    results.forEach(function(s){
-      var li = document.createElement('li');
-      var a = document.createElement('a');
-      a.href = s.anchor; // scroll in-page
-      a.setAttribute('role','option');
-      a.innerHTML = '<span>'+s.number+'. '+s.name+'</span><span style="color:#286d67;font-weight:600;">кушодан</span>';
-      a.addEventListener('mousedown', function(e){
-            e.preventDefault(); // prevent default anchor jump
-            var targetId = s.anchor.substring(1); // remove '#'
-            var target = document.getElementById(targetId);
-            if(target){
-                  target.scrollIntoView({ behavior: 'smooth' }); // smooth scroll to surah
-            }
-            typeaheadClose(); // close dropdown
-      });
+function typeaheadOpen(){
+  var ta = document.getElementById('typeahead');
+  if(ta) ta.style.display = 'block';
+}
 
-      li.appendChild(a);
-      list.appendChild(li);
+function typeaheadClose(){
+  var ta = document.getElementById('typeahead');
+  if(ta) ta.style.display = 'none';
+}
+
+function typeaheadCloseDelayed(){
+  clearTimeout(__typeaheadTimer);
+  __typeaheadTimer = setTimeout(typeaheadClose, 150);
+}
+
+// Show full list when search bar is focused
+document.getElementById('global-surah-search').addEventListener('focus', function(){
+  var list = document.getElementById('typeahead-list');
+  list.innerHTML = '';
+  __surahs.forEach(function(s){
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = s.anchor;
+    a.setAttribute('role','option');
+    a.innerHTML = '<span>'+s.number+'. '+s.name+'</span>';
+    a.addEventListener('mousedown', function(e){
+      e.preventDefault();
+      var targetId = s.anchor.substring(1);
+      var target = document.getElementById(targetId);
+      if(target){ target.scrollIntoView({ behavior: 'smooth' }); }
+      typeaheadClose();
     });
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+  typeaheadOpen();
+});
+
+// Filter results while typing
+function typeaheadFilter(q){
+  var list = document.getElementById('typeahead-list');
+  if(!list) return;
+  list.innerHTML = ''; // always clear first
+  var term = normalize(q);
+  if(!term){ 
+    // do nothing else, full list is already handled on focus
+    return; 
   }
+
+  var results = __surahs.filter(function(s){
+    return (s.name && normalize(s.name).indexOf(term) > -1) || (''+s.number).indexOf(term) > -1;
+  });
+
+  if(results.length === 0){ 
+    typeaheadClose(); 
+    return; 
+  }
+
+  typeaheadOpen();
+  results.forEach(function(s){
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = s.anchor;
+    a.setAttribute('role','option');
+    a.innerHTML = '<span>'+s.number+'. '+s.name+'</span>';
+    a.addEventListener('mousedown', function(e){
+      e.preventDefault();
+      var targetId = s.anchor.substring(1);
+      var target = document.getElementById(targetId);
+      if(target){ target.scrollIntoView({ behavior: 'smooth' }); }
+      typeaheadClose();
+    });
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+}
+
+
   // Append per-surah reader link under each section
   document.addEventListener('DOMContentLoaded', function() {
     appendReaderLinks();
@@ -310,7 +356,6 @@
       var name = text.replace(/^\d+\.\s*/, '');
       if(!num || !name) return;
 
-      // Find the paragraph containing "Маълумот:" text
       var infoParagraph = Array.from(sec.querySelectorAll('p'))
         .find(p => p.textContent.includes('Маълумот'));
       
@@ -319,13 +364,12 @@
       p.style.marginTop = '10px';
       p.innerHTML = 'Барои пурра хондани Сураи ' + name + ' бо тарҷума ва тафсир ба ин <a href="/surah/'+num+'" style="color:blue;"><strong>саҳифа</strong></a> гузаред.';
 
-      // Insert after Маълумот paragraph if found, else after h2
       var after = infoParagraph || h2;
       after.parentNode.insertBefore(p, after.nextSibling);
     });
   }
-
 </script>
+
 <section class="surah">
   <h2 id="surah-1">
     <a href="/surah/1">1. Сураи Фотиҳа</a>
@@ -339,8 +383,7 @@
 Аммо чун захмхӯрда баргузидаи қавм ва ҳам сарватманд буд, онҳо шарти гузоштаи саҳобагонро қабул карданд. Пас асҳоби гиромӣ бо сураи «Фотиҳа» саркардаи он қавмро "Руқия" намуданд ва Худованд ба сабаби ин сураи муборак ба ӯ шифо бахшид. Чун ин хабар ба Расули Худо (ﷺ) расид, ӯ руқияро рад накард ва иҷозати аз он ҳақ гирифтанро дод. Валлоҳу аълам.
 Хулоса, дар фазилати сураи мазкур ҳадисҳо ва ривоятҳои зиёде ворид шудааст. Аммо имконнопазир аст, ки ҳамаи он дар ин шарҳи мухтасар ҷой карда шавад. 
 Умед аз Худо дорем, ки дар оянда дар ин боб чун садақаи ҷория ба хонандагони азиз боз ҳам маълумоти бештаре ҷамъ карда бинависем.</p>
-  <p style="margin-top:10px"><span>Барои пурра хондани Сураи Фотиҳа бо тарҷума ва тафсир ба ин <a href="/surah/1"><strong>саҳифа</strong></a> гузаред.</span></p>
-  
+    
 </section>
 
 <section class="surah">
@@ -348,7 +391,6 @@
     <a href="/surah/2">2. Бақара</a>
   </h2>
   <p><strong>Оятҳо:</strong> 286 | <strong>Тартиби ваҳй:</strong> 87</p>
-  <p style="margin-top:10px"><span>Барои хондани Сураи Бақара ба ин <a href="/surah/2"><strong>саҳифа</strong></a> гузаред.</span></p>
   <p><strong>Маълумот:</strong> Ин сура бо ҷамии оятҳои худ, бидуни шакку шубҳа дар Мадина нозил шудааст, ки он сураи 2-юми Қуръон буда, аз 286 оят иборат аст.
 Номи сура ба таври мутлақ аз оятҳои 67-73-уми ҳамин сура гирифта шудааст. Сураи мазкур аз дарозтарин сураҳои Қуръон буда, аз рӯи мазмуни худ бо сураҳои дар Мадина нозилшуда монанд буда, он низому қонунҳоеро ки инсонҳо дар пиёда кардани ҳаёти иҷтимоии хеш ба онҳо ниёз доранд, баён месозад. Сураи «Бақара» бузургтарин ҳукмҳои шариъатро мисли ақида, ибодат, муъомилот, ахлоқ, муносибати зану шавҳар, талоқ, идда, ило, қарз ва монанди инҳоро дар бар мегирад. Дар ибтидо ҳарфе чанд, яъне 4 ояти он сифати мӯъминонро ва 2 ояти он одати кофиронро ва 13 ояти он ахлоқи мунофиқонро баён карда, ҳақиқати имон ва куфру нифоқро равшан месозад. (Т.Ҷалолайн.). Яъне сураи мазкур бо услуби хос байни аҳли саодат (некбахтон) ва аҳли шақоват (бадбахтон) фарқ гузошта, онҳоро аз ҳамдигар ошкоро ҷудо сохтааст.
 Баъдан суханро аз пайдоиши Абу-л-башар, яъне Одам (а) оғоз намуда, ҳодисаҳои аҷоиби дар он айём гузаштаро зикр карда, бо санаду далелҳо собит месозад, ки Аллоҳтаъоло навъи башарро гиромӣ доштааст. Дар ҳақиқат агар ба ин сура назар намоем, мебинем, ки аз се як ҳиссаи онро аҳволи аҳли китоб дар бар гирифтааст. Ба хоса аҳволи гузаштагони бани Исроилро дар маърази хонанда қарор медиҳад. Сабаб он аст, ки авлоди онҳо дар Мадинаи мунаввара, дар ҳамсоягии мӯъминон иқомат дошта, онҳо баҳри заъиф сохтани шариати Муҳаммад (с) алайҳи мусалмонон найрангҳоро ба кор мебурданд. Яъне пинҳонкорӣ ва даст доштан ба фисқу фасоди онҳо барои мӯъминон хатари бузургро ба миён овард, ки ин далели шикастани аҳднома, миёни бани Исроил ва мӯъминон гардид. Сураи муборака иттилоъ медиҳад, ки мӯъминон сари вақт аз макри онҳо огоҳ гашта, хатари ба миёномадаро дафъ сохтанд.
