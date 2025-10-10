@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Surah } from '@shared/schema';
-import SeoHead from '@/components/shared/SeoHead';
 import { getFeaturedImages, CloudImage } from '@/lib/cloudStorage';
 
 interface LastReadSection {
@@ -191,23 +190,7 @@ export default function Home({ onOpenOverlay }: HomeProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SeoHead
-        title="Қуръони Карим - Тафсири Осонбаён бо забони тоҷикӣ"
-        description="Қуръони Карим бо тарҷумаи тоҷикӣ, тафсир, талаффуз ва тиловат. Хондани Қуръон онлайн барои тоҷикзабонон."
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "Қуръони Карим",
-          "description": "Қуръони Карим бо тарҷума ва тафсири тоҷикӣ. Тафсири осонбаёни Қуръон оят ба оят.",
-          "url": window.location.origin,
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": `${window.location.origin}/?search={search_term_string}`,
-            "query-input": "required name=search_term_string"
-          },
-          "keywords": "Куръон, Қуръони Карим, тарҷумаи тоҷикӣ, тафсир, тиловат, талаффуз, тоҷикӣ, забони точики"
-        }}
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       
       <Header onOpenOverlay={onOpenOverlay} />
 

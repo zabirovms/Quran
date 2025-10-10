@@ -23,7 +23,6 @@ import {
   User,
   Tag
 } from 'lucide-react';
-import SeoHead from '@/components/shared/SeoHead';
 
 interface ArticleItem {
   id: string;
@@ -219,17 +218,7 @@ export default function Articles({ onOpenOverlay }: ArticlesProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SeoHead
-        title="Мақолаҳои исломӣ - Маълумотҳо, тафсир ва аҳком"
-        description="Мақолаҳои исломӣ дар бораи Қуръон, аҳком, таърих ва ахлоқи исломӣ бо забони тоҷикӣ."
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "Мақолаҳои исломӣ",
-          "description": "Мақолаҳои исломӣ ва маълумотҳо",
-          "url": `${window.location.origin}/articles`
-        }}
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       <Header onOpenOverlay={onOpenOverlay} />
       
       {/* Inline Back to Home */}

@@ -23,7 +23,6 @@ import {
   Home
 } from 'lucide-react';
 import { Link } from 'wouter';
-import SeoHead from '@/components/shared/SeoHead';
 
 interface DownloadItem {
   id: string;
@@ -242,17 +241,7 @@ export default function Downloads({ onOpenOverlay }: DownloadsProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SeoHead
-        title="Боргирии Қуръон ва матнҳои исломӣ - PDF, аудио ва дигар форматҳо"
-        description="Боргирии Қуръони Карим, дуоҳо, фарзҳои исломӣ ва матнҳои дигар бо форматҳои гуногун."
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "Боргирии матнҳои исломӣ",
-          "description": "Боргирии Қуръон ва матнҳои исломӣ",
-          "url": `${window.location.origin}/downloads`
-        }}
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       <Header onOpenOverlay={onOpenOverlay} />
 
       <main className="flex-1 container mx-auto px-4 py-6">

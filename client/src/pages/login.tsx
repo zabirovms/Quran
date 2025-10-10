@@ -1,4 +1,3 @@
-import SeoHead from '@/components/shared/SeoHead';
 import AuthLayout from '@/components/auth/AuthLayout';
 import AuthCard from '@/components/auth/AuthCard';
 import LoginForm from '@/components/auth/LoginForm';
@@ -23,7 +22,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <SeoHead title={'Вуруд'} description="Воридшавӣ ё сабтином ба сомона" />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       <AuthLayout>
         <div className="space-y-4">
           <AuthCard loginForm={<LoginForm />} registerForm={<RegisterForm />} />

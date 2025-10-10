@@ -3,7 +3,6 @@ import Header from '@/components/layout/Header';
 // Removed floating BackToHome in favor of inline control
 import { Home } from 'lucide-react';
 import { Link } from 'wouter';
-import SeoHead from '@/components/shared/SeoHead';
 
 interface ProjectsProps {
   onOpenOverlay: (type: GlobalOverlayType) => void;
@@ -12,23 +11,7 @@ interface ProjectsProps {
 export default function Projects({ onOpenOverlay }: ProjectsProps) {
   return (
     <div className="min-h-screen flex flex-col">
-      <SeoHead
-        title="Лоиҳаҳои мо - Рушди манбаъҳои исломӣ бо забони тоҷикӣ - Қуръони Карим"
-        description="Лоиҳаҳои ояндаи мо оиди манбаъҳои исломӣ ба забони тоҷикӣ. Вақти намоз, пайдо кардани масҷидҳо, китобхонаи исломӣ, ҳадисҳо ва тафсирҳо бо забони тоҷикӣ."
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "Лоиҳаҳои мо",
-          "description": "Лоиҳаҳои ояндаи мо оиди манбаъҳои исломӣ ба забони тоҷикӣ",
-          "inLanguage": "tg",
-          "isPartOf": {
-            "@type": "WebSite",
-            "name": "Қуръони Карим",
-            "url": window.location.origin
-          },
-          "keywords": "лоиҳаҳои исломӣ, вақти намоз, масҷидҳо, китобхонаи исломӣ, ҳадисҳо, тафсирҳо, тоҷикӣ"
-        }}
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       <Header onOpenOverlay={onOpenOverlay} />
       
       {/* Inline Back to Home */}

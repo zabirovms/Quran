@@ -1,15 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
-import SeoHead from '@/components/shared/SeoHead';
 import { Home } from 'lucide-react';
 
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white p-4">
-      <SeoHead
-        title="Саҳифа ёфт нашуд - 404"
-        description="Саҳифаи дархост кардаатон ёфт нашуд. Лутфан ба саҳифаи асосӣ баргардед."
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
 
       {/* Error Message - 404 (No bottom margin) */}
       <div className="text-center">

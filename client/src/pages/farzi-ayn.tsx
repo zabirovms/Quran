@@ -5,7 +5,6 @@ import { Home } from "lucide-react";
 import { ChevronUp } from "lucide-react";
 import Header from "@/components/layout/Header";
 import { GlobalOverlayType } from "@/App";
-import SeoHead from "@/components/shared/SeoHead";
 
 interface FarziAynProps {
   onOpenOverlay: (type: GlobalOverlayType) => void;
@@ -67,22 +66,7 @@ export default function FarziAynPage({ onOpenOverlay }: FarziAynProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SeoHead
-        title="Фарзи Айн - дарси такливи мусалмонӣ бо забони тоҷикӣ - Қуръони Карим"
-        description="Китоби Фарзи Айн - дарси такливи мусалмонӣ бо забони тоҷикӣ. Матни пурраи китоб барои хониш онлайн."
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "Book",
-          name: "Фарзи Айн",
-          description: "Дарси такливи мусалмонӣ бо забони тоҷикӣ",
-          inLanguage: "tg",
-          publisher: {
-            "@type": "Organization",
-            name: "Қуръони Карим",
-          },
-          keywords: "Фарзи Айн, тоҷикӣ, дарси такливи мусалмонӣ, китоби исломӣ",
-        }}
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       <Header onOpenOverlay={onOpenOverlay} />
 
       <main

@@ -7,7 +7,6 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { GlobalOverlayType } from '@/App';
 import { Search, Play } from 'lucide-react';
-import SeoHead from '@/components/shared/SeoHead';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface VideoItem {
@@ -156,17 +155,7 @@ export default function Videos({ onOpenOverlay }: VideosProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SeoHead
-        title="Видеоҳои Қуръонӣ - Тиловат бо субтитрҳои тоҷикӣ"
-        description="Видеоҳои тиловати Қуръон, дуоҳо ва маълумотҳои исломӣ бо субтитрҳои тоҷикӣ."
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "Видеоҳои Қуръонӣ",
-          "description": "Видеоҳои тиловати Қуръон бо субтитрҳо",
-          "url": `${window.location.origin}/videos`
-        }}
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       <Header onOpenOverlay={onOpenOverlay} />
       {/* Hero with search */}
       <section className="relative">

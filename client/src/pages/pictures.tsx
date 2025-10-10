@@ -5,7 +5,6 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { GlobalOverlayType } from '@/App';
 import { Download, Share2, X, BookOpen } from 'lucide-react';
-import SeoHead from '@/components/shared/SeoHead';
 
 interface PictureItem {
   id: string;
@@ -123,10 +122,7 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <SeoHead
-          title="Суратҳо - Қуръони Карим"
-          description="Суратҳо ва иқтибосҳо аз Қуръони Карим"
-        />
+        {/* SEO meta tags are handled server-side for better crawler support */}
         <Header onOpenOverlay={onOpenOverlay} />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
@@ -142,10 +138,7 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
   if (error) {
     return (
       <div className="min-h-screen bg-background">
-        <SeoHead
-          title="Суратҳо - Қуръони Карим"
-          description="Суратҳо ва иқтибосҳо аз Қуръони Карим"
-        />
+        {/* SEO meta tags are handled server-side for better crawler support */}
         <Header onOpenOverlay={onOpenOverlay} />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
@@ -166,10 +159,7 @@ export default function Pictures({ onOpenOverlay }: PicturesProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <SeoHead
-        title="Суратҳо - Қуръони Карим"
-        description="Суратҳо ва иқтибосҳо аз Қуръони Карим"
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       <Header onOpenOverlay={onOpenOverlay} />
       
       <div className="container mx-auto px-4 py-8">

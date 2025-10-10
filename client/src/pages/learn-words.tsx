@@ -32,7 +32,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Link } from 'wouter';
-import SeoHead from '@/components/shared/SeoHead';
 // Removed floating BackToHome usage
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -537,10 +536,7 @@ export default function LearnWords() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex flex-col">
-      <SeoHead
-        title="Омӯзиши калимаҳои Қуръон"
-        description="Калимаҳои аз ҳама бештар истифодашавандаро дар Қуръон тавассути шеваҳои интерактивӣ омӯзед."
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
       
       {/* Inline back control in header instead of floating button */}
 

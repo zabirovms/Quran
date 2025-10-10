@@ -24,7 +24,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Link } from 'wouter';
-import SeoHead from '@/components/shared/SeoHead';
 // Removed floating BackToHome usage
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -181,10 +180,7 @@ export default function TasbeehCounter() {
 
   return (
     <>
-      <SeoHead
-        title="Тасбеҳ | Қуръони Карим"
-        description="Тасбеҳгӯяк барои зикрҳои Исломӣ бо забони тоҷикӣ ва арабӣ"
-      />
+      {/* SEO meta tags are handled server-side for better crawler support */}
 
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/95">
         {/* Inline back control in header instead of floating button */}

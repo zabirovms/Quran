@@ -27,7 +27,6 @@ import {
 import { Link } from 'wouter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import SeoHead from '@/components/shared/SeoHead';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useDisplaySettings } from '@/hooks/useDisplaySettings';
@@ -241,29 +240,7 @@ export default function Surah({ surahNumber, onOpenOverlay }: SurahProps) {
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-      {surah && (
-        <SeoHead
-          title={`Сураи ${surah.name_tajik} (${surah.name_arabic})`}
-          description={`Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}.`}
-          structuredData={{
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "headline": `Сураи ${surah.name_tajik} - Қуръони Карим бо тарҷумаи тоҷикӣ`,
-            "name": surah.name_tajik,
-            "alternativeHeadline": surah.name_arabic,
-            "author": {
-              "@type": "Organization",
-              "name": "Қуръони Тоҷикӣ"
-            },
-            "inLanguage": "tg",
-            "isPartOf": {
-              "@type": "WebSite",
-              "name": "Қуръони Тоҷикӣ",
-              "url": window.location.origin
-            }
-          }}
-        />
-      )}
+      {/* SEO meta tags are handled server-side for better crawler support */}
       
       {/* New Header - Fixed at the top */}
       <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
