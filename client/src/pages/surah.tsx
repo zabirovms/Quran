@@ -342,7 +342,7 @@ export default function Surah({ surahNumber, initialVerseNumber, onOpenOverlay }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* SEO meta tags are now handled server-side for better crawler support */}
+      {/* SEO meta tags are handled server-side for better crawler support */}
 
       <SmartSticky className="bg-background/80 backdrop-blur-sm border-b">
         <header className="container mx-auto px-4 py-1">

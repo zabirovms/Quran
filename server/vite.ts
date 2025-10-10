@@ -14,8 +14,11 @@ async function injectSurahMetaTags(template: string, surahNumber: number): Promi
     if (!surah) return template;
 
     const title = `Сураи ${surah.name_tajik} | Қуръони Карим`;
-    const description = `Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. ${surah.verses_count} оят, нозил шуда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'}. Тарҷумаи тоҷикӣ ва тафсири осонбаён.`;
+    const description = `Хондани Сураи ${surah.name_tajik} бо тарҷумаи тоҷикӣ. Ин сура аз ${surah.verses_count} оят иборат буда дар ${surah.revelation_type === 'Meccan' ? 'Макка' : 'Мадина'} нозил шудааст. Тарҷума, тафсири осонбаён, тиловат ва тарҷумаи ҳар як калимаҳои онро метавонед дар инҷо дастрас кунед.`;
     const canonicalUrl = `https://www.quran.tj/surah/${surahNumber}`;
+    const siteName = 'Қуръони Карим';
+    const imageUrl = 'https://www.quran.tj/favicon.ico';
+    const keywords = `Қуръон, қуръони карим, куръони карим, тарачумаи куръони карим, тафсир, куръони карим точики, quran in tajik, забони тоҷикӣ, коран, точики, ${surah.name_tajik}, ${surah.name_arabic}, Сураи ${surah.number}, тарҷумаи тоҷикӣ, тафсир`;
 
     // Replace title
     template = template.replace(
@@ -29,6 +32,12 @@ async function injectSurahMetaTags(template: string, surahNumber: number): Promi
       `<meta name="description" content="${description}" />`
     );
 
+    // Replace keywords
+    template = template.replace(
+      /<meta name="keywords" content=".*?" \/>/,
+      `<meta name="keywords" content="${keywords}" />`
+    );
+
     // Add canonical URL
     template = template.replace(
       /<meta name="theme-color" content="#0c4532" \/>/,
@@ -36,7 +45,7 @@ async function injectSurahMetaTags(template: string, surahNumber: number): Promi
       <link rel="canonical" href="${canonicalUrl}" />`
     );
 
-    // Add Open Graph tags
+    // Update Open Graph tags
     template = template.replace(
       /<meta property="og:title" content=".*?" \/>/,
       `<meta property="og:title" content="${title}" />`
@@ -50,6 +59,65 @@ async function injectSurahMetaTags(template: string, surahNumber: number): Promi
     template = template.replace(
       /<meta property="og:url" content=".*?" \/>/,
       `<meta property="og:url" content="${canonicalUrl}" />`
+    );
+
+    template = template.replace(
+      /<meta property="og:type" content=".*?" \/>/,
+      `<meta property="og:type" content="article" />`
+    );
+
+    template = template.replace(
+      /<meta property="og:site_name" content=".*?" \/>/,
+      `<meta property="og:site_name" content="${siteName}" />`
+    );
+
+    template = template.replace(
+      /<meta property="og:image" content=".*?" \/>/,
+      `<meta property="og:image" content="${imageUrl}" />`
+    );
+
+    // Update Twitter meta tags
+    template = template.replace(
+      /<meta name="twitter:title" content=".*?" \/>/,
+      `<meta name="twitter:title" content="${title}" />`
+    );
+
+    template = template.replace(
+      /<meta name="twitter:description" content=".*?" \/>/,
+      `<meta name="twitter:description" content="${description}" />`
+    );
+
+    template = template.replace(
+      /<meta name="twitter:image" content=".*?" \/>/,
+      `<meta name="twitter:image" content="${imageUrl}" />`
+    );
+
+    // Add structured data for better SEO
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": `Сураи ${surah.name_tajik} - Қуръони Карим бо тарҷумаи тоҷикӣ`,
+      "name": surah.name_tajik,
+      "alternativeHeadline": surah.name_arabic,
+      "author": {
+        "@type": "Organization",
+        "name": "Қуръони Тоҷикӣ"
+      },
+      "inLanguage": "tg",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Қуръони Тоҷикӣ",
+        "url": "https://www.quran.tj"
+      },
+      "datePublished": new Date().toISOString(),
+      "description": description
+    };
+
+    // Add structured data before closing head tag
+    template = template.replace(
+      /<\/head>/,
+      `<script type="application/ld+json">${JSON.stringify(structuredData)}</script>
+      </head>`
     );
 
     return template;
