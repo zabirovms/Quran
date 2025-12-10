@@ -26,6 +26,7 @@ const ArticlesPage = lazy(() => import("@/pages/articles"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const MosquesPage = lazy(() => import("@/pages/mosques"));
+const PrivacyPage = lazy(() => import("@/pages/privacy"));
 
 // Loading component for better UX
 const PageLoader = () => (
@@ -77,6 +78,7 @@ function Router() {
             <Route path="/articles" component={() => <ArticlesPage onOpenOverlay={openOverlay} />} />
             <Route path="/mosques" component={MosquesPage} />
             <Route path="/login" component={LoginPage} />
+            <Route path="/privacy" component={() => <PrivacyPage onOpenOverlay={openOverlay} />} />
             <Route component={NotFound} />
           </Switch>
       </Suspense>
