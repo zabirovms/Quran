@@ -79,6 +79,7 @@ function Router() {
             <Route path="/mosques" component={MosquesPage} />
             <Route path="/login" component={LoginPage} />
             <Route path="/privacy-policy" component={() => <PrivacyPage onOpenOverlay={openOverlay} />} />
+            <Route path="/privacy" component={() => <PrivacyPage onOpenOverlay={openOverlay} />} />
             <Route component={NotFound} />
           </Switch>
       </Suspense>
